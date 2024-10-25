@@ -9,9 +9,17 @@ namespace HN.Graph.Editor
 {
     public abstract class HNGraphNewAction<T> : EndNameEditAction where T : HNGraphObject
     {
-        public override void Action(int instanceId, string pathName, string resourceFile)
+        public T GraphData => graphData;
+        private T graphData;
+
+
+        public void CreateGraphData()
         {
-            T graphData = ScriptableObject.CreateInstance<T>();
+            graphData = ScriptableObject.CreateInstance<T>();
+        }
+
+        public void SaveDataToJson(string pathName)
+        {
             string graphDataJson = JsonUtility.ToJson(graphData);
             StreamWriter sw;
             sw = File.CreateText(pathName);

@@ -1,6 +1,5 @@
 using System.Collections;
 using System.Collections.Generic;
-using UnityEditor;
 using UnityEngine;
 
 namespace HN.Graph
@@ -15,13 +14,6 @@ namespace HN.Graph
         {
             this.extension = extension;
         }
-
-
-
-#if UNITY_EDITOR
-
-#endif
-
 
     }
 }

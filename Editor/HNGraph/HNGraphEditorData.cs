@@ -6,7 +6,7 @@ using UnityEngine;
 
 namespace HN.Graph.Editor
 {
-    public abstract class HNGraphEditorData : ScriptableObject
+    public class HNGraphEditorData : ScriptableObject
     {
         public HNGraphObject graphData;
         public string graphAssetName;

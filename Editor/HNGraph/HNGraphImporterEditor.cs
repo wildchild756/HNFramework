@@ -9,33 +9,9 @@ using UnityEngine.UIElements;
 
 namespace HN.Graph.Editor
 {
-    public abstract class HNGraphImporterEditor<T> : ScriptedImporterEditor where T : HNGraphObject
+    public abstract class HNGraphImporterEditor : ScriptedImporterEditor
     {
-        private HNGraphImporter<T> importer;
-
-
-        public override void OnInspectorGUI()
-        {
-            Debug.Log("123123");
-            if (GUILayout.Button(new GUIContent("Open Graph")))
-            {
-                OnOpenButtonClick();
-            }
-
-            ApplyRevertGUI();
-        }
-
-        private void OnOpenButtonClick()
-        {
-            importer = target as HNGraphImporter<T>;
-            HNGraphEditorData graphEditorData = ScriptableObject.CreateInstance<HNGraphEditorData>();
-            graphEditorData.Initialize(importer.graphData);
-            OnOpenGraph(importer.assetPath, importer.Extension, graphEditorData);
-        }
-
-
-
-        public static bool OnOpenGraph(string path, string targetExtension, HNGraphEditorData graphEditorData)
+        public static bool OpenGraph<T>(string path, string targetExtension, HNGraphEditorData graphEditorData) where T : HNGraphEditorWindow
         {
             var extension = Path.GetExtension(path);
             if (string.IsNullOrEmpty(extension))
@@ -58,7 +34,7 @@ namespace HN.Graph.Editor
                 }
             }
 
-            var window = HNGraphEditorWindow.ShowWindow();
+            T window = HNGraphEditorWindow.ShowWindow<T>();
             window.Focus();
             return window.Initialize(guid, graphEditorData);
         }

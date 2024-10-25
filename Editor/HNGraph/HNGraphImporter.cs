@@ -12,27 +12,30 @@ namespace HN.Graph.Editor
     {
         public string Extension => extension;
         private string extension;
-        public HNGraphObject graphData;
+
+        public T GraphData => graphData;
+        private T graphData;
 
 
-        public override void OnImportAsset(AssetImportContext ctx)
+        public void LoadGraphData(string path)
         {
-            string path = ctx.assetPath;
             graphData = AssetDatabase.LoadAssetAtPath<T>(path);
-            if (graphData == null)
+            if(graphData == null)
             {
                 graphData = ScriptableObject.CreateInstance<T>();
             }
-            extension = graphData.Extension;
-            string textGraph = File.ReadAllText(path, Encoding.UTF8);
-            JsonUtility.FromJsonOverwrite(textGraph, graphData);
-            if (graphData != null)
-            {
-                ctx.AddObjectToAsset("MainAsset", graphData);
-                ctx.SetMainObject(graphData);
-            }
         }
 
+        public void OverwriteGraphDataByJson(AssetImportContext ctx)
+        {
+            string textGraph = File.ReadAllText(ctx.assetPath, Encoding.UTF8);
+            JsonUtility.FromJsonOverwrite(textGraph, graphData);
+        }
 
+        public void SetObject(AssetImportContext ctx)
+        {
+            ctx.AddObjectToAsset("MainAsset", graphData);
+            ctx.SetMainObject(graphData);
+        }
     }
 }

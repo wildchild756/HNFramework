@@ -18,13 +18,10 @@ namespace HN.Graph.Editor
         private Dictionary<string, HNGraphNodeView> nodeViewDict;
         private List<HNGraphEdgeView> edgeViews;
         private Dictionary<string, HNGraphEdgeView> edgeViewDict;
-        private HNGraphSearchWindowProvider searchWindowProvider;
         private HNGraphEdgeConnectionListener edgeConnectorListener;
 
-        public HNGraphView(HNGraphEditorWindow graphEditorWindow, HNGraphEditorData graphEditorData)
+        public HNGraphView(HNGraphEditorWindow graphEditorWindow, HNGraphEditorData graphEditorData, HNGraphSearchWindowProvider searchWindowProvider)
         {
-            styleSheets.Add(Resources.Load<StyleSheet>("Styles/HNRenderGraphView"));
-
             this.graphEditorWindow = graphEditorWindow;
             this.graphEditorData = graphEditorData;
 
@@ -35,7 +32,7 @@ namespace HN.Graph.Editor
 
             serializeGraphElements = SerializeGraphElementsImplementation;
 
-            //AddManipulator(new ContentDragger());
+            AddManipulator(new ContentDragger());
             AddManipulator(new SelectionDragger());
             AddManipulator(new RectangleSelector());
             AddManipulator(new ClickSelector());
@@ -46,12 +43,11 @@ namespace HN.Graph.Editor
 
             SetupZoom(0.05f, 8);
 
-            searchWindowProvider = ScriptableObject.CreateInstance<HNGraphSearchWindowProvider>();
             searchWindowProvider.graph = this;
             nodeCreationRequest += context =>
             {
-                //searchWindowProvider.target = (VisualElement)focusController.focusedElement;
                 Vector2 pos = context.screenMousePosition;
+                Debug.Log(pos);
                 var searchWindowContext = new SearchWindowContext(pos, 0f, 0f);
                 SearchWindow.Open(searchWindowContext, searchWindowProvider);
 
@@ -62,6 +58,8 @@ namespace HN.Graph.Editor
 
             DrawNodes();
             //DrawEdges();
+
+            styleSheets.Add(Resources.Load<StyleSheet>("Styles/HNGraphView"));
         }
 
         public override List<Port> GetCompatiblePorts(Port startPort, NodeAdapter nodeAdapter)

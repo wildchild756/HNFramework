@@ -1,0 +1,16 @@
+HNGraphView
+{
+	flex-grow: 1;
+}
+GridBackground
+{
+	--thick-lines: 2;
+	--spacing: 50;
+	--grid-background-color: rgb(35, 35, 35);
+	--line-color: rgb(45, 45, 45);
+	--thick-line-color: rgb(60, 60, 60);
+}
+Toolbar
+{
+
+}

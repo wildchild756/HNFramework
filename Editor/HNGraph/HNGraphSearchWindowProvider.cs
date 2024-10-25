@@ -9,43 +9,29 @@ using UnityEngine.UIElements;
 
 namespace HN.Graph.Editor
 {
-    public class HNGraphSearchWindowProvider : ScriptableObject, ISearchWindowProvider
+    public abstract class HNGraphSearchWindowProvider : ScriptableObject, ISearchWindowProvider
     {
         public HNGraphView graph;
         public HNGraphNode target;
 
         public static List<SearchContextElement> elements;
 
+
         public List<SearchTreeEntry> CreateSearchTree(SearchWindowContext context)
         {
             List<SearchTreeEntry> tree = new List<SearchTreeEntry>();
             tree.Add(new SearchTreeGroupEntry(new GUIContent("Create Nodes")));
+            List<SearchContextElement> elements = FindElements();
+            SortElements(elements);
+            CreateSearchTreeEntry(tree);
+            return tree;
+        }
 
-            elements = new List<SearchContextElement>();
 
-            Assembly[] assemblies = AppDomain.CurrentDomain.GetAssemblies();
-            foreach (Assembly assembly in assemblies)
-            {
-                foreach (Type type in assembly.GetTypes())
-                {
-                    if (type.CustomAttributes.ToList() != null)
-                    {
-                        var attribute = type.GetCustomAttribute(typeof(HNGraphNodeInfoAttribute));
-                        if (attribute != null)
-                        {
-                            HNGraphNodeInfoAttribute attr = (HNGraphNodeInfoAttribute)attribute;
-                            var node = Activator.CreateInstance(type);
+        public abstract List<SearchContextElement> FindElements();
 
-                            if (string.IsNullOrEmpty(attr.MenuItem))
-                            {
-                                continue;
-                            }
-                            elements.Add(new SearchContextElement(node, attr.MenuItem));
-                        }
-                    }
-                }
-            }
-
+        private void SortElements(List<SearchContextElement> elements)
+        {
             elements.Sort((entry1, entry2) =>
             {
                 string[] splits1 = entry1.title.Split('/');
@@ -68,9 +54,11 @@ namespace HN.Graph.Editor
                 }
                 return 0;
             });
+        }
 
+        private void CreateSearchTreeEntry(List<SearchTreeEntry> tree)
+        {
             List<string> groups = new List<string>();
-
             foreach (SearchContextElement element in elements)
             {
                 string[] entryTitle = element.title.Split('/');
@@ -92,8 +80,6 @@ namespace HN.Graph.Editor
                 tree.Add(entry);
             }
 
-
-            return tree;
         }
 
         public bool OnSelectEntry(SearchTreeEntry searchTreeEntry, SearchWindowContext context)
@@ -109,33 +95,6 @@ namespace HN.Graph.Editor
             graph.AddNode(node);
 
             return true;
-        }
-
-        private void AddToSearchTree(string title, Type type, List<SearchTreeEntry> entries, Assembly[] assemblies)
-        {
-            entries.Add(new SearchTreeGroupEntry(new GUIContent(title), 1));
-            foreach (Assembly assembly in assemblies)
-            {
-                foreach (Type t in assembly.GetTypes())
-                {
-                    if (t.IsClass && !t.IsAbstract && t.IsSubclassOf(type))
-                    {
-                        AddPass(entries, t);
-                    }
-                }
-            }
-        }
-
-        private void AddPass(List<SearchTreeEntry> entries, Type type)
-        {
-            if (Activator.CreateInstance(type) is HNRenderPass entry)
-            {
-                entries.Add(new SearchTreeEntry(new GUIContent(entry.passName))
-                {
-                    level = 2,
-                    userData = entry,
-                });
-            }
         }
 
 

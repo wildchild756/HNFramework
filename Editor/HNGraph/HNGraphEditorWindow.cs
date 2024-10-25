@@ -9,15 +9,20 @@ using UnityEngine.UIElements;
 
 namespace HN.Graph.Editor
 {
-    public class HNGraphEditorWindow : EditorWindow
+    public abstract class HNGraphEditorWindow : EditorWindow
     {
         [SerializeField]
         public HNGraphEditorData graphEditorData;
         public string guid;
+        public HNGraphSearchWindowProvider searchWindowProvider;
 
         private string graphEditorDataPath;
         private string graphEditorDataName;
         private string titleContentString;
+
+
+        public abstract void OnInitialize();
+
 
         public bool Initialize(string assetGuid, HNGraphEditorData graphEditorData)
         {
@@ -31,10 +36,13 @@ namespace HN.Graph.Editor
             this.graphEditorData = graphEditorData;
             titleContentString = graphEditorDataName;
 
+            OnInitialize();
+
             titleContent = new GUIContent(graphEditorDataName);
 
-            var graphView = new HNGraphView(this, graphEditorData);
-            rootVisualElement.Add(graphView);
+            var graphView = new HNGraphView(this, graphEditorData, searchWindowProvider);
+            graphView.name = "HNGraphView";
+            graphView.graphViewChanged += OnChange;
 
             var toolbar = new IMGUIContainer(() =>
             {
@@ -61,9 +69,10 @@ namespace HN.Graph.Editor
                 GUILayout.FlexibleSpace();
                 GUILayout.EndHorizontal();
             });
-            //rootVisualElement.Add(toolbar);
+            toolbar.name = "Toolbar";
+            graphView.Add(toolbar);
 
-            graphView.graphViewChanged += OnChange;
+            rootVisualElement.Add(graphView);
 
             return true;
         }
@@ -77,9 +86,9 @@ namespace HN.Graph.Editor
         }
 
 
-        public static HNGraphEditorWindow ShowWindow()
+        public static T ShowWindow<T>() where T : HNGraphEditorWindow
         {
-            HNGraphEditorWindow window = CreateWindow<HNGraphEditorWindow>(typeof(HNGraphEditorWindow), typeof(SceneView));
+            T window = CreateWindow<T>(typeof(T), typeof(SceneView));
             return window;
         }
 

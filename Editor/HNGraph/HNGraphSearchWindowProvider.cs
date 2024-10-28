@@ -89,7 +89,7 @@ namespace HN.Graph.Editor
 
             SearchContextElement element = (SearchContextElement)searchTreeEntry.userData;
 
-            HNRenderPass pass = (HNRenderPass)element.target;
+            IHNGraphNode pass = (IHNGraphNode)element.target;
             HNGraphNode node = new HNGraphNode(pass);
             node.SetPosition(new Rect(graphMousePosition, new Vector2()));
             graph.AddNode(node);

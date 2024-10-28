@@ -6,13 +6,30 @@ namespace HN.Graph
 {
     public abstract class HNGraphObject : ScriptableObject
     {
-        public string Extension => extension;
-        private string extension;
-
-
-        public HNGraphObject(string extension)
+        public string AssetPath
         {
-            this.extension = extension;
+            get { return assetPath; }
+            set { assetPath = value; }
+        }
+        [SerializeField]
+        private string assetPath;
+
+        public string EditorDataJson
+        {
+            get { return editorDataJson; }
+            set { editorDataJson = value; }
+        }
+        [SerializeField]
+        private string editorDataJson = "{}";
+
+
+#if UNITY_EDITOR
+        public abstract void SerializeToJson();
+#endif
+
+        public HNGraphObject()
+        {
+            
         }
 
     }

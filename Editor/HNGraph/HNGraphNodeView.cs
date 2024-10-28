@@ -37,7 +37,7 @@ namespace HN.Graph.Editor
             this.guid = nodeData.Guid;
             inputPortViews = new List<HNGraphPortView>();
             outputPortViews = new List<HNGraphPortView>();
-            passType = nodeData.pass.GetType();
+            passType = nodeData.graphNodeClass.GetType();
 
             DrawNode();
             DrawPort();

@@ -10,14 +10,10 @@ namespace HN.Graph.Editor
 {
     public abstract class HNGraphImporter<T> : ScriptedImporter where T : HNGraphObject
     {
-        public string Extension => extension;
-        private string extension;
-
-        public T GraphData => graphData;
         private T graphData;
 
 
-        public void LoadGraphData(string path)
+        public virtual void LoadGraphData(string path)
         {
             graphData = AssetDatabase.LoadAssetAtPath<T>(path);
             if(graphData == null)
@@ -26,13 +22,13 @@ namespace HN.Graph.Editor
             }
         }
 
-        public void OverwriteGraphDataByJson(AssetImportContext ctx)
+        public virtual void OverwriteGraphDataByJson(AssetImportContext ctx)
         {
             string textGraph = File.ReadAllText(ctx.assetPath, Encoding.UTF8);
             JsonUtility.FromJsonOverwrite(textGraph, graphData);
         }
 
-        public void SetObject(AssetImportContext ctx)
+        public virtual void SetObject(AssetImportContext ctx)
         {
             ctx.AddObjectToAsset("MainAsset", graphData);
             ctx.SetMainObject(graphData);

@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
@@ -11,8 +12,22 @@ namespace HN.Graph.Editor
 {
     public abstract class HNGraphImporterEditor : ScriptedImporterEditor
     {
-        public static bool OpenGraph<T>(string path, string targetExtension, HNGraphEditorData graphEditorData) where T : HNGraphEditorWindow
+        public T LoadGraphData<T>() where T : HNGraphObject
         {
+            var importer = (HNGraphImporter<T>)target;
+            T graphData = AssetDatabase.LoadAssetAtPath<T>(importer.assetPath);
+            graphData.AssetPath = importer.assetPath;
+            return graphData;
+        }
+
+        public static bool OpenGraph<T, U>(string path, string targetExtension, HNGraphObject graphData) 
+            where T : HNGraphEditorWindow 
+            where U : HNGraphEditorData
+        {
+            U graphEditorData = ScriptableObject.CreateInstance<U>();
+            JsonUtility.FromJsonOverwrite(graphData.EditorDataJson, graphEditorData);
+            graphEditorData.Initialize(graphData);
+            
             var extension = Path.GetExtension(path);
             if (string.IsNullOrEmpty(extension))
             {
@@ -27,7 +42,7 @@ namespace HN.Graph.Editor
             var guid = AssetDatabase.AssetPathToGUID(path);
             foreach (var w in Resources.FindObjectsOfTypeAll<HNGraphEditorWindow>())
             {
-                if (w.guid == guid)
+                if (w.Guid == guid)
                 {
                     w.Focus();
                     return true;
@@ -38,5 +53,8 @@ namespace HN.Graph.Editor
             window.Focus();
             return window.Initialize(guid, graphEditorData);
         }
+
+        
+
     }
 }

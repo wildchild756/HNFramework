@@ -10,7 +10,8 @@ namespace HN.Graph.Editor
     [Serializable]
     public class HNGraphNode
     {
-        public HNRenderPass pass;
+        [SerializeReference]
+        public IHNGraphNode graphNodeClass;
 
         public string Guid => guid;
         [SerializeField]
@@ -20,9 +21,9 @@ namespace HN.Graph.Editor
         [SerializeField]
         private Rect position;
 
-        public HNGraphNode(HNRenderPass pass)
+        public HNGraphNode(IHNGraphNode graphNodeClass)
         {
-            this.pass = pass;
+            this.graphNodeClass = graphNodeClass;
             NewGUID();
 
         }

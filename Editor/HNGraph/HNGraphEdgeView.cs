@@ -13,5 +13,11 @@ namespace HN.Graph.Editor
             set { connectionData = value; }
         }
         private HNGraphEdge connectionData;
+
+
+        public HNGraphEdgeView()
+        {
+            
+        }
     }
 }

@@ -10,6 +10,7 @@ namespace HN.Graph.Editor
         public void OnDrop(GraphView graphView, Edge edge)
         {
             HNGraphEdgeView edgeView = (HNGraphEdgeView)edge;
+            Debug.Log(edgeView);
             HNGraphView hnGraphView = (HNGraphView)graphView;
             if (edgeView != null && hnGraphView != null)
             {

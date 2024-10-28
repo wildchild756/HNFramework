@@ -9,10 +9,17 @@ using UnityEngine.UIElements;
 
 namespace HN.Graph.Editor
 {
-    public abstract class HNGraphSearchWindowProvider : ScriptableObject, ISearchWindowProvider
+    public class HNGraphSearchWindowProvider : ScriptableObject, ISearchWindowProvider
     {
         public HNGraphView graph;
         public HNGraphNode target;
+        
+        public Type GraphNodeInfoAttributeType
+        {
+            get { return graphNodeInfoAttributeType; }
+            set { graphNodeInfoAttributeType = value; }
+        }
+        private Type graphNodeInfoAttributeType;
 
         public static List<SearchContextElement> elements;
 
@@ -20,6 +27,11 @@ namespace HN.Graph.Editor
         public List<SearchTreeEntry> CreateSearchTree(SearchWindowContext context)
         {
             List<SearchTreeEntry> tree = new List<SearchTreeEntry>();
+            if(graphNodeInfoAttributeType == null)
+            {
+                return tree;
+            }
+
             tree.Add(new SearchTreeGroupEntry(new GUIContent("Create Nodes")));
             List<SearchContextElement> elements = FindElements();
             SortElements(elements);
@@ -28,7 +40,35 @@ namespace HN.Graph.Editor
         }
 
 
-        public abstract List<SearchContextElement> FindElements();
+        // public abstract List<SearchContextElement> FindElements();
+
+        public List<SearchContextElement> FindElements()
+        {
+            elements = new List<SearchContextElement>();
+            Assembly[] assemblies = AppDomain.CurrentDomain.GetAssemblies();
+            foreach (Assembly assembly in assemblies)
+            {
+                foreach (Type type in assembly.GetTypes())
+                {
+                    if (type.CustomAttributes.ToList() != null)
+                    {
+                        var attribute = type.GetCustomAttribute(graphNodeInfoAttributeType);
+                        if (attribute != null)
+                        {
+                            HNGraphNodeInfoAttribute attr = (HNGraphNodeInfoAttribute)Convert.ChangeType(attribute, graphNodeInfoAttributeType);
+                            var node = Activator.CreateInstance(type);
+
+                            if (string.IsNullOrEmpty(attr.MenuItem))
+                            {
+                                continue;
+                            }
+                            elements.Add(new SearchContextElement(node, attr.MenuItem));
+                        }
+                    }
+                }
+            }
+            return elements;
+        }
 
         private void SortElements(List<SearchContextElement> elements)
         {

@@ -13,7 +13,13 @@ namespace HN.Graph.Editor
     {
         public string Guid => guid;
         private string guid;
-        public HNGraphSearchWindowProvider searchWindowProvider;
+
+        public HNGraphSearchWindowProvider SearchWindowProvider
+        {
+            get { return searchWindowProvider; }
+            set { searchWindowProvider = value; }
+        }
+        private HNGraphSearchWindowProvider searchWindowProvider;
 
         private HNGraphEditorData graphEditorData;
         private HNGraphView graphView;
@@ -40,6 +46,11 @@ namespace HN.Graph.Editor
             this.graphEditorData = graphEditorData;
 
             OnInitialize();
+
+            if(searchWindowProvider == null)
+            {
+                return false;
+            }
 
             graphView = new HNGraphView(this, graphEditorData, searchWindowProvider);
             graphView.name = "HNGraphView";

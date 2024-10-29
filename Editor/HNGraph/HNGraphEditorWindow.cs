@@ -6,6 +6,7 @@ using UnityEngine;
 using UnityEditor;
 using UnityEditor.Experimental.GraphView;
 using UnityEngine.UIElements;
+using UnityEditor.UIElements;
 
 namespace HN.Graph.Editor
 {
@@ -29,7 +30,8 @@ namespace HN.Graph.Editor
         private string extension;
 
 
-        public abstract void OnInitialize();
+        public abstract void CreateSearchWindowProvider();
+        public abstract void AdditionalToolButon(Toolbar toolbar);
 
 
         public bool Initialize(string assetGuid, HNGraphEditorData graphEditorData)
@@ -45,7 +47,7 @@ namespace HN.Graph.Editor
             }
             this.graphEditorData = graphEditorData;
 
-            OnInitialize();
+            CreateSearchWindowProvider();
 
             if(searchWindowProvider == null)
             {
@@ -53,29 +55,10 @@ namespace HN.Graph.Editor
             }
 
             graphView = new HNGraphView(this, graphEditorData, searchWindowProvider);
-            graphView.name = "HNGraphView";
+            graphView.name = "GraphView";
             graphView.graphViewChanged += OnChange;
 
-            toolbar = new IMGUIContainer(() =>
-            {
-                GUILayout.BeginHorizontal(EditorStyles.toolbar);
-                if (GUILayout.Button("Save Asset", EditorStyles.toolbarButton))
-                {
-                    OnSaveAsset();
-                }
-                GUILayout.Space(6);
-                if (GUILayout.Button("Save As...", EditorStyles.toolbarButton))
-                {
-                    OnSaveAs();
-                }
-                GUILayout.Space(6);
-                if (GUILayout.Button("Show In Project", EditorStyles.toolbarButton))
-                {
-                    OnShowInProject();
-                }
-                GUILayout.FlexibleSpace();
-                GUILayout.EndHorizontal();
-            });
+            var toolbar = GetToolbar();
             toolbar.name = "Toolbar";
             graphView.Add(toolbar);
 
@@ -84,6 +67,28 @@ namespace HN.Graph.Editor
             return true;
         }
 
+
+        private Toolbar GetToolbar()
+        {
+            Toolbar toolbar = new Toolbar();
+            toolbar.name = "Toolbar";
+            var saveButton = new ToolbarButton(OnSaveAsset);
+            saveButton.text = "Save Asset";
+            toolbar.Add(saveButton);
+            var saveAsButton = new ToolbarButton(OnSaveAs);
+            saveAsButton.text = "Save As...";
+            toolbar.Add(saveAsButton);
+            var showInProjectButton = new ToolbarButton(OnShowInProject);
+            showInProjectButton.text = "Show In Project";
+            toolbar.Add(showInProjectButton);
+
+            var spacer = new ToolbarSpacer();
+            toolbar.Add(spacer);
+            
+            AdditionalToolButon(toolbar);
+            
+            return toolbar;
+        }
 
         private GraphViewChange OnChange(GraphViewChange graphViewChange)
         {

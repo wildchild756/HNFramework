@@ -38,8 +38,8 @@ namespace HN.Graph.Editor
             AddManipulator(new ClickSelector());
 
             GridBackground gridBackground = new GridBackground();
+            gridBackground.name = "GridBackground";
             Insert(0, gridBackground);
-            gridBackground.StretchToParentSize();
 
             SetupZoom(0.05f, 8);
 

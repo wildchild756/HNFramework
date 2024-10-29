@@ -1,8 +1,8 @@
-HNGraphView
+#GraphView
 {
 	flex-grow: 1;
 }
-GridBackground
+#GridBackground
 {
 	--thick-lines: 2;
 	--spacing: 50;
@@ -10,7 +10,12 @@ GridBackground
 	--line-color: rgb(45, 45, 45);
 	--thick-line-color: rgb(60, 60, 60);
 }
-Toolbar
+#Toolbar
 {
-
+	flex-direction: row-reverse;
+}
+#BreadcrumbsContainer
+{
+	flex-direction: row;
+	flex-grow: 1;
 }

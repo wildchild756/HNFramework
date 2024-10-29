@@ -24,6 +24,11 @@ namespace HN.Graph.Editor
             where T : HNGraphEditorWindow 
             where U : HNGraphEditorData
         {
+            if(graphData == null)
+            {
+                return false;
+            }
+
             U graphEditorData = ScriptableObject.CreateInstance<U>();
             JsonUtility.FromJsonOverwrite(graphData.EditorDataJson, graphEditorData);
             graphEditorData.Initialize(graphData);

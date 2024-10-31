@@ -1,7 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Reflection;
+using HN.Serialize;
 using UnityEngine;
 
 namespace HN.Graph.Editor
@@ -33,21 +33,21 @@ namespace HN.Graph.Editor
         {
             this.graphData = graphData;
 
-            if(!string.IsNullOrEmpty(graphData.EditorDataJson))
+            if(!string.IsNullOrEmpty(graphData.SerializedEditorData))
             {
-                DeserializeEditorDataFromJson(graphData.EditorDataJson);
+                DeserializeEditorData(graphData.SerializedEditorData);
             }
             
         }
 
-        public string SerializeEditorDataToJson()
+        public string SerializeEditorDataTo()
         {
-            return JsonUtility.ToJson(this);
+            return Json.Serialize(this);
         }
 
-        public void DeserializeEditorDataFromJson(string json)
+        public void DeserializeEditorData(string serializeData)
         {
-            JsonUtility.FromJsonOverwrite(json, this);
+            Json.DeserializeFromString(this, serializeData);
         }
 
     }

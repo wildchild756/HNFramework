@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEditor.Experimental.GraphView;
 using UnityEngine;
+using UnityEngine.UIElements;
 
 namespace HN.Graph.Editor
 {
@@ -15,9 +16,15 @@ namespace HN.Graph.Editor
         private HNGraphEdge connectionData;
 
 
-        public HNGraphEdgeView()
+        public HNGraphEdgeView() : base()
+        {
+            RegisterCallback<MouseDownEvent>(OnMouseDown);
+        }
+
+        private void OnMouseDown(MouseDownEvent e)
         {
             
         }
+
     }
 }

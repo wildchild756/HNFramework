@@ -14,17 +14,17 @@ namespace HN.Graph
         [SerializeField]
         private string assetPath;
 
-        public string EditorDataJson
+        public string SerializedEditorData
         {
-            get { return editorDataJson; }
-            set { editorDataJson = value; }
+            get { return serializedEditorData; }
+            set { serializedEditorData = value; }
         }
         [SerializeField]
-        private string editorDataJson = "{}";
+        private string serializedEditorData = "{}";
 
 
 #if UNITY_EDITOR
-        public abstract void SerializeToJson();
+        public abstract void Serialize();
 #endif
 
         public HNGraphObject()

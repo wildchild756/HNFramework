@@ -17,8 +17,8 @@ namespace HN.Graph.Editor
         public HNGraphNode NodeData => nodeData;
         private HNGraphNode nodeData;
 
-        public HNGraphEdgeConnectionListener EdgeConnectorListener => edgeConnectorListener;
-        private HNGraphEdgeConnectionListener edgeConnectorListener;
+        public HNGraphEdgeConnectorListener EdgeConnectorListener => edgeConnectorListener;
+        private HNGraphEdgeConnectorListener edgeConnectorListener;
 
         public List<HNGraphPortView> InputPortViews => inputPortViews;
         private List<HNGraphPortView> inputPortViews;
@@ -29,7 +29,7 @@ namespace HN.Graph.Editor
         private Type passType;
 
 
-        public HNGraphNodeView(HNGraphNode nodeData, HNGraphEdgeConnectionListener edgeConnectorListener)
+        public HNGraphNodeView(HNGraphNode nodeData, HNGraphEdgeConnectorListener edgeConnectorListener)
         {
             AddToClassList("graph-node");
             this.edgeConnectorListener = edgeConnectorListener;
@@ -37,7 +37,7 @@ namespace HN.Graph.Editor
             this.guid = nodeData.Guid;
             inputPortViews = new List<HNGraphPortView>();
             outputPortViews = new List<HNGraphPortView>();
-            passType = nodeData.graphNodeClass.GetType();
+            passType = nodeData.GraphNodeClass.GetType();
 
             DrawNode();
             DrawPort();
@@ -83,11 +83,8 @@ namespace HN.Graph.Editor
                 HNGraphPortInfoAttribute slotInfo = propertyInfo.GetCustomAttribute<HNGraphPortInfoAttribute>();
                 if (slotInfo != null)
                 {
-                    Direction portDir = slotInfo.Type == HNGraphPortInfoAttribute.SlotType.Input ? Direction.Input : Direction.Output;
-                    HNGraphPortView portView = new HNGraphPortView(portDir);
-                    portView.portName = slotInfo.SlotName;
-                    portView.AddManipulator(new EdgeConnector<HNGraphEdgeView>(edgeConnectorListener));
-                    portView.AddToClassList("port-view");
+                    Direction portDir = (slotInfo.Type == HNGraphPortInfoAttribute.SlotType.Input ? Direction.Input : Direction.Output);
+                    HNGraphPortView portView = new HNGraphPortView(portDir, edgeConnectorListener, slotInfo.SlotName);
                     if (slotInfo.Type == HNGraphPortInfoAttribute.SlotType.Input)
                     {
                         inputPortViews.Add(portView);

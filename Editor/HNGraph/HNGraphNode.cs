@@ -10,8 +10,9 @@ namespace HN.Graph.Editor
     [Serializable]
     public class HNGraphNode
     {
+        public IHNGraphNode GraphNodeClass => graphNodeClass;
         [SerializeReference]
-        public IHNGraphNode graphNodeClass;
+        private IHNGraphNode graphNodeClass;
 
         public string Guid => guid;
         [SerializeField]

@@ -18,7 +18,7 @@ namespace HN.Graph.Editor
         private Dictionary<string, HNGraphNodeView> nodeViewDict;
         private List<HNGraphEdgeView> edgeViews;
         private Dictionary<string, HNGraphEdgeView> edgeViewDict;
-        private HNGraphEdgeConnectionListener edgeConnectorListener;
+        private HNGraphEdgeConnectorListener edgeConnectorListener;
 
         public HNGraphView(HNGraphEditorWindow graphEditorWindow, HNGraphEditorData graphEditorData, HNGraphSearchWindowProvider searchWindowProvider)
         {
@@ -35,7 +35,7 @@ namespace HN.Graph.Editor
             AddManipulator(new ContentDragger());
             AddManipulator(new SelectionDragger());
             AddManipulator(new RectangleSelector());
-            AddManipulator(new ClickSelector());
+            //AddManipulator(new ClickSelector());
 
             GridBackground gridBackground = new GridBackground();
             gridBackground.name = "GridBackground";
@@ -52,7 +52,7 @@ namespace HN.Graph.Editor
                 EditorUtility.SetDirty(graphEditorWindow);
             };
 
-            edgeConnectorListener = new HNGraphEdgeConnectionListener();
+            edgeConnectorListener = new HNGraphEdgeConnectorListener();
             graphViewChanged = RenderGraphViewChanged;
 
             DrawNodes();

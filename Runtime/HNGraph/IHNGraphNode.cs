@@ -2,7 +2,10 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public interface IHNGraphNode
+namespace HN.Graph
 {
-    
+    public interface IHNGraphNode
+    {
+
+    }
 }

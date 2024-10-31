@@ -1,7 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
-using System.IO;
-using System.Text;
+using HN.Serialize;
 using UnityEngine;
 using UnityEditor;
 using UnityEditor.AssetImporters;
@@ -22,10 +21,9 @@ namespace HN.Graph.Editor
             }
         }
 
-        public virtual void OverwriteGraphDataByJson(AssetImportContext ctx)
+        public virtual void DeserializeGraphData(AssetImportContext ctx)
         {
-            string textGraph = File.ReadAllText(ctx.assetPath, Encoding.UTF8);
-            JsonUtility.FromJsonOverwrite(textGraph, graphData);
+            Json.Deserialize(graphData, ctx.assetPath);
         }
 
         public virtual void SetObject(AssetImportContext ctx)

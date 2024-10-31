@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
+using HN.Serialize;
 using UnityEngine;
 using UnityEditor;
 using UnityEditor.ProjectWindowCallback;
@@ -18,14 +19,9 @@ namespace HN.Graph.Editor
             graphData = ScriptableObject.CreateInstance<T>();
         }
 
-        public void SaveDataToJson(string pathName)
+        public void Serialize(string pathName)
         {
-            string graphDataJson = JsonUtility.ToJson(graphData);
-            StreamWriter sw;
-            sw = File.CreateText(pathName);
-            sw.Write(graphDataJson);
-            sw.Close();
-            sw.Dispose();
+            Json.Serialize(graphData, pathName);
             AssetDatabase.Refresh();
         }
     }

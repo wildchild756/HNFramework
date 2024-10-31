@@ -5,16 +5,27 @@ using UnityEditor.Experimental.GraphView;
 
 namespace HN.Graph.Editor
 {
-    public class HNGraphEdgeConnectionListener : IEdgeConnectorListener
+    public class HNGraphEdgeConnectorListener : IEdgeConnectorListener
     {
         public void OnDrop(GraphView graphView, Edge edge)
         {
             HNGraphEdgeView edgeView = (HNGraphEdgeView)edge;
             HNGraphView hnGraphView = (HNGraphView)graphView;
-            if (edgeView != null && hnGraphView != null)
+            if (edgeView == null || hnGraphView == null)
             {
-                hnGraphView.AddEdge(edgeView);
+                return;
             }
+
+            if(edgeView.input == null || edgeView.output == null)
+            {
+                return;
+            }
+
+            if(edgeView.input.node == null || edgeView.output.node == null)
+            {
+                return;
+            }
+            hnGraphView.AddEdge(edgeView);
         }
 
         public void OnDropOutsidePort(Edge edge, Vector2 position)

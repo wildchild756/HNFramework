@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
+using HN.Serialize;
 using UnityEditor;
 using UnityEditor.AssetImporters;
 using UnityEditor.Callbacks;
@@ -30,7 +31,7 @@ namespace HN.Graph.Editor
             }
 
             U graphEditorData = ScriptableObject.CreateInstance<U>();
-            JsonUtility.FromJsonOverwrite(graphData.EditorDataJson, graphEditorData);
+            Json.DeserializeFromString(graphEditorData, graphData.SerializedEditorData);
             graphEditorData.Initialize(graphData);
             
             var extension = Path.GetExtension(path);

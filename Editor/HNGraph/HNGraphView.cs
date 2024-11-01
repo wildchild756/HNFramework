@@ -86,7 +86,7 @@ namespace HN.Graph.Editor
         public void AddNode(HNGraphNode node)
         {
             Undo.RecordObject(graphEditorData, "Add Node");
-            graphEditorData.Nodes.Add(node);
+            graphEditorData.Nodes.Add(node.Guid, node);
 
             AddNodeView(node);
         }
@@ -100,7 +100,7 @@ namespace HN.Graph.Editor
             Undo.RecordObject(graphEditorData, "Add Edge");
             HNGraphEdge connection = new HNGraphEdge(edgeView.OutputPortView.PortData, edgeView.InputPortView.PortData);
             edgeView.EdgeData = connection;
-            graphEditorData.Edges.Add(connection);
+            graphEditorData.Edges.Add(connection.Guid, connection);
 
             AddEdgeView(edgeView.OutputPortView, edgeView.InputPortView, edgeView);
         }
@@ -108,7 +108,7 @@ namespace HN.Graph.Editor
 
         private void DrawNodes()
         {
-            foreach (HNGraphNode node in graphEditorData.Nodes)
+            foreach (HNGraphNode node in graphEditorData.Nodes.Values)
             {
                 AddNodeView(node);
             }
@@ -124,7 +124,7 @@ namespace HN.Graph.Editor
 
         private void DrawEdges()
         {
-            foreach(HNGraphEdge edge in graphEditorData.Edges)
+            foreach(HNGraphEdge edge in graphEditorData.Edges.Values)
             {
                 HNGraphPortView outputPortView = null;
                 HNGraphPortView inputPortView = null;
@@ -132,19 +132,20 @@ namespace HN.Graph.Editor
                 {
                     foreach(var output in nodeView.OutputPortViews)
                     {
-                        if(output.PortData == edge.OutputPort)
+                        if(output.PortData.Guid == edge.OutputPort.Guid)
                         {
                             outputPortView = output;
                         }
                     }
                     foreach(var input in nodeView.InputPortViews)
                     {
-                        if(input.PortData == edge.InputPort)
+                        if(input.PortData.Guid == edge.InputPort.Guid)
                         {
                             inputPortView = input;
                         }
                     }
                 }
+
                 if(outputPortView != null && inputPortView != null)
                 {
                     HNGraphEdgeView edgeView = new HNGraphEdgeView();
@@ -211,14 +212,14 @@ namespace HN.Graph.Editor
 
         private void RemoveNode(HNGraphNodeView node)
         {
-            graphEditorData.Nodes.Remove(node.NodeData);
+            graphEditorData.Nodes.Remove(node.NodeData.Guid);
             nodeViews.Remove(node);
             //AssetDatabase.Refresh();
         }
 
         private void RemoveEdge(HNGraphEdgeView edge)
         {
-            graphEditorData.Edges.Remove(edge.EdgeData);
+            graphEditorData.Edges.Remove(edge.EdgeData.Guid);
             edgeViews.Remove(edge);
         }
 

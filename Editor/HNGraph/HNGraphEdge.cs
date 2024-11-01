@@ -8,6 +8,10 @@ namespace HN.Graph.Editor
     [Serializable]
     public class HNGraphEdge : IDisposable
     {
+        public string Guid => guid;
+        [SerializeField]
+        private string guid;
+        
         public HNGraphPort OutputPort => outputPort;
         [SerializeReference]
         private HNGraphPort outputPort;
@@ -19,6 +23,8 @@ namespace HN.Graph.Editor
 
         public HNGraphEdge(HNGraphPort outputPort, HNGraphPort inputPort)
         {
+            guid = HNGraphUtils.NewGuid();
+            
             this.outputPort = outputPort;
             outputPort.ConnectToEdge(this);
             this.inputPort = inputPort;

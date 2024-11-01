@@ -8,17 +8,17 @@ namespace HN.Graph.Editor
     [Serializable]
     public class HNGraphPort : IDisposable
     {
-        public string Identifier => identifier;
+        public string Guid => guid;
         [SerializeField]
-        private string identifier;
+        private string guid;
         
-        public Type PortType
+        public string PortTypeName
         {
-            get { return portType; }
-            set { portType = value; }
+            get { return portTypeName; }
+            set { portTypeName = value; }
         }
         [SerializeField]
-        private Type portType;
+        private string portTypeName;
 
         public string Name
         {
@@ -44,16 +44,27 @@ namespace HN.Graph.Editor
         [SerializeReference]
         private List<HNGraphEdge> edges;
 
-        public HNGraphPort(HNGraphNode ownerNode, Type type, string identifier, string name, Direction direction, Capacity capacity)
+        public HNGraphPort(HNGraphNode ownerNode, string typeName, string name, Direction direction, Capacity capacity)
         {
-            this.identifier = identifier;
+            guid = HNGraphUtils.NewGuid();
+            
             this.ownerNode = ownerNode;
-            this.portType = type;
+            this.portTypeName = typeName;
             this.name = name;
             this.portDirection = direction;
             this.portCapacity = capacity;
             
             edges = new List<HNGraphEdge>();
+        }
+
+        public bool IsMatchWithAttribute(Type type, HNGraphPortInfoAttribute portInfo)
+        {
+            bool b = true;
+            b &= this.portTypeName == type.FullName;
+            b &= this.name == portInfo.PortName;
+            b &= this.PortDirection == (portInfo.PortDirection == HNGraphPortInfoAttribute.Direction.Input ? Direction.Input : Direction.Output);
+            b &= this.portCapacity == (portInfo.PortCapacity == HNGraphPortInfoAttribute.Capacity.Single ? Capacity.Single : Capacity.Multi);
+            return b;
         }
 
         public void ConnectToEdge(HNGraphEdge edge)
@@ -81,12 +92,15 @@ namespace HN.Graph.Editor
         }
 
 
+        [Serializable]
         public enum Direction
         {
             Input,
             Output
         }
 
+
+        [Serializable]
         public enum Capacity
         {
             Single,

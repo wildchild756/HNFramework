@@ -11,13 +11,13 @@ namespace HN.Graph.Editor
         [SerializeReference]
         public HNGraphObject graphData;
 
-        public List<HNGraphNode> Nodes => nodes;
+        public SerializableGraphNodes Nodes => nodes;
         [SerializeField]
-        private List<HNGraphNode> nodes;
+        private SerializableGraphNodes nodes;
 
-        public List<HNGraphEdge> Edges => edges;
+        public SerializableGraphEdges Edges => edges;
         [SerializeField]
-        private List<HNGraphEdge> edges;
+        private SerializableGraphEdges edges;
 
 
         public abstract void SaveAsset();
@@ -25,8 +25,8 @@ namespace HN.Graph.Editor
 
         public HNGraphEditorData()
         {
-            nodes = new List<HNGraphNode>();
-            edges = new List<HNGraphEdge>();
+            nodes = new SerializableGraphNodes();
+            edges = new SerializableGraphEdges();
         }
 
         public void Initialize(HNGraphObject graphData)
@@ -42,35 +42,35 @@ namespace HN.Graph.Editor
 
         public void AddNode(HNGraphNode node)
         {
-            if(!nodes.Contains(node))
+            if(!nodes.ContainsValue(node))
             {
-                nodes.Add(node);
+                nodes.Add(node.Guid, node);
             }
         }
 
         public void AddEdge(HNGraphEdge edge)
         {
-            if(!edges.Contains(edge))
+            if(!edges.ContainsValue(edge))
             {
-                edges.Add(edge);
+                edges.Add(edge.Guid, edge);
             }
         }
 
         public void RemoveNode(HNGraphNode node)
         {
-            if(nodes.Contains(node))
+            if(nodes.ContainsValue(node))
             {
 
-                nodes.Remove(node);
+                nodes.Remove(node.Guid);
                 node.Dispose();
             }
         }
 
         public void RemoveEdge(HNGraphEdge edge)
         {
-            if(edges.Contains(edge))
+            if(edges.ContainsValue(edge))
             {
-                edges.Remove(edge);
+                edges.Remove(edge.Guid);
                 edge.Dispose();
             }
         }
@@ -85,7 +85,9 @@ namespace HN.Graph.Editor
             Json.DeserializeFromString(this, serializeData);
         }
 
+
     }
+
 }
 
 

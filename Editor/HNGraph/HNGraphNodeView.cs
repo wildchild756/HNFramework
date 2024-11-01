@@ -59,13 +59,26 @@ namespace HN.Graph.Editor
                 HNGraphPortInfoAttribute slotInfo = propertyInfo.GetCustomAttribute<HNGraphPortInfoAttribute>();
                 if (slotInfo != null)
                 {
-                    HNGraphPort port = nodeData.FindPortWithIdentifier(slotInfo.Identifier);
+                    HNGraphPort port = null;
+                    foreach(var nodePort in nodeData.InputPorts.Values)
+                    {
+                        if(nodePort.IsMatchWithAttribute(propertyInfo.PropertyType, slotInfo))
+                        {
+                            port = nodePort;
+                        }
+                    }
+                    foreach(var nodePort in nodeData.OutputPorts.Values)
+                    {
+                        if(nodePort.IsMatchWithAttribute(propertyInfo.PropertyType, slotInfo))
+                        {
+                            port = nodePort;
+                        }
+                    }
                     if(port == null)
                     {
                         port = new HNGraphPort(
                             nodeData, 
-                            propertyInfo.PropertyType, 
-                            slotInfo.Identifier,
+                            propertyInfo.PropertyType.FullName, 
                             slotInfo.PortName, 
                             slotInfo.PortDirection == HNGraphPortInfoAttribute.Direction.Input ? HNGraphPort.Direction.Input : HNGraphPort.Direction.Output, 
                             slotInfo.PortCapacity == HNGraphPortInfoAttribute.Capacity.Single ? HNGraphPort.Capacity.Single : HNGraphPort.Capacity.Multi

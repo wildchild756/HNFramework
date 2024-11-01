@@ -8,22 +8,40 @@ namespace HN.Graph.Editor
 {
     public class HNGraphEdgeView : Edge
     {
-        public HNGraphEdge ConnectionData
+        public HNGraphEdge EdgeData
         {
-            get { return connectionData; }
-            set { connectionData = value; }
+            get { return edgeData; }
+            set { edgeData = value; }
         }
-        private HNGraphEdge connectionData;
+        private HNGraphEdge edgeData;
 
-
-        public HNGraphEdgeView() : base()
+        public HNGraphPortView OutputPortView
         {
-            RegisterCallback<MouseDownEvent>(OnMouseDown);
+            get { return (HNGraphPortView)output; }
+            set { output = value; }
         }
 
-        private void OnMouseDown(MouseDownEvent e)
+        public HNGraphPortView InputPortView
         {
-            
+            get { return (HNGraphPortView)input; }
+            set { input = value; }
+        }
+
+
+        public HNGraphPortView FindAnotherPort(HNGraphPortView port)
+        {
+            if(OutputPortView == port)
+            {
+                return InputPortView;
+            }
+            else if(InputPortView == port)
+            {
+                return OutputPortView;
+            }
+            else
+            {
+                return null;
+            }
         }
 
     }

@@ -15,9 +15,7 @@ namespace HN.Graph.Editor
 
         private HNGraphEditorData graphEditorData;
         private List<HNGraphNodeView> nodeViews;
-        private Dictionary<string, HNGraphNodeView> nodeViewDict;
         private List<HNGraphEdgeView> edgeViews;
-        private Dictionary<string, HNGraphEdgeView> edgeViewDict;
         private HNGraphEdgeConnectorListener edgeConnectorListener;
 
         public HNGraphView(HNGraphEditorWindow graphEditorWindow, HNGraphEditorData graphEditorData, HNGraphSearchWindowProvider searchWindowProvider)
@@ -26,9 +24,7 @@ namespace HN.Graph.Editor
             this.graphEditorData = graphEditorData;
 
             nodeViews = new List<HNGraphNodeView>();
-            nodeViewDict = new Dictionary<string, HNGraphNodeView>();
             edgeViews = new List<HNGraphEdgeView>();
-            edgeViewDict = new Dictionary<string, HNGraphEdgeView>();
 
             serializeGraphElements = SerializeGraphElementsImplementation;
 
@@ -97,18 +93,16 @@ namespace HN.Graph.Editor
 
         public void AddEdge(HNGraphEdgeView edgeView)
         {
-            HNGraphPortView outputPortView = (HNGraphPortView)edgeView.output;
-            HNGraphPortView inputPortView = (HNGraphPortView)edgeView.input;
-            if (outputPortView == null && inputPortView == null)
+            if (edgeView.OutputPortView == null && edgeView.InputPortView == null)
             {
                 return;
             }
             Undo.RecordObject(graphEditorData, "Add Edge");
-            HNGraphEdge connection = new HNGraphEdge(outputPortView, inputPortView);
-            edgeView.ConnectionData = connection;
+            HNGraphEdge connection = new HNGraphEdge(edgeView.OutputPortView.PortData, edgeView.InputPortView.PortData);
+            edgeView.EdgeData = connection;
             graphEditorData.Edges.Add(connection);
 
-            AddEdgeView(outputPortView, inputPortView, edgeView);
+            AddEdgeView(edgeView.OutputPortView, edgeView.InputPortView, edgeView);
         }
 
 
@@ -120,55 +114,53 @@ namespace HN.Graph.Editor
             }
         }
 
+        private void AddNodeView(HNGraphNode node)
+        {
+            HNGraphNodeView nodeView = new HNGraphNodeView(node, edgeConnectorListener);
+            nodeView.SetPosition(node.Position);
+            nodeViews.Add(nodeView);
+            AddElement(nodeView);
+        }
+
         private void DrawEdges()
         {
             foreach(HNGraphEdge edge in graphEditorData.Edges)
             {
                 HNGraphPortView outputPortView = null;
                 HNGraphPortView inputPortView = null;
-                foreach(HNGraphNodeView nodeView in nodeViews)
+                foreach(var nodeView in nodeViews)
                 {
-                    if(nodeView.NodeData.Guid == edge.OutputGuid)
+                    foreach(var output in nodeView.OutputPortViews)
                     {
-                        if(nodeView.OutputPortViews.Count > edge.OutputPortIndex)
+                        if(output.PortData == edge.OutputPort)
                         {
-                            outputPortView = nodeView.OutputPortViews[edge.OutputPortIndex];
+                            outputPortView = output;
                         }
                     }
-                    if(nodeView.NodeData.Guid == edge.InputGuid)
+                    foreach(var input in nodeView.InputPortViews)
                     {
-                        if(nodeView.InputPortViews.Count > edge.InputPortIndex)
+                        if(input.PortData == edge.InputPort)
                         {
-                            inputPortView = nodeView.InputPortViews[edge.InputPortIndex];
+                            inputPortView = input;
                         }
                     }
                 }
                 if(outputPortView != null && inputPortView != null)
                 {
                     HNGraphEdgeView edgeView = new HNGraphEdgeView();
-                    edgeView.output = outputPortView;
-                    edgeView.input = inputPortView;
-                    edgeView.ConnectionData = edge;
+                    edgeView.OutputPortView = outputPortView;
+                    edgeView.InputPortView = inputPortView;
+                    edgeView.EdgeData = edge;
                     AddEdgeView(outputPortView, inputPortView, edgeView);
                 }
             }
         }
 
-        private void AddNodeView(HNGraphNode node)
-        {
-            HNGraphNodeView nodeView = new HNGraphNodeView(node, edgeConnectorListener);
-            nodeView.SetPosition(node.Position);
-            nodeViews.Add(nodeView);
-            nodeViewDict.Add(node.Guid, nodeView);
-            AddElement(nodeView);
-        }
-
         private void AddEdgeView(HNGraphPortView outputPortView, HNGraphPortView inputPortView, HNGraphEdgeView edgeView)
         {
-            outputPortView.Connect(edgeView);
-            inputPortView.Connect(edgeView);
+            outputPortView.ConnectToEdge(edgeView);
+            inputPortView.ConnectToEdge(edgeView);
             edgeViews.Add(edgeView);
-            edgeViewDict.Add(edgeView.ConnectionData.Guid, edgeView);
             AddElement(edgeView);
         }
 
@@ -220,15 +212,13 @@ namespace HN.Graph.Editor
         private void RemoveNode(HNGraphNodeView node)
         {
             graphEditorData.Nodes.Remove(node.NodeData);
-            nodeViewDict.Remove(node.NodeData.Guid);
             nodeViews.Remove(node);
             //AssetDatabase.Refresh();
         }
 
         private void RemoveEdge(HNGraphEdgeView edge)
         {
-            graphEditorData.Edges.Remove(edge.ConnectionData);
-            edgeViewDict.Remove(edge.ConnectionData.Guid);
+            graphEditorData.Edges.Remove(edge.EdgeData);
             edgeViews.Remove(edge);
         }
 

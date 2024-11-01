@@ -40,6 +40,41 @@ namespace HN.Graph.Editor
             
         }
 
+        public void AddNode(HNGraphNode node)
+        {
+            if(!nodes.Contains(node))
+            {
+                nodes.Add(node);
+            }
+        }
+
+        public void AddEdge(HNGraphEdge edge)
+        {
+            if(!edges.Contains(edge))
+            {
+                edges.Add(edge);
+            }
+        }
+
+        public void RemoveNode(HNGraphNode node)
+        {
+            if(nodes.Contains(node))
+            {
+
+                nodes.Remove(node);
+                node.Dispose();
+            }
+        }
+
+        public void RemoveEdge(HNGraphEdge edge)
+        {
+            if(edges.Contains(edge))
+            {
+                edges.Remove(edge);
+                edge.Dispose();
+            }
+        }
+
         public string SerializeEditorDataTo()
         {
             return Json.Serialize(this);

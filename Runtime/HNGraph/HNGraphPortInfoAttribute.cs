@@ -8,24 +8,38 @@ namespace HN.Graph
     [AttributeUsage(AttributeTargets.Property, AllowMultiple = false)]
     public abstract class HNGraphPortInfoAttribute : Attribute
     {
-        public string SlotName => slotName;
-        private string slotName;
+        public string Identifier => identifier;
+        private string identifier;
 
-        public SlotType Type => type;
-        private SlotType type;
+        public string PortName => name;
+        private string name;
+
+        public Direction PortDirection => direction;
+        private Direction direction;
+
+        public Capacity PortCapacity => capacity;
+        private Capacity capacity;
 
 
-        public HNGraphPortInfoAttribute(string slotName, SlotType type)
+        public HNGraphPortInfoAttribute(string identifier, string slotName, Direction direction, Capacity capacity)
         {
-            this.slotName = slotName;
-            this.type = type;
+            this.identifier = identifier;
+            this.name = slotName;
+            this.direction = direction;
+            this.capacity = capacity;
         }
 
 
-        public enum SlotType
+        public enum Direction
         {
             Input,
             Output
+        }
+
+        public enum Capacity
+        {
+            Single,
+            Multi
         }
     }
 }

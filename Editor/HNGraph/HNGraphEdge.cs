@@ -6,45 +6,30 @@ using UnityEngine;
 namespace HN.Graph.Editor
 {
     [Serializable]
-    public class HNGraphEdge
+    public class HNGraphEdge : IDisposable
     {
-        public string Guid => guid;
-        [SerializeField]
-        private string guid;
+        public HNGraphPort OutputPort => outputPort;
+        [SerializeReference]
+        private HNGraphPort outputPort;
 
-        public string OutputGuid => outputGuid;
-        [SerializeField]
-        private string outputGuid;
-
-        public string InputGuid => inputGuid;
-        [SerializeField]
-        private string inputGuid;
-
-        public int OutputPortIndex => outputPortIndex;
-        [SerializeField]
-        private int outputPortIndex;
-
-        public int InputPortIndex => inputPortIndex;
-        [SerializeField]
-        private int inputPortIndex;
+        public HNGraphPort InputPort => inputPort;
+        [SerializeReference]
+        private HNGraphPort inputPort;
 
 
-        public HNGraphEdge(HNGraphPortView outputPortView, HNGraphPortView inputPortView)
+        public HNGraphEdge(HNGraphPort outputPort, HNGraphPort inputPort)
         {
-            NewGUID();
-
-            HNGraphNodeView outputNodeView = (HNGraphNodeView)outputPortView.node;
-            outputGuid = outputNodeView.NodeData.Guid;
-            outputPortIndex = outputNodeView.GetOutputPortViewIndex(outputPortView);
-            HNGraphNodeView inputNodeView = (HNGraphNodeView)inputPortView.node;
-            inputGuid = inputNodeView.NodeData.Guid;
-            inputPortIndex = inputNodeView.GetInputPortViewIndex(inputPortView);
-
+            this.outputPort = outputPort;
+            outputPort.ConnectToEdge(this);
+            this.inputPort = inputPort;
+            inputPort.ConnectToEdge(this);
         }
 
-        private void NewGUID()
+        public void Dispose()
         {
-            guid = System.Guid.NewGuid().ToString();
+            outputPort = null;
+            inputPort = null;
         }
+
     }
 }

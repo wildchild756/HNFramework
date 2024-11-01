@@ -1,22 +1,27 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Reflection;
+using HN;
 using UnityEngine;
 using UnityEditor.Experimental.GraphView;
+using Unity.VisualScripting;
 
 namespace HN.Graph.Editor
 {
     [Serializable]
-    public class HNGraphNode
+    public class HNGraphNode : IDisposable
     {
         public IHNGraphNode GraphNodeClass => graphNodeClass;
         [SerializeReference]
         private IHNGraphNode graphNodeClass;
 
-        public string Guid => guid;
+        public List<HNGraphPort> InputPorts => inputPorts;
         [SerializeField]
-        private string guid;
+        private List<HNGraphPort> inputPorts;
+
+        public List<HNGraphPort> OutputPorts => outputPorts;
+        [SerializeField]
+        private List<HNGraphPort> outputPorts;
 
         public Rect Position => position;
         [SerializeField]
@@ -25,8 +30,64 @@ namespace HN.Graph.Editor
         public HNGraphNode(IHNGraphNode graphNodeClass)
         {
             this.graphNodeClass = graphNodeClass;
-            NewGUID();
+            inputPorts = new List<HNGraphPort>();
+            outputPorts = new List<HNGraphPort>();
 
+        }
+
+        public void AddPort(HNGraphPort port)
+        {
+            if(port == null)
+            {
+                return;
+            }
+
+            if(port.PortDirection == HNGraphPort.Direction.Input)
+            {
+                inputPorts.Add(port);
+            }
+            else if(port.PortDirection == HNGraphPort.Direction.Output)
+            {
+                outputPorts.Add(port);
+            }
+        }
+
+        public HNGraphPort FindInputPortWithIdentifier(string identifier)
+        {
+            foreach(var inputPort in inputPorts)
+            {
+                if(inputPort.Identifier == identifier)
+                {
+                    return inputPort;
+                }
+            }
+
+            return null;
+        }
+
+        public HNGraphPort FindOutputPortWithIdentifier(string identifier)
+        {
+            foreach(var outputPort in outputPorts)
+            {
+                if(outputPort.Identifier == identifier)
+                {
+                    return outputPort;
+                }
+            }
+
+            return null;
+        }
+
+        public HNGraphPort FindPortWithIdentifier(string identifier)
+        {
+            HNGraphPort port = null;
+            port = FindInputPortWithIdentifier(identifier);
+            if(port == null)
+            {
+                port = FindOutputPortWithIdentifier(identifier);
+            }
+
+            return port;
         }
 
         public void SetPosition(Rect position)
@@ -34,10 +95,16 @@ namespace HN.Graph.Editor
             this.position = position;
         }
 
-
-        private void NewGUID()
+        public void Dispose()
         {
-            guid = System.Guid.NewGuid().ToString();
+            foreach(var port in inputPorts)
+            {
+                port.Dispose();
+            }
+            foreach(var port in outputPorts)
+            {
+                port.Dispose();
+            }
         }
 
 

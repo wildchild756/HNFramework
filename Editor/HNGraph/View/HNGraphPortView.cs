@@ -40,7 +40,7 @@ namespace HN.Graph.Editor
             this.ownerNodeView = nodeView;
             edgeViews = new List<HNGraphEdgeView>();
 
-            var edgeConnector = new EdgeConnector<HNGraphEdgeView>(connectListener);
+            var edgeConnector = new HNGraphEdgeConnector(connectListener);
             this.AddManipulator(edgeConnector);
         }
 
@@ -71,7 +71,7 @@ namespace HN.Graph.Editor
             List<HNGraphPortView> connectPorts = new List<HNGraphPortView>();
             foreach(var edgeView in edgeViews)
             {
-                connectPorts.Add(edgeView.FindAnotherPort(this));
+                 connectPorts.Add(edgeView.FindAnotherPort(this));
             }
 
             return connectPorts;
@@ -81,7 +81,7 @@ namespace HN.Graph.Editor
         {
             if(edgeViews.Count > 0)
             {
-                return edgeViews[0].FindAnotherPort(this);
+                 return edgeViews[0].FindAnotherPort(this);
             }
             
             return null;

@@ -40,9 +40,10 @@ namespace HN.Graph.Editor
         [SerializeReference]
         private HNGraphNode ownerNode;
 
-        public List<HNGraphEdge> Edges;
+        public List<HNGraphEdge> Edges => edges;
         [SerializeReference]
         private List<HNGraphEdge> edges;
+
 
         public HNGraphPort(HNGraphNode ownerNode, string typeName, string name, Direction direction, Capacity capacity)
         {
@@ -83,11 +84,14 @@ namespace HN.Graph.Editor
             }
         }
 
-        public void Dispose()
+        public virtual void Dispose()
         {
-            foreach(var edge in edges)
+            if(edges != null && edges.Count != 0)
             {
-                DisconnectFromEdge(edge);
+                for(int i = 0; i < edges.Count; i++)
+                {
+                    DisconnectFromEdge(edges[i]);
+                }
             }
         }
 

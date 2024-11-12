@@ -20,18 +20,27 @@ namespace HN.Graph.Editor
         [SerializeReference]
         private HNGraphPort inputPort;
 
+        [SerializeReference]
+        private HNGraphEditorData editorData;
 
-        public HNGraphEdge(HNGraphPort outputPort, HNGraphPort inputPort)
+
+        public HNGraphEdge(HNGraphEditorData editorData, HNGraphPort outputPort, HNGraphPort inputPort)
         {
-            guid = HNGraphUtils.NewGuid();
-            
+            this.editorData = editorData;
             this.outputPort = outputPort;
-            outputPort.ConnectToEdge(this);
             this.inputPort = inputPort;
+            outputPort.ConnectToEdge(this);
             inputPort.ConnectToEdge(this);
+            
+            OnCreate();
         }
 
-        public void Dispose()
+        public virtual void OnCreate()
+        {
+            guid = HNGraphUtils.NewGuid();
+        }
+
+        public virtual void Dispose()
         {
             outputPort = null;
             inputPort = null;

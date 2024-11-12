@@ -124,14 +124,13 @@ namespace HN.Graph.Editor
 
         public bool OnSelectEntry(SearchTreeEntry searchTreeEntry, SearchWindowContext context)
         {
-            var windowMousePosition = graph.ChangeCoordinatesTo(graph, context.screenMousePosition - graph.graphEditorWindow.position.position);
+            var windowMousePosition = graph.ChangeCoordinatesTo(graph, context.screenMousePosition - graph.GraphEditorWindow.position.position);
             var graphMousePosition = graph.contentViewContainer.WorldToLocal(windowMousePosition);
 
             SearchContextElement element = (SearchContextElement)searchTreeEntry.userData;
 
             IHNGraphNode pass = (IHNGraphNode)element.target;
-            HNGraphNode node = new HNGraphNode(pass);
-            node.SetPosition(new Rect(graphMousePosition, new Vector2()));
+            HNGraphNode node = new HNGraphNode(graph.GraphEditorData, pass, graphMousePosition);
             graph.AddNode(node);
 
             return true;

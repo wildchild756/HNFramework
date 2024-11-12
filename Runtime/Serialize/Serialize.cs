@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
@@ -9,7 +10,7 @@ namespace HN.Serialize
 {
     public class Json
     {
-        public static bool Serialize(Object obj, string path)
+        public static bool Serialize(System.Object obj, string path)
         {
             if(string.IsNullOrEmpty(path) || obj == null)
             {
@@ -28,7 +29,7 @@ namespace HN.Serialize
             return true;
         }
 
-        public static string Serialize(Object obj)
+        public static string Serialize(System.Object obj)
         {
             if(obj == null)
             {
@@ -55,6 +56,40 @@ namespace HN.Serialize
                 jsonString = "{}";
             }
             JsonUtility.FromJsonOverwrite(jsonString, obj);
+        }
+
+        public static System.Object DeserializeFromString(string typeName, string jsonString)
+        {
+            if(string.IsNullOrEmpty(jsonString))
+            {
+                return null;
+            }
+            var type = Type.GetType(typeName);
+            var obj = Activator.CreateInstance(type);
+            if(obj == null)
+            {
+                return null;
+            }
+            DeserializeFromString(obj, jsonString);
+            return obj;
+        }
+
+        public static T Deserialize<T>(string path)
+        {
+            var obj = Activator.CreateInstance<T>();
+            if(Deserialize(obj, path))
+            {
+                return obj;
+            }
+            return default;
+        }
+
+        public static T DeserializeFromString<T>(string jsonString)
+        {
+            var obj = Activator.CreateInstance<T>();
+            DeserializeFromString(obj, jsonString);
+
+            return obj;
         }
     }
 }

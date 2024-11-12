@@ -6,6 +6,7 @@ using System.Reflection;
 using UnityEngine;
 using UnityEngine.UIElements;
 using UnityEditor.Experimental.GraphView;
+using Unity.VisualScripting;
 
 namespace HN.Graph.Editor
 {
@@ -60,20 +61,23 @@ namespace HN.Graph.Editor
                 if (slotInfo != null)
                 {
                     HNGraphPort port = null;
-                    foreach(var nodePort in nodeData.InputPorts.Values)
+
+                    foreach(var inputPort in nodeData.InputPorts.Values)
                     {
-                        if(nodePort.IsMatchWithAttribute(propertyInfo.PropertyType, slotInfo))
+                        if(inputPort.IsMatchWithAttribute(propertyInfo.PropertyType, slotInfo))
                         {
-                            port = nodePort;
+                            port = inputPort;
                         }
                     }
-                    foreach(var nodePort in nodeData.OutputPorts.Values)
+
+                    foreach(var outputPort in nodeData.OutputPorts.Values)
                     {
-                        if(nodePort.IsMatchWithAttribute(propertyInfo.PropertyType, slotInfo))
+                        if(outputPort.IsMatchWithAttribute(propertyInfo.PropertyType, slotInfo))
                         {
-                            port = nodePort;
+                            port = outputPort;
                         }
                     }
+
                     if(port == null)
                     {
                         port = new HNGraphPort(
@@ -115,7 +119,7 @@ namespace HN.Graph.Editor
 
         public void SavePosition()
         {
-            nodeData.SetPosition(GetPosition());
+            nodeData.SetLayout(GetPosition());
         }
     }
 }

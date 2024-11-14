@@ -20,6 +20,10 @@ namespace HN.Graph.Editor
         [SerializeReference]
         private HNGraphPort inputPort;
 
+        public List<string> RelayNoteGuids => relayNodeGuids;
+        [SerializeField]
+        private List<string> relayNodeGuids;
+
         [SerializeReference]
         private HNGraphEditorData editorData;
 
@@ -29,6 +33,7 @@ namespace HN.Graph.Editor
             this.editorData = editorData;
             this.outputPort = outputPort;
             this.inputPort = inputPort;
+            relayNodeGuids = new List<string>();
             outputPort.ConnectToEdge(this);
             inputPort.ConnectToEdge(this);
             

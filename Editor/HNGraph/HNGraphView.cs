@@ -172,6 +172,14 @@ namespace HN.Graph.Editor
             AddStickyNoteView(stickyNoteData);
         }
 
+        public void CreateRelayNodeOnEdge(HNGraphEdgeView edgeView, Vector2 mousePos)
+        {
+            Undo.RecordObject(GraphEditorData, "Add Relay Node");
+            HNGraphRelayNode relayNodeData = new HNGraphRelayNode(edgeView.EdgeData, mousePos);
+            GraphEditorData.AddRelayNode(relayNodeData);
+            
+        }
+
 
         private void DrawNodes()
         {
@@ -227,7 +235,7 @@ namespace HN.Graph.Editor
 
             if (output != null && input != null)
             {
-                HNGraphEdgeView edgeView = new HNGraphEdgeView();
+                HNGraphEdgeView edgeView = new HNGraphEdgeView(this);
                 edgeView.output = output;
                 edgeView.input = input;
                 edgeView.EdgeData = edgeData;
@@ -268,7 +276,7 @@ namespace HN.Graph.Editor
 
         private void AddNodeView(HNGraphNode nodeData)
         {
-            HNGraphNodeView nodeView = new HNGraphNodeView(nodeData, edgeConnectorListener);
+            HNGraphNodeView nodeView = new HNGraphNodeView(this, nodeData, edgeConnectorListener);
             nodeView.SetPosition(nodeData.GetLayout());
             nodeViews.Add(nodeView);
             AddElement(nodeView);
@@ -302,8 +310,8 @@ namespace HN.Graph.Editor
 
         private void OnEdgeAdded(HNGraphEdgeView edgeView)
         {
-            edgeView?.InputPortView?.OwnerNodeView?.NodeData.OnEdgeAdded(edgeView.InputPortView.PortData.Guid);
-            edgeView?.OutputPortView?.OwnerNodeView?.NodeData.OnEdgeAdded(edgeView.OutputPortView.PortData.Guid);
+            edgeView?.InputPortView?.OwnerNodeView?.BaseNodeData.OnEdgeAdded(edgeView.InputPortView.PortData.Guid);
+            edgeView?.OutputPortView?.OwnerNodeView?.BaseNodeData.OnEdgeAdded(edgeView.OutputPortView.PortData.Guid);
         }
 
         private void AddElementsToGroup(HNGraphGroupView groupView)
@@ -318,7 +326,7 @@ namespace HN.Graph.Editor
 
                 foreach(var nodeView in nodeViews)
                 {
-                    if(nodeView.NodeData.Guid == nodeGuid)
+                    if(nodeView.BaseNodeData.Guid == nodeGuid)
                     {
                         groupView.AddElement(nodeView);
                     }
@@ -338,7 +346,7 @@ namespace HN.Graph.Editor
                     }
                     HNGraphNodeView selectedNodeView = selectedNode as HNGraphNodeView;
                     groupView.AddElement(selectedNodeView);
-                    groupView.GroupData.AddNode(selectedNodeView.NodeData.Guid);
+                    groupView.GroupData.AddNode(selectedNodeView.BaseNodeData.Guid);
                 }
             }
         }
@@ -445,7 +453,7 @@ namespace HN.Graph.Editor
         private void RemoveNode(HNGraphNodeView nodeView)
         {
             GraphEditorData.RemoveNode(nodeView.NodeData);
-            nodeView.NodeData.Dispose();
+            nodeView.BaseNodeData.Dispose();
             RemoveElement(nodeView);
             nodeViews.Remove(nodeView);
             //AssetDatabase.Refresh();

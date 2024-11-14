@@ -19,28 +19,34 @@ namespace HN.Graph.Editor
         public HNGraphPort PortData => portData;
         private HNGraphPort portData;
 
-        public HNGraphNodeView OwnerNodeView => ownerNodeView;
-        private HNGraphNodeView ownerNodeView;
+        public HNGraphBaseNodeView OwnerNodeView => ownerNodeView;
+        private HNGraphBaseNodeView ownerNodeView;
 
         public List<HNGraphEdgeView> EdgeViews => edgeViews;
         private List<HNGraphEdgeView> edgeViews;
 
+        private HNGraphView graphView;
+
 
         public HNGraphPortView(
+            HNGraphView graphView,
             HNGraphPort portData, 
-            HNGraphNodeView nodeView, 
-            string name, 
+            HNGraphBaseNodeView nodeView, 
+            string name,
+            Orientation orientation,
             Direction portDirection, 
             Capacity capacity, 
             IEdgeConnectorListener connectListener
-            ): base(Orientation.Horizontal, portDirection, capacity, null)
+            ): base(orientation, portDirection, capacity, null)
         {
-            PortName = name;
+            this.graphView = graphView;
+            PortName = orientation == Orientation.Horizontal ? name : "";
+            tooltip = orientation == Orientation.Horizontal ? "" : name;
             this.portData = portData;
             this.ownerNodeView = nodeView;
             edgeViews = new List<HNGraphEdgeView>();
 
-            var edgeConnector = new HNGraphEdgeConnector(connectListener);
+            var edgeConnector = new HNGraphEdgeConnector(graphView, connectListener);
             this.AddManipulator(edgeConnector);
         }
 
@@ -87,9 +93,9 @@ namespace HN.Graph.Editor
             return null;
         }
 
-        public List<HNGraphNodeView> FindConnectNodes()
+        public List<HNGraphBaseNodeView> FindConnectNodes()
         {
-            List<HNGraphNodeView> connectNodes = new List<HNGraphNodeView>();
+            List<HNGraphBaseNodeView> connectNodes = new List<HNGraphBaseNodeView>();
             List<HNGraphPortView> connectPorts = FindConnectPorts();
             foreach(var port in connectPorts)
             {
@@ -99,7 +105,7 @@ namespace HN.Graph.Editor
             return connectNodes;
         }
 
-        public HNGraphNodeView FindFirstConnectNode()
+        public HNGraphBaseNodeView FindFirstConnectNode()
         {
             HNGraphPortView connectPort = FindFirstConnectPort();
             if(connectPort != null)

@@ -36,16 +36,16 @@ namespace HN.Graph.Editor
         [SerializeField]
         private Capacity portCapacity;
 
-        public HNGraphNode OwnerNode => ownerNode;
+        public HNGraphBaseNode OwnerNode => ownerNode;
         [SerializeReference]
-        private HNGraphNode ownerNode;
+        private HNGraphBaseNode ownerNode;
 
         public List<HNGraphEdge> Edges => edges;
         [SerializeReference]
         private List<HNGraphEdge> edges;
 
 
-        public HNGraphPort(HNGraphNode ownerNode, string typeName, string name, Direction direction, Capacity capacity)
+        public HNGraphPort(HNGraphBaseNode ownerNode, string typeName, string name, Direction direction, Capacity capacity)
         {
             guid = HNGraphUtils.NewGuid();
             

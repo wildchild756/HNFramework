@@ -15,4 +15,6 @@ namespace HN.Graph.Editor
     public class SerializableGroups : SerializedDictionary<string, HNGraphGroup> {}
     [Serializable]
     public class SerializableStickyNotes : SerializedDictionary<string, HNGraphStickyNote> {}
+    [Serializable]
+    public class SerializableRelayNodes : SerializedDictionary<string, HNGraphRelayNode> {}
 }

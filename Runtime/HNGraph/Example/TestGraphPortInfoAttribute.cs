@@ -7,8 +7,8 @@ namespace HN.Graph.Example
 {
     public class TestGraphPortInfoAttribute : HNGraphPortInfoAttribute
     {
-        public TestGraphPortInfoAttribute(string slotName, Direction direction, Capacity capacity)
-             : base(slotName, direction, capacity)
+        public TestGraphPortInfoAttribute(string slotName, Orientation orientation, Direction direction, Capacity capacity)
+             : base(slotName, orientation, direction, capacity)
         {
 
         }

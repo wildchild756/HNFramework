@@ -33,7 +33,7 @@ namespace HN.Graph.Editor
                     continue;
                 }
 
-                groupData.AddNode(nodeView.NodeData.Guid);
+                groupData.AddNode(nodeView.BaseNodeData.Guid);
             }
 
             base.OnElementsAdded(elements);
@@ -50,7 +50,7 @@ namespace HN.Graph.Editor
             {
                 if(element is HNGraphNodeView nodeView)
                 {
-                    groupData.RemoveNode(nodeView.NodeData.Guid);
+                    groupData.RemoveNode(nodeView.BaseNodeData.Guid);
                 }
             }
 

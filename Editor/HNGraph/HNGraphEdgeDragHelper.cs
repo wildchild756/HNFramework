@@ -202,7 +202,7 @@ namespace HN.Graph.Editor
             {
                 if (m_GhostEdge == null)
                 {
-                    m_GhostEdge = new HNGraphEdgeView();
+                    m_GhostEdge = new HNGraphEdgeView(m_GraphView as HNGraphView);
                     m_GhostEdge.isGhostEdge = true;
                     m_GhostEdge.pickingMode = PickingMode.Ignore;
                     m_GraphView.AddElement(m_GhostEdge);

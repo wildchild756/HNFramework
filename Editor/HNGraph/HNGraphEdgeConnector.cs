@@ -7,14 +7,16 @@ namespace HN.Graph.Editor
     public class HNGraphEdgeConnector : EdgeConnector
     {
         readonly EdgeDragHelper m_EdgeDragHelper;
+        private HNGraphView graphView;
         Edge m_EdgeCandidate;
         private bool m_Active;
         Vector2 m_MouseDownPosition;
 
         internal const float k_ConnectionDistanceTreshold = 10f;
 
-        public HNGraphEdgeConnector(IEdgeConnectorListener listener)
+        public HNGraphEdgeConnector(HNGraphView graphView, IEdgeConnectorListener listener)
         {
+            this.graphView = graphView;
             m_EdgeDragHelper = new HNGraphEdgeDragHelper(listener);
             m_Active = false;
             activators.Add(new ManipulatorActivationFilter { button = MouseButton.LeftMouse });
@@ -60,7 +62,7 @@ namespace HN.Graph.Editor
 
             m_MouseDownPosition = e.localMousePosition;
 
-            m_EdgeCandidate = new HNGraphEdgeView();
+            m_EdgeCandidate = new HNGraphEdgeView(graphView);
             m_EdgeDragHelper.draggedPort = graphElement;
             m_EdgeDragHelper.edgeCandidate = m_EdgeCandidate;
 

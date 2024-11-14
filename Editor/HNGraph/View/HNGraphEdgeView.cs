@@ -29,10 +29,14 @@ namespace HN.Graph.Editor
             set { input = value; }
         }
 
+        private HNGraphView graphView;
 
-        public HNGraphEdgeView() : base()
+
+        public HNGraphEdgeView(HNGraphView graphView)
         {
-            
+            this.graphView = graphView;
+
+            RegisterCallback<MouseDownEvent>(OnMouseDown);
         }
 
         public HNGraphPortView FindAnotherPort(HNGraphPortView port)
@@ -48,6 +52,14 @@ namespace HN.Graph.Editor
             else
             {
                 return null;
+            }
+        }
+
+        private void OnMouseDown(MouseDownEvent e)
+        {
+            if(e.altKey)
+            {
+                graphView.CreateRelayNodeOnEdge(this, e.localMousePosition);
             }
         }
 

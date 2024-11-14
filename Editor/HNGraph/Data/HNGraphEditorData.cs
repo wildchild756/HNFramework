@@ -23,6 +23,9 @@ namespace HN.Graph.Editor
         [SerializeField]
         private SerializableStickyNotes stickyNotes;
 
+        [SerializeField]
+        private SerializableRelayNodes relayNodes;
+
 
         public abstract void SaveAsset();
         public abstract void Compile();
@@ -33,6 +36,7 @@ namespace HN.Graph.Editor
             edges = new SerializableEdges();
             groups = new SerializableGroups();
             stickyNotes = new SerializableStickyNotes();
+            relayNodes = new SerializableRelayNodes();
         }
 
         public void Initialize(HNGraphObject graphData)
@@ -86,6 +90,16 @@ namespace HN.Graph.Editor
             return stickyNotes[guid];
         }
 
+        public HNGraphRelayNode GetRelayNode(string guid)
+        {
+            if(!relayNodes.ContainsKey(guid))
+            {
+                return null;
+            }
+
+            return relayNodes[guid];
+        }
+
         public IEnumerator GetNodesEnumerator()
         {
             return nodes.Values.GetEnumerator();
@@ -104,6 +118,11 @@ namespace HN.Graph.Editor
         public IEnumerator GetStickyNoteEnumerator()
         {
             return stickyNotes.Values.GetEnumerator();
+        }
+
+        public IEnumerator GetRelayNodeEnumerator()
+        {
+            return relayNodes.Values.GetEnumerator();
         }
 
         public void AddNode(HNGraphNode node)
@@ -135,6 +154,14 @@ namespace HN.Graph.Editor
             if(!stickyNotes.ContainsValue(stickyNote))
             {
                 stickyNotes.Add(stickyNote.Guid, stickyNote);
+            }
+        }
+
+        public void AddRelayNode(HNGraphRelayNode relayNode)
+        {
+            if(!relayNodes.ContainsValue(relayNode))
+            {
+                relayNodes.Add(relayNode.Guid, relayNode);
             }
         }
 
@@ -182,6 +209,15 @@ namespace HN.Graph.Editor
             {
                 stickyNotes.Remove(stickyNote.Guid);
                 stickyNote.Dispose();
+            }
+        }
+
+        public void RemoveRelayNode(HNGraphRelayNode relayNode)
+        {
+            if(relayNodes.ContainsValue(relayNode))
+            {
+                relayNodes.Remove(relayNode.Guid);
+                relayNode.Dispose();
             }
         }
 

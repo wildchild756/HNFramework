@@ -11,7 +11,10 @@ namespace HN.Graph.Editor
 {
     public class HNGraphSearchWindowProvider : ScriptableObject, ISearchWindowProvider
     {
+        public static List<SearchContextElement> elements;
+        
         public HNGraphView graph;
+
         public HNGraphNode target;
         
         public Type GraphNodeInfoAttributeType
@@ -19,9 +22,9 @@ namespace HN.Graph.Editor
             get { return graphNodeInfoAttributeType; }
             set { graphNodeInfoAttributeType = value; }
         }
-        private Type graphNodeInfoAttributeType;
 
-        public static List<SearchContextElement> elements;
+
+        private Type graphNodeInfoAttributeType;
 
 
         public List<SearchTreeEntry> CreateSearchTree(SearchWindowContext context)
@@ -130,7 +133,8 @@ namespace HN.Graph.Editor
             SearchContextElement element = (SearchContextElement)searchTreeEntry.userData;
 
             IHNGraphNode pass = (IHNGraphNode)element.target;
-            HNGraphNode node = new HNGraphNode(graph.GraphEditorData, pass, graphMousePosition);
+            HNGraphNode node = new HNGraphNode(graph.GraphEditorData, pass);
+            node.Initialize(graphMousePosition);
             graph.AddNode(node);
 
             return true;

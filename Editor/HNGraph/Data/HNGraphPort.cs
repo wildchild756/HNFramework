@@ -9,53 +9,65 @@ namespace HN.Graph.Editor
     public class HNGraphPort : IDisposable
     {
         public string Guid => guid;
-        [SerializeField]
-        private string guid;
-        
+
         public string PortTypeName
         {
             get { return portTypeName; }
             set { portTypeName = value; }
         }
-        [SerializeField]
-        private string portTypeName;
 
         public string Name
         {
             get { return name; }
             set { name = value; }
         }
+
+        public Direction PortDirection => portDirection;
+
+        public Capacity PortCapacity => portCapacity;
+
+        public HNGraphBaseNode OwnerNode => ownerNode;
+
+        public IReadOnlyList<string> ConnectionGuids => connectionGuids;
+
+
+        [SerializeField]
+        private string guid;
+
+        [SerializeField]
+        private string portTypeName;
+
         [SerializeField]
         private string name;
 
-        public Direction PortDirection => portDirection;
         [SerializeField]
         private Direction portDirection;
 
-        public Capacity PortCapacity => portCapacity;
         [SerializeField]
         private Capacity portCapacity;
 
-        public HNGraphBaseNode OwnerNode => ownerNode;
         [SerializeReference]
         private HNGraphBaseNode ownerNode;
 
-        public List<HNGraphEdge> Edges => edges;
         [SerializeReference]
-        private List<HNGraphEdge> edges;
+        private List<string> connectionGuids;
+        
+        [SerializeReference]
+        private HNGraphEditorData editorData;
 
 
-        public HNGraphPort(HNGraphBaseNode ownerNode, string typeName, string name, Direction direction, Capacity capacity)
+        public HNGraphPort(HNGraphBaseNode ownerNode, HNGraphEditorData editorData, string typeName, string name, Direction direction, Capacity capacity)
         {
             guid = HNGraphUtils.NewGuid();
             
             this.ownerNode = ownerNode;
+            this.editorData = editorData;
             this.portTypeName = typeName;
             this.name = name;
             this.portDirection = direction;
             this.portCapacity = capacity;
             
-            edges = new List<HNGraphEdge>();
+            connectionGuids = new List<string>();
         }
 
         public bool IsMatchWithAttribute(Type type, HNGraphPortInfoAttribute portInfo)
@@ -68,31 +80,29 @@ namespace HN.Graph.Editor
             return b;
         }
 
-        public void ConnectToEdge(HNGraphEdge edge)
+        public void AddConnection(string Guid)
         {
-            if(!edges.Contains(edge))
+            if(connectionGuids.Contains(Guid))
             {
-                edges.Add(edge);
+                // Debug.LogWarning($"{connectionGuids} already contains connection guid {guid}.");
+                return;
             }
+            connectionGuids.Add(Guid);
         }
 
-        public void DisconnectFromEdge(HNGraphEdge edge)
+        public void RemoveConnection(string Guid)
         {
-            if(edges.Contains(edge))
+            if(!connectionGuids.Contains(Guid))
             {
-                edges.Remove(edge);
+                // Debug.LogWarning($"{connectionGuids} does not contains connection guid {guid}.");
+                return;
             }
+            connectionGuids.Remove(Guid);
         }
 
         public virtual void Dispose()
         {
-            if(edges != null && edges.Count != 0)
-            {
-                for(int i = 0; i < edges.Count; i++)
-                {
-                    DisconnectFromEdge(edges[i]);
-                }
-            }
+            connectionGuids.Clear();
         }
 
 

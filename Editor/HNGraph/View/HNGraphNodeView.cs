@@ -13,19 +13,20 @@ namespace HN.Graph.Editor
     public class HNGraphNodeView : HNGraphBaseNodeView
     {
         public HNGraphNode NodeData => BaseNodeData as HNGraphNode;
+
         private Type passType;
 
 
         public HNGraphNodeView(HNGraphView graphView, HNGraphNode nodeData, HNGraphEdgeConnectorListener edgeConnectorListener) 
         : base(graphView, nodeData, edgeConnectorListener)
         {
-            OnCreate();
+
         }
 
-        public override void OnCreate()
+        public override void Initialize()
         {
             passType = NodeData.GraphNodeClass.GetType();
-            base.OnCreate();
+            base.Initialize();
         }
 
         protected override void DrawNode()
@@ -71,12 +72,17 @@ namespace HN.Graph.Editor
                     {
                         port = new HNGraphPort(
                             BaseNodeData,
+                            GraphView.GraphEditorData,
                             propertyInfo.PropertyType.FullName, 
                             slotInfo.PortName, 
                             slotInfo.PortDirection == HNGraphPortInfoAttribute.Direction.Input ? HNGraphPort.Direction.Input : HNGraphPort.Direction.Output, 
                             slotInfo.PortCapacity == HNGraphPortInfoAttribute.Capacity.Single ? HNGraphPort.Capacity.Single : HNGraphPort.Capacity.Multi
                             );
-                        BaseNodeData.AddPort(port);
+                        
+                        if(port.PortDirection == HNGraphPort.Direction.Input)
+                            BaseNodeData.AddInputPort(port);
+                        else if(port.PortDirection == HNGraphPort.Direction.Output)
+                            BaseNodeData.AddOutputPort(port);
                     }
 
                     CreatePortView(port, slotInfo);
@@ -96,30 +102,7 @@ namespace HN.Graph.Editor
                 slotInfo.PortCapacity == HNGraphPortInfoAttribute.Capacity.Single ? Port.Capacity.Single : Port.Capacity.Multi,
                 EdgeConnectorListener
                 );
-            if (slotInfo.PortDirection == HNGraphPortInfoAttribute.Direction.Input)
-            {
-                InputPortViews.Add(portView);
-                if(slotInfo.orientation == HNGraphPortInfoAttribute.Orientation.Vertical)
-                {
-                    TopPortContainer.Add(portView);
-                }
-                else
-                {
-                    inputContainer.Add(portView);
-                }
-            }
-            else
-            {
-                OutputPortViews.Add(portView);
-                if (slotInfo.orientation == HNGraphPortInfoAttribute.Orientation.Vertical)
-                {
-                    BottomPortContainer.Add(portView);
-                }
-                else
-                {
-                    outputContainer.Add(portView);
-                }
-            }
+            AddPortView(portView);
         }
 
     }

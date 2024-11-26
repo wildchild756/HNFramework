@@ -25,7 +25,7 @@ namespace HN.Graph.Editor
             {
                 return;
             }
-            hnGraphView.AddEdge(edgeView);
+            hnGraphView.AddConnection(edgeView);
         }
 
         public void OnDropOutsidePort(Edge edge, Vector2 position)

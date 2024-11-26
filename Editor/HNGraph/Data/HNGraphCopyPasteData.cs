@@ -10,6 +10,7 @@ namespace HN.Graph.Editor
     {
         [SerializeField]
         public List<HNGraphNode> serializedNodes = new List<HNGraphNode>();
+        
         [SerializeField]
         public List<HNGraphStickyNote> serializedStickyNotes = new List<HNGraphStickyNote>();
 

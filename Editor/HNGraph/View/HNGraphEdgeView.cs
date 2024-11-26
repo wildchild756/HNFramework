@@ -10,13 +10,6 @@ namespace HN.Graph.Editor
 {
     public class HNGraphEdgeView : Edge
     {
-        public HNGraphEdge EdgeData
-        {
-            get { return edgeData; }
-            set { edgeData = value; }
-        }
-        private HNGraphEdge edgeData;
-
         public HNGraphPortView OutputPortView
         {
             get { return (HNGraphPortView)output; }
@@ -29,8 +22,20 @@ namespace HN.Graph.Editor
             set { input = value; }
         }
 
-        private HNGraphView graphView;
+        public HNGraphConnectionView ConnectionView
+        {
+            get { return connectionView; }
+            set { connectionView = value; }
+        }
 
+        // public int Index => index;
+
+
+        private HNGraphConnectionView connectionView;
+
+        private HNGraphView graphView;
+        // private int index = 0;
+        
 
         public HNGraphEdgeView(HNGraphView graphView)
         {
@@ -39,7 +44,53 @@ namespace HN.Graph.Editor
             RegisterCallback<MouseDownEvent>(OnMouseDown);
         }
 
-        public HNGraphPortView FindAnotherPort(HNGraphPortView port)
+        public void Initialize(HNGraphConnectionView connectionView, HNGraphPortView output, HNGraphPortView input)
+        {
+            ConnectionView = connectionView;
+            // this.index = index;
+            OutputPortView = output;
+            ConnectOutput(OutputPortView);
+            InputPortView = input;
+            ConnectInput(InputPortView);
+        }
+
+        public void ConnectOutput(HNGraphPortView outputPortView)
+        {
+            OutputPortView = outputPortView;
+            OutputPortView.ConnectToEdge(this);
+        }
+
+        public void ConnectInput(HNGraphPortView inputPortView)
+        {
+            InputPortView = inputPortView;
+            inputPortView.ConnectToEdge(this);
+        }    
+
+        public void DisconnectOutput()
+        {
+            if(OutputPortView != null)
+            {
+                OutputPortView.DisconnectFromEdge(this);
+                OutputPortView = null;
+            }
+        }
+
+        public void DisconnectInput()
+        {
+            if(InputPortView != null)
+            {
+                InputPortView.DisconnectFromEdge(this);
+                InputPortView = null;
+            }
+        }
+
+        public void DisconnectAll()
+        {
+            DisconnectOutput();
+            DisconnectInput();
+        }
+
+        public HNGraphPortView GetAnotherPort(HNGraphPortView port)
         {
             if(OutputPortView == port)
             {
@@ -59,9 +110,8 @@ namespace HN.Graph.Editor
         {
             if(e.altKey)
             {
-                graphView.CreateRelayNodeOnEdge(this, e.localMousePosition);
+                graphView.AddRelayNode(this, e.localMousePosition);
             }
         }
-
     }
 }

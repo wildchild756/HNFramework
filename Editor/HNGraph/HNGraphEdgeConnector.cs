@@ -6,7 +6,7 @@ namespace HN.Graph.Editor
 {
     public class HNGraphEdgeConnector : EdgeConnector
     {
-        readonly EdgeDragHelper m_EdgeDragHelper;
+        readonly HNGraphEdgeDragHelper m_EdgeDragHelper;
         private HNGraphView graphView;
         Edge m_EdgeCandidate;
         private bool m_Active;
@@ -61,7 +61,7 @@ namespace HN.Graph.Editor
             }
 
             m_MouseDownPosition = e.localMousePosition;
-
+            
             m_EdgeCandidate = new HNGraphEdgeView(graphView);
             m_EdgeDragHelper.draggedPort = graphElement;
             m_EdgeDragHelper.edgeCandidate = m_EdgeCandidate;

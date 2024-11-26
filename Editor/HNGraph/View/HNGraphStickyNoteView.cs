@@ -10,11 +10,16 @@ namespace HN.Graph.Editor
     public class HNGraphStickyNoteView : StickyNote
     {
         public HNGraphStickyNote StickyNoteData => stickyNoteData;
+
+        
         private HNGraphStickyNote stickyNoteData;
 
+        private HNGraphView graphView;
 
-        public HNGraphStickyNoteView(HNGraphStickyNote stickyNoteData)
+
+        public HNGraphStickyNoteView(HNGraphView graphView, HNGraphStickyNote stickyNoteData)
         {
+            this.graphView = graphView;
             this.stickyNoteData = stickyNoteData;
             
             this.Q<TextField>("title-field").RegisterCallback<ChangeEvent<string>>(e => 
@@ -30,10 +35,14 @@ namespace HN.Graph.Editor
             contents = stickyNoteData.Content;
         }
 
+        public void Initialize()
+        {
+            SetPosition(stickyNoteData.GetLayout());
+        }
+
         public void SavePosition()
         {
-            var p = GetPosition();
-            stickyNoteData.SetLayout(p);
+            stickyNoteData.SetLayout(GetPosition());
         }
 
         public override void OnResized()

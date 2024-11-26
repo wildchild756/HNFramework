@@ -316,7 +316,6 @@ namespace HN.Graph.Editor
                     edgeCandidate.output = endPort;
                 else
                     edgeCandidate.input = endPort;
-
                 m_Listener.OnDrop(m_GraphView, edgeCandidate);
                 didConnect = true;
             }

@@ -13,14 +13,13 @@ namespace HN.Graph.Editor.Example
     {
         public override void SaveAsset()
         {
-            graphData.SerializedEditorData = Serialize();
             Compile();
-            graphData.Serialize();
+            base.SaveAsset();
         }
 
-        public override void Compile()
+        public void Compile()
         {
-            TestGraph graph = graphData as TestGraph;
+            TestGraph graph = GraphData as TestGraph;
             // if(graph == null || graph.RenderStack == null)
             // {
             //     return;

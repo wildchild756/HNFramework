@@ -7,6 +7,7 @@ namespace HN.Graph.Editor
     public interface IPositionable
     {
         public Rect GetLayout();
+        
         public void SetLayout(Rect position);
     }
 }

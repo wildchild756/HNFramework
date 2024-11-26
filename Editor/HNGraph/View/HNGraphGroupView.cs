@@ -1,5 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
+using Unity.VisualScripting;
 using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 using UnityEngine.UIElements;
@@ -9,11 +11,15 @@ namespace HN.Graph.Editor
     public class HNGraphGroupView : Group
     {
         public HNGraphGroup GroupData => groupData;
+        
         private HNGraphGroup groupData;
 
+        private HNGraphView graphView;
 
-        public HNGraphGroupView(HNGraphGroup groupData)
+
+        public HNGraphGroupView(HNGraphView graphView, HNGraphGroup groupData)
         {
+            this.graphView = graphView;
             this.groupData = groupData;
 
             title = groupData.Title;
@@ -21,6 +27,13 @@ namespace HN.Graph.Editor
             {
                 groupData.SetTitle(e.newValue);
             });
+        }
+
+        public void Initialize()
+        {
+            SetPosition(groupData.GetLayout());
+            AddElementsToGroup();
+            AddSelectionsToGroup();
         }
 
         protected override void OnElementsAdded(IEnumerable<GraphElement> elements)
@@ -55,6 +68,42 @@ namespace HN.Graph.Editor
             }
 
             base.OnElementsRemoved(elements);
+        }
+
+        private void AddElementsToGroup()
+        {
+            foreach(var nodeGuid in groupData.InnerNodeGuids)
+            {
+                if(string.IsNullOrEmpty(nodeGuid))
+                {
+                    continue;
+                }
+
+                foreach(var nodeView in graphView.NodeViews)
+                {
+                    if(nodeView.BaseNodeData.Guid == nodeGuid)
+                    {
+                        AddElement(nodeView);
+                    }
+                }
+            }
+        }
+
+        private void AddSelectionsToGroup()
+        {
+            foreach(var selectedNode in graphView.selection)
+            {
+                if(selectedNode is HNGraphNodeView)
+                {
+                    if(graphView.GroupViews.ToList().Exists(x => x.ContainsElement(selectedNode as HNGraphNodeView)))
+                    {
+                        continue;
+                    }
+                    HNGraphNodeView selectedNodeView = selectedNode as HNGraphNodeView;
+                    AddElement(selectedNodeView);
+                    GroupData.AddNode(selectedNodeView.BaseNodeData.Guid);
+                }
+            }
         }
 
         public void SavePosition()

@@ -10,23 +10,23 @@ namespace HN.Graph.Editor
     public class HNGraphNode : HNGraphBaseNode
     {
         public IHNGraphNode GraphNodeClass => graphNodeClass;
+
         [SerializeReference]
         private IHNGraphNode graphNodeClass;
 
         [SerializeReference]
         private HNGraphEditorData editorData;
 
-        public HNGraphNode(HNGraphEditorData editorData, IHNGraphNode graphNodeClass, Vector2 position) : base()
+
+        public HNGraphNode(HNGraphEditorData editorData, IHNGraphNode graphNodeClass)
         {
             this.editorData = editorData;
             this.graphNodeClass = graphNodeClass;
-
-            OnCreate(position);
         }
 
-        public override void OnCreate(Vector2 position)
+        public override void Initialize(Vector2 position)
         {
-            base.OnCreate(position);
+            base.Initialize(position);
         }
 
     }

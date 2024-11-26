@@ -11,6 +11,8 @@ namespace HN.Graph.Editor
     public abstract class HNGraphNewAction<T> : EndNameEditAction where T : HNGraphObject
     {
         public T GraphData => graphData;
+
+        
         private T graphData;
 
 

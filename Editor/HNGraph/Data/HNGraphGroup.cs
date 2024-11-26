@@ -9,39 +9,41 @@ namespace HN.Graph.Editor
     public class HNGraphGroup : IDisposable
     {
         public string Guid => guid;
+
+        public string Title => title;
+
+        public IReadOnlyList<string> InnerNodeGuids => InnerNodeGuids;
+
+
         [SerializeField]
         private string guid;
 
-        public string Title => title;
         [SerializeField]
         private string title;
 
         [SerializeField]
         private Rect layout;
 
-        public List<string> InnerNodeGuids => InnerNodeGuids;
         [SerializeField]
         private List<string> innerNodeGuids;
-
+        
         [SerializeReference]
         private HNGraphEditorData editorData;
 
 
-        public HNGraphGroup(HNGraphEditorData editorData, string title, Vector2 position)
+        public HNGraphGroup(HNGraphEditorData editorData, string title)
         {
             this.editorData = editorData;
             
             innerNodeGuids = new List<string>();
             this.title = title;
-            this.layout.position = position;
-
-            OnCreate(position);
         }
 
-        public virtual void OnCreate(Vector2 newPos)
+        public virtual void Initialize(Vector2 position)
         {
             guid = HNGraphUtils.NewGuid();
-            SetLayout(new Rect(newPos, new Vector2(400, 200)));
+            layout.position = position;
+            layout.size = new Vector2(400, 200);
         }
 
         public void SetTitle(string title)
@@ -51,7 +53,7 @@ namespace HN.Graph.Editor
 
         public Rect GetLayout()
         {
-            return this.layout;
+            return layout;
         }
 
         public void SetLayout(Rect layout)
@@ -59,25 +61,24 @@ namespace HN.Graph.Editor
             this.layout = layout;
         }
 
-        public bool ContainsNode(string nodeGuid)
-        {
-            return innerNodeGuids.Contains(nodeGuid);
-        }
-
         public void AddNode(string nodeGuid)
         {
-            if(!innerNodeGuids.Contains(nodeGuid))
+            if(innerNodeGuids.Contains(nodeGuid))
             {
-                innerNodeGuids.Add(nodeGuid);
+                // Debug.LogWarning($"{innerNodeGuids} already contains node guid {nodeGuid}.");
+                return;
             }
+            innerNodeGuids.Add(nodeGuid);
         }
 
         public void RemoveNode(string nodeGuid)
         {
-            if(innerNodeGuids.Contains(nodeGuid))
+            if(!innerNodeGuids.Contains(nodeGuid))
             {
-                innerNodeGuids.Remove(nodeGuid);
+                // Debug.LogWarning($"{innerNodeGuids} does not contains node guid {nodeGuid}.");
+                return;
             }
+            innerNodeGuids.Remove(nodeGuid);
         }
 
         public virtual void Dispose()

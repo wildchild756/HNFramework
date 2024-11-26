@@ -14,20 +14,24 @@ namespace HN.Graph.Editor
         public HNGraphPort InputPort => InputPorts.Values.ToList()[0];
 
         public HNGraphPort OutputPort => OutputPorts.Values.ToList()[0];
+        
 
         [SerializeReference]
-        private HNGraphEdge edgeData;
+        private HNGraphConnection connectionData;
+
+        [SerializeReference]
+        private HNGraphEditorData editorData;
 
 
-        public HNGraphRelayNode(HNGraphEdge edgeData, Vector2 position) : base()
+        public HNGraphRelayNode(HNGraphEditorData editorData, HNGraphConnection edgeData)
         {
-            this.edgeData = edgeData;
-            OnCreate(position);
+            this.editorData = editorData;
+            this.connectionData = edgeData;
         }
 
-        public override void OnCreate(Vector2 position)
+        public override void Initialize(Vector2 position)
         {
-            base.OnCreate(position);
+            base.Initialize(position);
         }
 
     }

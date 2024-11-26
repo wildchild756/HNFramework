@@ -10,14 +10,18 @@ namespace HN.Graph.Editor
     public abstract class HNGraphBaseNode : IDisposable, IPositionable, ISerializable
     {
         public string Guid => guid;
+
+        public IReadOnlyDictionary<string, HNGraphPort> InputPorts => inputPorts;
+
+        public IReadOnlyDictionary<string, HNGraphPort> OutputPorts => outputPorts;
+
+
         [SerializeField]
         private string guid;
 
-        public SerializablePorts InputPorts => inputPorts;
         [SerializeField]
         private SerializablePorts inputPorts;
-
-        public SerializablePorts OutputPorts => outputPorts;
+        
         [SerializeField]
         private SerializablePorts outputPorts;
 
@@ -31,38 +35,62 @@ namespace HN.Graph.Editor
             outputPorts = new SerializablePorts();
         }
 
-        public virtual void OnCreate(Vector2 position)
+        public virtual void Initialize(Vector2 position)
         {
             guid = HNGraphUtils.NewGuid();
             SetLayout(new Rect(position, Vector2.zero));
         }
 
-        public virtual void OnEdgeAdded(string portGuid)
+        public virtual void OnConnectionAdded(string portGuid)
         {
 
         }
 
-        public void AddPort(HNGraphPort port)
+        public void AddInputPort(HNGraphPort port)
         {
             if(port == null)
+                return;
+
+            if(inputPorts.ContainsKey(port.Guid))
             {
+                // Debug.LogWarning($"Guid {port.Guid} already contained in {inputPorts}.");
                 return;
             }
+            
+            inputPorts.Add(port.Guid, port);
+        }
 
-            if(port.PortDirection == HNGraphPort.Direction.Input)
+        public void AddOutputPort(HNGraphPort port)
+        {
+            if(port == null)
+                return;
+
+            if(outputPorts.ContainsKey(port.Guid))
             {
-                inputPorts.Add(port.Guid, port);
+                // Debug.LogWarning($"Guid {port.Guid} already contained in {outputPorts}.");
+                return;
             }
-            else if(port.PortDirection == HNGraphPort.Direction.Output)
-            {
-                outputPorts.Add(port.Guid, port);
-            }
+            
+            outputPorts.Add(port.Guid, port);
+        }
+
+        public void RemoveInputPort(string Guid)
+        {
+            if(inputPorts.ContainsKey(Guid))
+                inputPorts.Remove(Guid);
+        }
+
+        public void RemoveOutputPort(string Guid)
+        {
+            if(outputPorts.ContainsKey(Guid))
+                outputPorts.Remove(Guid);
         }
 
         public HNGraphPort GetInputPort(string guid)
         {
             if(!inputPorts.ContainsKey(guid))
             {
+                // Debug.LogWarning($"{inputPorts} has not contains Guid {guid}.");
                 return null;
             }
 
@@ -73,6 +101,7 @@ namespace HN.Graph.Editor
         {
             if(!outputPorts.ContainsKey(guid))
             {
+                // Debug.LogWarning($"{outputPorts} has not contains Guid {guid}.");
                 return null;
             }
 

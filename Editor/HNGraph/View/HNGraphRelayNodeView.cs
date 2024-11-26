@@ -17,24 +17,21 @@ namespace HN.Graph.Editor
 
         public HNGraphPortView OutputPortView => OutputPortViews[0];
 
-        public HNGraphEdge EdgeView => edgeView;
-        private HNGraphEdge edgeView;
+        public int Index => index;
 
-        private Type portType;
-        
+
+        private int index = 0;
     
     
-        public HNGraphRelayNodeView(HNGraphView graphView, HNGraphRelayNode relayNodeData, Type type, HNGraphEdgeConnectorListener edgeConnectorListener)
+        public HNGraphRelayNodeView(HNGraphView graphView, HNGraphRelayNode relayNodeData, HNGraphEdgeConnectorListener edgeConnectorListener)
          : base(graphView, relayNodeData, edgeConnectorListener)
         {
-            this.portType = type;
-
-            OnCreate();
+            RegisterCallback<MouseDownEvent>(OnMouseDown);
         }
 
-        public override void OnCreate()
+        public override void Initialize()
         {
-            base.OnCreate();
+            base.Initialize();
         }
 
         protected override void DrawNode()
@@ -44,7 +41,14 @@ namespace HN.Graph.Editor
 
         protected override void DrawPorts()
         {
-            HNGraphPort inputPortData = RelayNodeData.InputPort;
+            HNGraphPort inputPortData = new HNGraphPort(
+                RelayNodeData, 
+                GraphView.GraphEditorData, 
+                "", 
+                "", 
+                HNGraphPort.Direction.Input, 
+                HNGraphPort.Capacity.Single
+            );
             HNGraphPortView inputPortView = new HNGraphPortView(
                 GraphView,
                 inputPortData,
@@ -55,16 +59,17 @@ namespace HN.Graph.Editor
                 Port.Capacity.Single,
                 EdgeConnectorListener
             );
-            if(inputPortView.orientation == Orientation.Vertical)
-            {
-                TopPortContainer.Add(inputPortView);
-            }
-            else
-            {
-                inputContainer.Add(inputPortView);
-            }
+            AddPortView(inputPortView);
+            RelayNodeData.AddInputPort(inputPortData);
 
-            HNGraphPort outputPortData = RelayNodeData.OutputPort;
+            HNGraphPort outputPortData = new HNGraphPort(
+                RelayNodeData, 
+                GraphView.GraphEditorData, 
+                "", 
+                "", 
+                HNGraphPort.Direction.Output, 
+                HNGraphPort.Capacity.Single
+            );
             HNGraphPortView outputPortView = new HNGraphPortView(
                 GraphView,
                 outputPortData,
@@ -75,13 +80,15 @@ namespace HN.Graph.Editor
                 Port.Capacity.Single,
                 EdgeConnectorListener
             );
-            if(outputPortView.orientation == Orientation.Vertical)
+            AddPortView(outputPortView);
+            RelayNodeData.AddOutputPort(outputPortData);
+        }
+
+        private void OnMouseDown(MouseDownEvent e)
+        {
+            if(e.altKey)
             {
-                BottomPortContainer.Add(outputPortView);
-            }
-            else
-            {
-                outputContainer.Add(outputPortView);
+                GraphView.DeleteRelayNode(this);
             }
         }
     }

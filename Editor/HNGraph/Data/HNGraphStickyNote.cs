@@ -11,38 +11,40 @@ namespace HN.Graph.Editor
     public class HNGraphStickyNote : IDisposable
     {
         public string Guid => guid;
+
+        public string Title => title;
+
+        public string Content => content;
+
+
         [SerializeField]
         private string guid;
-        
-        public string Title => title;
+
         [SerializeField]
         private string title = "Title";
 
-        public string Content => content;
         [SerializeField]
         private string content = "Content";
 
         [SerializeField]
         private Rect layout;
-
+        
         [SerializeReference]
         private HNGraphEditorData editorData;
 
 
-        public HNGraphStickyNote(HNGraphEditorData editorData, string title, Vector2 position)
+        public HNGraphStickyNote(HNGraphEditorData editorData, string title)
         {
             this.editorData = editorData;
             
             this.title = title;
-            this.layout.position = position;
-
-            OnCreate(position);
         }
 
-        public virtual void OnCreate(Vector2 newPos)
+        public virtual void Initialize(Vector2 newPos)
         {
             guid = HNGraphUtils.NewGuid();
-            SetLayout(new Rect(newPos, new Vector2(400, 200)));
+            layout.position = newPos;
+            layout.size = new Vector2(400, 200);
         }
 
         public void SetTitle(string title)
@@ -57,7 +59,7 @@ namespace HN.Graph.Editor
 
         public Rect GetLayout()
         {
-            return this.layout;
+            return layout;
         }
 
         public void SetLayout(Rect layout)

@@ -39,7 +39,7 @@ namespace HN.Graph.Editor
             guid = assetGuid;
             graphEditorDataPath = AssetDatabase.GUIDToAssetPath(assetGuid);
             graphEditorDataName = Path.GetFileNameWithoutExtension(graphEditorDataPath);
-            titleContent = new GUIContent($"{graphEditorDataName}({graphEditorData.graphData.GetType().Name})");
+            titleContent = new GUIContent($"{graphEditorDataName}({graphEditorData.GraphData.GetType().Name})");
             extension = Path.GetExtension(graphEditorDataPath).Split(".")[1];
             if (graphEditorData == null)
             {
@@ -134,22 +134,22 @@ namespace HN.Graph.Editor
             {
                 if (newPath != graphEditorDataPath)
                 {
-                    Type type = graphEditorData.graphData.GetType();
+                    Type type = graphEditorData.GraphData.GetType();
                     HNGraphObject newGraphData = (HNGraphObject)ScriptableObject.CreateInstance(type);
                     if (newGraphData != null)
                     {
                         newGraphData.AssetPath = newPath;
-                        graphEditorData.graphData = newGraphData;
+                        graphEditorData.GraphData = newGraphData;
                     }
                     graphEditorData.SaveAsset();
                     AssetDatabase.ImportAsset(newPath);
 
                     newGraphData = (HNGraphObject)AssetDatabase.LoadAssetAtPath(newPath, type);
-                    graphEditorData.graphData = newGraphData;
+                    graphEditorData.GraphData = newGraphData;
                     guid = AssetDatabase.AssetPathToGUID(newPath);
                     graphEditorDataPath = newPath;
                     graphEditorDataName = Path.GetFileNameWithoutExtension(graphEditorDataPath);
-                    titleContent = new GUIContent(($"{graphEditorDataName}({graphEditorData.graphData.GetType().Name})"));
+                    titleContent = new GUIContent(($"{graphEditorDataName}({graphEditorData.GraphData.GetType().Name})"));
                 }
             }
         }

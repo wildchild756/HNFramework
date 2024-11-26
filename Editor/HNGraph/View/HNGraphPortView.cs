@@ -17,12 +17,20 @@ namespace HN.Graph.Editor
         }
         
         public HNGraphPort PortData => portData;
-        private HNGraphPort portData;
 
         public HNGraphBaseNodeView OwnerNodeView => ownerNodeView;
+
+        public IReadOnlyList<HNGraphConnectionView> ConnectionViews => connectionViews;
+
+        public IReadOnlyList<HNGraphEdgeView> EdgeViews => edgeViews;
+
+
+        private HNGraphPort portData;
+
         private HNGraphBaseNodeView ownerNodeView;
 
-        public List<HNGraphEdgeView> EdgeViews => edgeViews;
+        private List<HNGraphConnectionView> connectionViews;
+
         private List<HNGraphEdgeView> edgeViews;
 
         private HNGraphView graphView;
@@ -44,10 +52,39 @@ namespace HN.Graph.Editor
             tooltip = orientation == Orientation.Horizontal ? "" : name;
             this.portData = portData;
             this.ownerNodeView = nodeView;
+            connectionViews = new List<HNGraphConnectionView>();
             edgeViews = new List<HNGraphEdgeView>();
-
+            
             var edgeConnector = new HNGraphEdgeConnector(graphView, connectListener);
             this.AddManipulator(edgeConnector);
+        }
+
+        public void ConnectToConnectionOutput(HNGraphConnectionView connectionView)
+        {
+            if(connectionViews.Contains(connectionView))
+            {
+                // Debug.LogWarning($"{connectionViews} already contains connection view {connectionView}.");
+                return;
+            }
+            connectionViews.Add(connectionView);
+
+            portData.AddConnection(connectionView.ConnectionData.Guid);
+            if(connectionView.OutputEdgeView != null)
+                ConnectToEdge(connectionView.OutputEdgeView);
+        }
+
+        public void ConnectToConnectionInput(HNGraphConnectionView connectionView)
+        {
+            if(connectionViews.Contains(connectionView))
+            {
+                // Debug.LogWarning($"{connectionViews} already contains connection view {connectionView}.");
+                return;
+            }
+            connectionViews.Add(connectionView);
+
+            portData.AddConnection(connectionView.ConnectionData.Guid);
+            if(connectionView.InputEdgeView != null)
+                ConnectToEdge(connectionView.InputEdgeView);
         }
 
         public void ConnectToEdge(HNGraphEdgeView edgeView)
@@ -57,46 +94,65 @@ namespace HN.Graph.Editor
             {
                 edgeViews.Add(edgeView);
             }
+        }
 
-            portData.ConnectToEdge(edgeView.EdgeData);
+        public void DisconnectFromConnectionOutput(HNGraphConnectionView connectionView)
+        {
+            Disconnect(connectionView.OutputEdgeView);
+            if(connectionViews.Contains(connectionView))
+            {
+                connectionViews.Remove(connectionView);
+            }
+
+            portData.RemoveConnection(connectionView.ConnectionData.Guid);
+        }
+
+        public void DisconnectFromConnectionInput(HNGraphConnectionView connectionView)
+        {
+            Disconnect(connectionView.InputEdgeView);
+            if(connectionViews.Contains(connectionView))
+            {
+                connectionViews.Remove(connectionView);
+            }
+
+            portData.RemoveConnection(connectionView.ConnectionData.Guid);
         }
 
         public void DisconnectFromEdge(HNGraphEdgeView edgeView)
         {
-            Disconnect(edgeView);
             if(edgeViews.Contains(edgeView))
             {
+                Disconnect(edgeView);
                 edgeViews.Remove(edgeView);
+                OwnerNodeView.RefreshPorts();
             }
-
-            portData.DisconnectFromEdge(edgeView.EdgeData);
         }
 
-        public List<HNGraphPortView> FindConnectPorts()
+        public List<HNGraphPortView> GetConnectPorts()
         {
             List<HNGraphPortView> connectPorts = new List<HNGraphPortView>();
-            foreach(var edgeView in edgeViews)
+            foreach(var connectionView in connectionViews)
             {
-                 connectPorts.Add(edgeView.FindAnotherPort(this));
+                 connectPorts.Add(connectionView.GetAnotherPort(this));
             }
 
             return connectPorts;
         }
 
-        public HNGraphPortView FindFirstConnectPort()
+        public HNGraphPortView GetFirstConnectPort()
         {
-            if(edgeViews.Count > 0)
+            if(connectionViews.Count > 0)
             {
-                 return edgeViews[0].FindAnotherPort(this);
+                 return connectionViews[0].GetAnotherPort(this);
             }
             
             return null;
         }
 
-        public List<HNGraphBaseNodeView> FindConnectNodes()
+        public List<HNGraphBaseNodeView> GetConnectNodes()
         {
             List<HNGraphBaseNodeView> connectNodes = new List<HNGraphBaseNodeView>();
-            List<HNGraphPortView> connectPorts = FindConnectPorts();
+            List<HNGraphPortView> connectPorts = GetConnectPorts();
             foreach(var port in connectPorts)
             {
                 connectNodes.Add(port.OwnerNodeView);
@@ -105,9 +161,9 @@ namespace HN.Graph.Editor
             return connectNodes;
         }
 
-        public HNGraphBaseNodeView FindFirstConnectNode()
+        public HNGraphBaseNodeView GetFirstConnectNode()
         {
-            HNGraphPortView connectPort = FindFirstConnectPort();
+            HNGraphPortView connectPort = GetFirstConnectPort();
             if(connectPort != null)
             {
                 return connectPort.OwnerNodeView;

@@ -28,13 +28,10 @@ namespace HN.Graph.Editor
             set { connectionView = value; }
         }
 
-        // public int Index => index;
-
 
         private HNGraphConnectionView connectionView;
 
         private HNGraphView graphView;
-        // private int index = 0;
         
 
         public HNGraphEdgeView(HNGraphView graphView)
@@ -47,7 +44,6 @@ namespace HN.Graph.Editor
         public void Initialize(HNGraphConnectionView connectionView, HNGraphPortView output, HNGraphPortView input)
         {
             ConnectionView = connectionView;
-            // this.index = index;
             OutputPortView = output;
             ConnectOutput(OutputPortView);
             InputPortView = input;

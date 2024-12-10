@@ -51,22 +51,16 @@ namespace HN.Graph.Editor
 
         public void AddRelayNode(int index, HNGraphRelayNode relayNode)
         {
-            if(relayNode == null)
+            if(relayNode == null || relayNodeGuids.Contains(relayNode.Guid))
                 return;
-
-            if(relayNodeGuids.Contains(relayNode.Guid))
-                throw new Exception($"{relayNodeGuids} already contains relay node guid {relayNode}");
 
             relayNodeGuids.Insert(index, relayNode.Guid);
         }
 
         public void RemoveRelayNode(HNGraphRelayNode relayNode)
         {
-            if(relayNode == null)
+            if(relayNode == null || !relayNodeGuids.Contains(relayNode.Guid))
                 return;
-
-            if(!relayNodeGuids.Contains(relayNode.Guid))
-                // Debug.LogWarning($"{relayNodeGuids} does not contains relay node guid {relayNode}.");
 
             relayNodeGuids.Remove(relayNode.Guid);
         }

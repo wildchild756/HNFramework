@@ -13,12 +13,9 @@ namespace HN.Graph.Example
         public const string TestGraphExtension = "testgraph";
 
 
-        // public Stack<IHNGraphNode> RenderStack => renderStack;
-        // private Stack<IHNGraphNode> renderStack;
-
         public TestGraph()
         {
-            // renderStack = new Stack<IHNGraphNode>();
+            
         }
 
 #if UNITY_EDITOR

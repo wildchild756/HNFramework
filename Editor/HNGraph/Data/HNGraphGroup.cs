@@ -12,7 +12,7 @@ namespace HN.Graph.Editor
 
         public string Title => title;
 
-        public IReadOnlyList<string> InnerNodeGuids => InnerNodeGuids;
+        public IReadOnlyList<string> InnerNodeGuids => innerNodeGuids;
 
 
         [SerializeField]
@@ -64,20 +64,16 @@ namespace HN.Graph.Editor
         public void AddNode(string nodeGuid)
         {
             if(innerNodeGuids.Contains(nodeGuid))
-            {
-                // Debug.LogWarning($"{innerNodeGuids} already contains node guid {nodeGuid}.");
                 return;
-            }
+
             innerNodeGuids.Add(nodeGuid);
         }
 
         public void RemoveNode(string nodeGuid)
         {
             if(!innerNodeGuids.Contains(nodeGuid))
-            {
-                // Debug.LogWarning($"{innerNodeGuids} does not contains node guid {nodeGuid}.");
                 return;
-            }
+                
             innerNodeGuids.Remove(nodeGuid);
         }
 

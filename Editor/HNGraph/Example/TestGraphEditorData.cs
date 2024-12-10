@@ -13,52 +13,9 @@ namespace HN.Graph.Editor.Example
     {
         public override void SaveAsset()
         {
-            Compile();
             base.SaveAsset();
         }
 
-        public void Compile()
-        {
-            TestGraph graph = GraphData as TestGraph;
-            // if(graph == null || graph.RenderStack == null)
-            // {
-            //     return;
-            // }
-
-            // List<TestOutput> outputNodes = FindNodesWithType<TestOutput>();
-            // Debug.Log(outputNodes.Count);
-            // foreach(var n in outputNodes)
-            // {
-            //     Debug.Log(n);
-            // }
-        }
-
-
-        // private List<Type> FindNodesWithType<Type>() where Type : TestGraphNode
-        // {
-        //     List<Type> list = new List<Type>();
-
-        //     var nodes = GetNodesEnumerator();
-        //     while(nodes.MoveNext())
-        //     {
-        //         HNGraphNode node = nodes.Current as HNGraphNode;
-        //         if(node == null)
-        //         {
-        //             continue;
-        //         }
-
-        //         if (node.GraphNodeClass != null)
-        //         {
-        //             Type thisNode = node.GraphNodeClass as Type;
-        //             if (thisNode != null)
-        //             {
-        //                 list.Add(thisNode);
-        //             }
-        //         }
-        //     }
-            
-        //     return list;
-        // }
     }
 
 
@@ -71,7 +28,7 @@ namespace HN.Graph.Editor.Example
         }
 
 
-        [MenuItem("Assets/Create/Test Graph")]
+        [MenuItem("Assets/Create/HN Unity Framework/Test Graph")]
         public static void CreateRenderGraph()
         {
             ProjectWindowUtil.StartNameEditingIfProjectWindowExists(

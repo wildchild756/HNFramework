@@ -228,13 +228,15 @@ namespace HN.Graph.Editor
             HNGraphPortView inputPortView = outputEdgeView.GetAnotherPort(relayNodeOutputPortView);
             RemoveElement(outputEdgeView);
             HNGraphConnectionView connectionView = inputEdgeView.ConnectionView;
+            int index = connectionView.GetEdgeViewIndex(inputEdgeView);
             connectionView.RemoveEdgeView(inputEdgeView);
             connectionView.RemoveEdgeView(outputEdgeView);
             connectionView.RemoveRelayNodeView(relayNodeView);
             RemoveElement(relayNodeView);
+            GraphEditorData.RemoveRelayNode(relayNodeView.RelayNodeData);
             HNGraphEdgeView newEdgeView = new HNGraphEdgeView(this);
             newEdgeView.Initialize(connectionView, outputPortView, inputPortView);
-            connectionView.AddEdgeView(newEdgeView);
+            connectionView.AddEdgeView(index, newEdgeView);
             AddElement(newEdgeView);
         }
 
@@ -322,7 +324,7 @@ namespace HN.Graph.Editor
                 {
                     HNGraphEdgeView edgeView = new HNGraphEdgeView(this);
                     edgeView.Initialize(connectionView, output, input);
-                    connectionView.AddEdgeView(edgeView);
+                    connectionView.AddEdgeView(0, edgeView);
                     AddElement(edgeView);
                 }
                 else
@@ -334,14 +336,14 @@ namespace HN.Graph.Editor
                         HNGraphRelayNodeView currentRelayNodeView = GetRelayNodeViewFromGuid(relayNodeGuidList[i]);
                         HNGraphEdgeView edgeView = new HNGraphEdgeView(this);
                         edgeView.Initialize(connectionView, lastRelayNodeOutputPortView, currentRelayNodeView.InputPortView);
-                        connectionView.AddEdgeView(edgeView);
+                        connectionView.AddEdgeView(i, edgeView);
                         AddElement(edgeView);
                         connectionView.AddRelayNodeView(i, currentRelayNodeView);
                         lastRelayNodeOutputPortView = currentRelayNodeView.OutputPortView;
                     }
                     HNGraphEdgeView lastEdgeView = new HNGraphEdgeView(this);
                     lastEdgeView.Initialize(connectionView, lastRelayNodeOutputPortView, input);
-                    connectionView.AddEdgeView(lastEdgeView);
+                    connectionView.AddEdgeView(relayNodeGuidList.Count, lastEdgeView);
                     AddElement(lastEdgeView);
                 }
             }
@@ -360,7 +362,7 @@ namespace HN.Graph.Editor
         {
             connectionView = new HNGraphConnectionView(this, connectionData);
             connectionView.Initialize(edgeView.OutputPortView, edgeView.InputPortView);
-            connectionView.AddEdgeView(edgeView);
+            connectionView.AddEdgeView(0, edgeView);
             connectionViews.Add(connectionView);
         }
 

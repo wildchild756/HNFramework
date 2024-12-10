@@ -19,7 +19,7 @@ namespace HN.Graph
             get { return serializedEditorData; }
             set { serializedEditorData = value; }
         }
-        [SerializeField]
+        [SerializeField, HideInInspector]
         private string serializedEditorData = "{}";
 
 

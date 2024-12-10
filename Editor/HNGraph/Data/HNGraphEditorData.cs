@@ -73,10 +73,7 @@ namespace HN.Graph.Editor
         public HNGraphNode GetNode(string guid)
         {
             if(!nodes.ContainsKey(guid))
-            {
-                Debug.Log($"{nodes} does not contains guid {guid}.");
                 return null;
-            }
 
             return nodes[guid];
         }
@@ -84,10 +81,7 @@ namespace HN.Graph.Editor
         public HNGraphConnection GetConnection(string guid)
         {
             if(!connections.ContainsKey(guid))
-            {
-                Debug.Log($"{connections} does not contains guid {guid}.");
                 return null;
-            }
 
             return connections[guid];
         }
@@ -95,10 +89,7 @@ namespace HN.Graph.Editor
         public HNGraphGroup GetGroup(string guid)
         {
             if(groups.ContainsKey(guid))
-            {
-                Debug.Log($"{groups} does not contains guid {guid}.");
                 return null;
-            }
 
             return groups[guid];
         }
@@ -106,10 +97,7 @@ namespace HN.Graph.Editor
         public HNGraphStickyNote GetStickyNote(string guid)
         {
             if(!stickyNotes.ContainsKey(guid))
-            {
-                Debug.Log($"{stickyNotes} does not contains guid {guid}.");
                 return null;
-            }
 
             return stickyNotes[guid];
         }
@@ -117,10 +105,7 @@ namespace HN.Graph.Editor
         public HNGraphRelayNode GetRelayNode(string guid)
         {
             if(!relayNodes.ContainsKey(guid))
-            {
-                Debug.Log($"{relayNodes} does not contains guid {guid}.");
                 return null;
-            }
 
             return relayNodes[guid];
         }
@@ -128,60 +113,48 @@ namespace HN.Graph.Editor
         public void AddNode(HNGraphNode node)
         {
             if(nodes.ContainsValue(node))
-            {
-                Debug.Log($"{nodes} already contains node guid {node}.");
                 return;
-            }
+
             nodes.Add(node.Guid, node);
         }
 
         public void AddConnection(HNGraphConnection connection)
         {
             if(connections.ContainsValue(connection))
-            {
-                Debug.Log($"{connections} already contains connection guid {connection}.");
                 return;
-            }
+
             connections.Add(connection.Guid, connection);
         }
 
         public void AddGroup(HNGraphGroup group)
         {
             if(groups.ContainsValue(group))
-            {
-                Debug.Log($"{groups} already contains group guid {group}.");
                 return;
-            }
+                
             groups.Add(group.Guid, group);
         }
 
         public void AddStickyNote(HNGraphStickyNote stickyNote)
         {
             if(stickyNotes.ContainsValue(stickyNote))
-            {
-                Debug.Log($"{stickyNotes} already contains stickyNote guid {stickyNote}.");
                 return;
-            }
+                
             stickyNotes.Add(stickyNote.Guid, stickyNote);
         }
 
         public void AddRelayNode(HNGraphRelayNode relayNode)
         {
             if(relayNodes.ContainsValue(relayNode))
-            {
-                Debug.Log($"{relayNodes} already contains relayNode guid {relayNode}.");
                 return;
-            }
+                
             relayNodes.Add(relayNode.Guid, relayNode);
         }
 
         public void RemoveNode(HNGraphNode node)
         {
             if(!nodes.ContainsValue(node))
-            {
-                Debug.Log($"{nodes} does not contains node guid {node}.");
-                return; 
-            }
+                return;
+                
             nodes.Remove(node.Guid);
             node.Dispose();
         }
@@ -189,10 +162,8 @@ namespace HN.Graph.Editor
         public void RemoveConnection(HNGraphConnection connection)
         {
             if(!connections.ContainsValue(connection))
-            {
-                Debug.Log($"{connections} does not contains connection guid {connection}.");
-                return; 
-            }
+                return;
+                
             connections.Remove(connection.Guid);
             connection.Dispose();
         }
@@ -200,10 +171,8 @@ namespace HN.Graph.Editor
         public void RemoveGroup(HNGraphGroup group)
         {
             if(!groups.ContainsValue(group))
-            {
-                Debug.Log($"{groups} does not contains group guid {group}.");
-                return; 
-            }
+                return;
+                
             foreach(var nodeGuid in group.InnerNodeGuids)
             {
                 if(!string.IsNullOrEmpty(nodeGuid))
@@ -219,10 +188,8 @@ namespace HN.Graph.Editor
         public void RemoveStickyNote(HNGraphStickyNote stickyNote)
         {
             if(!stickyNotes.ContainsValue(stickyNote))
-            {
-                Debug.Log($"{stickyNotes} does not contains stickyNote guid {stickyNote}.");
-                return; 
-            }
+                return;
+                
             stickyNotes.Remove(stickyNote.Guid);
             stickyNote.Dispose();
         }
@@ -230,10 +197,8 @@ namespace HN.Graph.Editor
         public void RemoveRelayNode(HNGraphRelayNode relayNode)
         {
             if(!relayNodes.ContainsValue(relayNode))
-            {
-                Debug.Log($"{relayNodes} does not contains relayNode guid {relayNode}.");
-                return; 
-            }
+                return;
+                
             relayNodes.Remove(relayNode.Guid);
             relayNode.Dispose();
         }

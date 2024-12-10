@@ -84,34 +84,28 @@ namespace HN.Graph.Editor
 
         public void CreateRelayNodeOnEdge(HNGraphEdgeView originEdgeView, HNGraphRelayNodeView relayNodeView)
         {
+            if(!edges.Contains(originEdgeView))
+                return;
+            
+            int index = edges.IndexOf(originEdgeView);
             HNGraphPortView outputPortView = originEdgeView.OutputPortView;
             HNGraphEdgeView outputEdgeView = new HNGraphEdgeView(graphView);
             outputEdgeView.Initialize(this, outputPortView, relayNodeView.InputPortView);
-            edges.Add(outputEdgeView);
+            edges.Insert(index, outputEdgeView);
             graphView.AddElement(outputEdgeView);
 
             HNGraphPortView inputPortView = originEdgeView.InputPortView;
             HNGraphEdgeView inputEdgeView = new HNGraphEdgeView(graphView);
             inputEdgeView.Initialize(this, relayNodeView.OutputPortView, inputPortView);
-            edges.Add(inputEdgeView);
+            edges.Insert(index + 1, inputEdgeView);
             graphView.AddElement(inputEdgeView);
 
-            HNGraphBaseNodeView nextNodeView = inputPortView.OwnerNodeView;
-            int index = 0;
-            for(; index < relayNodes.Count; index++)
-            {
-                if(nextNodeView == relayNodes[index])
-                    break;
-            }
             relayNodes.Insert(index, relayNodeView);
             connectionData.AddRelayNode(index, relayNodeView.RelayNodeData);
 
             originEdgeView.DisconnectAll();
-            if(edges.Contains(originEdgeView))
-            {
-                edges.Remove(originEdgeView);
-                graphView.RemoveElement(originEdgeView);
-            }
+            edges.Remove(originEdgeView);
+            graphView.RemoveElement(originEdgeView);
             graphView.AddElement(relayNodeView);
         }
 
@@ -124,9 +118,14 @@ namespace HN.Graph.Editor
             }
         }
 
-        public void AddEdgeView(HNGraphEdgeView edgeView)
+        public void AddEdgeView(int index, HNGraphEdgeView edgeView)
         {
-            edges.Add(edgeView);
+            edges.Insert(index, edgeView);
+        }
+
+        public int GetEdgeViewIndex(HNGraphEdgeView edgeView)
+        {
+            return edges.IndexOf(edgeView);
         }
 
         public void RemoveEdgeView(HNGraphEdgeView edgeView)
@@ -143,6 +142,7 @@ namespace HN.Graph.Editor
         public void RemoveRelayNodeView(HNGraphRelayNodeView relayNodeView)
         {
             relayNodes.Remove(relayNodeView);
+            connectionData.RemoveRelayNode(relayNodeView.RelayNodeData);
         }
 
     }

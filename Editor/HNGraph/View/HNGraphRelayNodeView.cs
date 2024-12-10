@@ -16,16 +16,14 @@ namespace HN.Graph.Editor
         public HNGraphPortView InputPortView => InputPortViews[0];
 
         public HNGraphPortView OutputPortView => OutputPortViews[0];
-
-        public int Index => index;
-
-
-        private int index = 0;
     
     
         public HNGraphRelayNodeView(HNGraphView graphView, HNGraphRelayNode relayNodeData, HNGraphEdgeConnectorListener edgeConnectorListener)
          : base(graphView, relayNodeData, edgeConnectorListener)
         {
+            var nodeBorder = this.Q("node-border");
+            nodeBorder.Remove(nodeBorder.Q("title"));
+
             RegisterCallback<MouseDownEvent>(OnMouseDown);
         }
 

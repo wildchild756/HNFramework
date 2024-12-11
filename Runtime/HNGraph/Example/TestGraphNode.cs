@@ -7,6 +7,9 @@ namespace HN.Graph.Example
 {
     public class TestGraphNode : IHNGraphNode
     {
-        
+        public string GetName()
+        {
+            return "";
+        }
     }
 }

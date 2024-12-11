@@ -100,6 +100,25 @@ namespace HN.Graph.Editor
             connectionGuids.Remove(Guid);
         }
 
+        public List<HNGraphNode> GetConnectedNodes()
+        {
+            List<HNGraphNode> connectedNodes = new List<HNGraphNode>();
+            if(connectionGuids.Count == 0)
+                return connectedNodes;
+            
+            for(int i = 0; i < connectionGuids.Count; i++)
+            {
+                HNGraphConnection connection = editorData.Connections[connectionGuids[i]];
+                HNGraphNode node = connection.OutputPort.OwnerNode as HNGraphNode;
+                if(node != null)
+                {
+                    connectedNodes.Add(node);
+                }
+            }
+
+            return connectedNodes;
+        }
+
         public virtual void Dispose()
         {
             connectionGuids.Clear();

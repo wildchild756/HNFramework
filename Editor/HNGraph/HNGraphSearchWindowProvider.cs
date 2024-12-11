@@ -132,8 +132,8 @@ namespace HN.Graph.Editor
 
             SearchContextElement element = (SearchContextElement)searchTreeEntry.userData;
 
-            IHNGraphNode pass = (IHNGraphNode)element.target;
-            HNGraphNode node = new HNGraphNode(graph.GraphEditorData, pass);
+            IHNGraphNode nodeData = (IHNGraphNode)element.target;
+            HNGraphNode node = new HNGraphNode(graph.GraphEditorData, nodeData);
             node.Initialize(graphMousePosition);
             graph.AddNode(node);
 

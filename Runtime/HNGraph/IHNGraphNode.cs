@@ -6,6 +6,6 @@ namespace HN.Graph
 {
     public interface IHNGraphNode
     {
-
+        public string GetName();
     }
 }

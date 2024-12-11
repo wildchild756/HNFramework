@@ -25,7 +25,7 @@ namespace HN.Graph.Editor
 
         public override void Initialize()
         {
-            passType = NodeData.GraphNodeClass.GetType();
+            passType = NodeData.NodeData.GetType();
             base.Initialize();
         }
 

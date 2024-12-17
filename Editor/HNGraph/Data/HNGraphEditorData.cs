@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using HN.Serialize;
+using UnityEditor;
 using UnityEngine;
 
 namespace HN.Graph.Editor
@@ -49,6 +50,9 @@ namespace HN.Graph.Editor
         {
             GraphData.SerializedEditorData = Serialize();
             GraphData.Serialize();
+            
+            EditorUtility.SetDirty(GraphData);
+            AssetDatabase.SaveAssets();
         }
         
         public HNGraphEditorData()
@@ -60,7 +64,7 @@ namespace HN.Graph.Editor
             relayNodes = new SerializableRelayNodes();
         }
 
-        public void Initialize(HNGraphObject graphData)
+        public virtual void Initialize(HNGraphObject graphData)
         {
             this.graphData = graphData;
 

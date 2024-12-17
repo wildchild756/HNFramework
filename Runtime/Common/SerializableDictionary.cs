@@ -7,7 +7,7 @@ using UnityEngine;
 namespace HN
 {
     [Serializable]
-    public class SerializedDictionary<K, V> : Dictionary<K, V>, ISerializationCallbackReceiver
+    public class SerializableDictionary<K, V> : Dictionary<K, V>, ISerializationCallbackReceiver
     {
         [SerializeField]
         List<K> keys = new List<K>();

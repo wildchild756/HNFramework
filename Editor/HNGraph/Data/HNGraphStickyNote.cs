@@ -8,7 +8,7 @@ using UnityEngine;
 namespace HN.Graph.Editor
 {
     [Serializable]
-    public class HNGraphStickyNote : IDisposable
+    public class HNGraphStickyNote : IDisposable, IPositionable
     {
         public string Guid => guid;
 

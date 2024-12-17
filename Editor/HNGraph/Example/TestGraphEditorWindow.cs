@@ -18,7 +18,7 @@ namespace HN.Graph.Editor.Example
             SearchWindowProvider.GraphNodeInfoAttributeType = typeof(TestGraphNodeInfoAttribute);
         }
 
-        public override void AdditionalToolButon(Toolbar toolbar)
+        public override void AdditionalToolButton(Toolbar toolbar)
         {
             var showInspector = new ToolbarToggle();
             showInspector.text = "Inspector";

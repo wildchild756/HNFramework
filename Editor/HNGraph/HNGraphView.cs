@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Text;
@@ -14,6 +15,9 @@ namespace HN.Graph.Editor
 {
     public class HNGraphView : GraphView
     {
+        private static readonly string graphViewStyle = "Styles/HNGraphView";
+
+
         public HNGraphEditorWindow GraphEditorWindow;
 
         public HNGraphEditorData GraphEditorData;
@@ -29,6 +33,13 @@ namespace HN.Graph.Editor
 
         public IReadOnlyList<HNGraphRelayNodeView> RelayNodeViews => relayNodeViews;
 
+        public IReadOnlyList<HNGraphFloatingPanelView> FloatingPanelViews => floatingPanelViews;
+
+
+        public SelectionChanged OnSelectionChanged;
+
+        public GraphViewElementsCreated graphViewElementsCreated;
+
 
         private List<HNGraphNodeView> nodeViews;
 
@@ -39,6 +50,8 @@ namespace HN.Graph.Editor
         private List<HNGraphStickyNoteView> stickyNoteViews;
 
         private List<HNGraphRelayNodeView> relayNodeViews;
+
+        private List<HNGraphFloatingPanelView> floatingPanelViews;
 
         private HNGraphEdgeConnectorListener edgeConnectorListener;
 
@@ -53,6 +66,7 @@ namespace HN.Graph.Editor
             groupViews = new List<HNGraphGroupView>();
             stickyNoteViews = new List<HNGraphStickyNoteView>();
             relayNodeViews = new List<HNGraphRelayNodeView>();
+            floatingPanelViews = new List<HNGraphFloatingPanelView>();
 
             serializeGraphElements = SerializeGraphElementsCallback;
             canPasteSerializedData = CanPasteSerializedDataCallback;
@@ -79,7 +93,7 @@ namespace HN.Graph.Editor
             };
 
             edgeConnectorListener = new HNGraphEdgeConnectorListener();
-            graphViewChanged = RenderGraphViewChanged;
+            graphViewChanged = OnGraphViewChanged;
 
             DrawNodes();
             DrawRelayNodes();
@@ -87,7 +101,7 @@ namespace HN.Graph.Editor
             DrawGroups();
             DrawStickyNotes();
 
-            styleSheets.Add(Resources.Load<StyleSheet>("Styles/HNGraphView"));
+            styleSheets.Add(Resources.Load<StyleSheet>(graphViewStyle));
         }
 
         public override List<Port> GetCompatiblePorts(Port startPort, NodeAdapter nodeAdapter)
@@ -126,6 +140,28 @@ namespace HN.Graph.Editor
             BuildStickNoteContextualMenu(evt, 2);
         }
 
+        public override void AddToSelection(ISelectable selectable)
+        {
+            base.AddToSelection(selectable);
+
+            OnSelectionChanged?.Invoke(selection);
+        }
+
+        public override void RemoveFromSelection(ISelectable selectable)
+        {
+            base.RemoveFromSelection(selectable);
+
+            OnSelectionChanged?.Invoke(selection);
+        }
+
+        public override void ClearSelection()
+        {
+            base.ClearSelection();
+
+            OnSelectionChanged?.Invoke(selection);
+        }
+
+
         private void BuidlGroupContextualMenu(ContextualMenuPopulateEvent evt, int menuPosition = -1)
         {
             if(menuPosition == -1)
@@ -156,12 +192,15 @@ namespace HN.Graph.Editor
             evt.menu.InsertAction(menuPosition, "Create Sticky Note", (e) => AddStickyNote(stickyNoteData), DropdownMenuAction.AlwaysEnabled);
         }
 
+
         public void AddNode(HNGraphNode nodeData)
         {
             Undo.RecordObject(GraphEditorData, "Add Node");
             GraphEditorData.AddNode(nodeData);
 
             AddNodeView(nodeData, out HNGraphNodeView nodeView);
+
+            graphViewElementsCreated(new HNGraphViewCreateElements(nodeView));
         }
 
         public void AddConnection(HNGraphEdgeView edgeView)
@@ -184,6 +223,8 @@ namespace HN.Graph.Editor
             OnConnectionAdded(connectionView);
 
             AddElement(edgeView);
+
+            graphViewElementsCreated(new HNGraphViewCreateElements(connectionView, edgeView));
         }
 
         public void AddGroup(HNGraphGroup group)
@@ -192,6 +233,8 @@ namespace HN.Graph.Editor
             GraphEditorData.AddGroup(group);
             
             AddGroupView(group, out HNGraphGroupView groupView);
+            
+            graphViewElementsCreated(new HNGraphViewCreateElements(groupView));
         }
 
         public void AddStickyNote(HNGraphStickyNote stickyNoteData)
@@ -200,6 +243,8 @@ namespace HN.Graph.Editor
             GraphEditorData.AddStickyNote(stickyNoteData);
 
             AddStickyNoteView(stickyNoteData, out HNGraphStickyNoteView stickyNoteView);
+            
+            graphViewElementsCreated(new HNGraphViewCreateElements(stickyNoteView));
         }
 
         public void AddRelayNode(HNGraphEdgeView edgeView, Vector2 mousePos)
@@ -215,6 +260,8 @@ namespace HN.Graph.Editor
             AddRelayNodeView(relayNodeData, out HNGraphRelayNodeView relayNodeView);
             
             connectionView.CreateRelayNodeOnEdge(edgeView, relayNodeView);
+
+            graphViewElementsCreated(new HNGraphViewCreateElements(relayNodeView));
         }
 
         public void DeleteRelayNode(HNGraphRelayNodeView relayNodeView)
@@ -238,6 +285,35 @@ namespace HN.Graph.Editor
             newEdgeView.Initialize(connectionView, outputPortView, inputPortView);
             connectionView.AddEdgeView(index, newEdgeView);
             AddElement(newEdgeView);
+            EditorUtility.SetDirty(GraphEditorWindow);
+        }
+
+        public void DrawFloatingPanelView(HNGraphFloatingPanelView floatingPanelView)
+        {
+            HNGraphNodeView selectedNode = null;
+            for(int i = 0; i < selection.Count; i++)
+            {
+                selectedNode = selection[i] as HNGraphNodeView;
+                if(selectedNode != null)
+                    break;
+            }
+            
+            floatingPanelViews.Add(floatingPanelView);
+            Add(floatingPanelView);
+
+            OnSelectionChanged?.Invoke(selection);
+        }
+
+        public void CloseFloatingPanel(Type floatingPanelType)
+        {
+            foreach(HNGraphFloatingPanelView floatingPanelView in floatingPanelViews)
+            {
+                if(floatingPanelView.FloatingPanelData.GetType() == floatingPanelType)
+                {
+                    RemoveFloatingPanelView(floatingPanelView);
+                    break;
+                }
+            }
         }
 
 
@@ -404,7 +480,7 @@ namespace HN.Graph.Editor
             }
         }
 
-        private GraphViewChange RenderGraphViewChanged(GraphViewChange graphViewChange)
+        private GraphViewChange OnGraphViewChanged(GraphViewChange graphViewChange)
         {
             if (graphViewChange.movedElements != null)
             {
@@ -565,6 +641,13 @@ namespace HN.Graph.Editor
             stickyNoteViews.Remove(stickyNoteView);
         }
 
+        private void RemoveFloatingPanelView(HNGraphFloatingPanelView floatingPanelView)
+        {
+            RemoveElement(floatingPanelView);
+            floatingPanelViews.Remove(floatingPanelView);
+            floatingPanelView.Dispose();
+        }
+
 
         private string SerializeGraphElementsCallback(IEnumerable<GraphElement> elements)
         {
@@ -691,5 +774,11 @@ namespace HN.Graph.Editor
             }
             return null;
         }
+    
+    
+        public delegate void SelectionChanged(List<ISelectable> selection);
+
+        public delegate HNGraphViewCreateElements GraphViewElementsCreated(HNGraphViewCreateElements graphViewChange);
     }
+
 }

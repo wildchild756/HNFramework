@@ -13,13 +13,19 @@ namespace HN.Graph.Editor
     public abstract class HNGraphEditorWindow : EditorWindow
     {
         public string Guid => guid;
-        private string guid;
 
         public HNGraphSearchWindowProvider SearchWindowProvider
         {
             get { return searchWindowProvider; }
             set { searchWindowProvider = value; }
         }
+
+        public HNGraphView GraphView => graphView;
+
+        public HNGraphEditorData GraphEditorData => graphEditorData;
+
+
+        private string guid;
         private HNGraphSearchWindowProvider searchWindowProvider;
 
         private HNGraphEditorData graphEditorData;
@@ -31,7 +37,7 @@ namespace HN.Graph.Editor
 
 
         public abstract void CreateSearchWindowProvider();
-        public abstract void AdditionalToolButon(Toolbar toolbar);
+        public abstract void AdditionalToolButton(Toolbar toolbar);
 
 
         public bool Initialize(string assetGuid, HNGraphEditorData graphEditorData)
@@ -57,6 +63,7 @@ namespace HN.Graph.Editor
             graphView = new HNGraphView(this, graphEditorData, searchWindowProvider);
             graphView.name = "GraphView";
             graphView.graphViewChanged += OnChange;
+            graphView.graphViewElementsCreated += OnElementsCreate;
 
             var toolbar = GetToolbar();
             toolbar.name = "Toolbar";
@@ -85,16 +92,9 @@ namespace HN.Graph.Editor
             var spacer = new ToolbarSpacer();
             toolbar.Add(spacer);
             
-            AdditionalToolButon(toolbar);
+            AdditionalToolButton(toolbar);
             
             return toolbar;
-        }
-
-        private GraphViewChange OnChange(GraphViewChange graphViewChange)
-        {
-            this.hasUnsavedChanges = true;
-            EditorUtility.SetDirty(graphEditorData);
-            return graphViewChange;
         }
 
         public override void SaveChanges()
@@ -111,6 +111,24 @@ namespace HN.Graph.Editor
             return window;
         }
 
+
+        private GraphViewChange OnChange(GraphViewChange graphViewChange)
+        {
+            SetWindowDirty();
+            return graphViewChange;
+        }
+
+        private HNGraphViewCreateElements OnElementsCreate(HNGraphViewCreateElements createElements)
+        {
+            SetWindowDirty();
+            return createElements;
+        }
+
+        private void SetWindowDirty()
+        {
+            this.hasUnsavedChanges = true;
+            EditorUtility.SetDirty(graphEditorData);
+        }
 
         private void OnSaveAsset()
         {

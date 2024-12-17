@@ -7,7 +7,7 @@ using UnityEngine;
 namespace HN.Graph.Editor
 {
     [Serializable]
-    public abstract class HNGraphBaseNode : IDisposable, IPositionable, ISerializable
+    public abstract class HNGraphBaseNode : IDisposable, IPositionable
     {
         public string Guid => guid;
 
@@ -116,16 +116,6 @@ namespace HN.Graph.Editor
         public void SetLayout(Rect layout)
         {
             this.layout = layout;
-        }
-
-        public string Serialize()
-        {
-            return Json.Serialize(this);
-        }
-
-        public void Deserialize(string serializeData)
-        {
-            Json.DeserializeFromString(this, serializeData);
         }
 
         public virtual void Dispose()

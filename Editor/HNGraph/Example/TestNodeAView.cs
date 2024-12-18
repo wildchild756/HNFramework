@@ -1,9 +1,9 @@
 using System.Collections;
 using System.Collections.Generic;
-using HN.HNRP;
+using HN.Graph.Editor;
 using UnityEngine;
 
-namespace HN.Graph.Example
+namespace HN.Graph.Example.Editor
 {
     [TestGraphNodeInfo("Test Node A", "Test Catgory A/Test Node A")]
     public class TestNodeA : TestGraphNode

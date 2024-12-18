@@ -248,10 +248,10 @@ namespace HN.Graph.Editor
 
             foreach(var node in Nodes.Values)
             {
-                if (node.NodeData == null)
+                if (node.NodeViewData == null)
                     continue;
                 
-                T nodeData = node.NodeData as T;
+                T nodeData = node.NodeViewData as T;
                 if (nodeData == null)
                     continue;
                 

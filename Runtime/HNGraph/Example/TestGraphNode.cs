@@ -5,11 +5,8 @@ using UnityEngine;
 
 namespace HN.Graph.Example
 {
-    public class TestGraphNode : IHNGraphNode
+    public class TestGraphNode
     {
-        public string GetName()
-        {
-            return "";
-        }
+        
     }
 }

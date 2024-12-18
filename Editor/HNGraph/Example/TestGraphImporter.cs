@@ -2,14 +2,14 @@ using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
-using HN.Graph.Example;
+using HN.Graph.Editor;
 using UnityEngine;
 using UnityEditor;
 using UnityEditor.AssetImporters;
 using UnityEditor.Callbacks;
 using Unity.VisualScripting;
 
-namespace HN.Graph.Editor.Example
+namespace HN.Graph.Example.Editor
 {
     [ScriptedImporter(1, TestGraph.TestGraphExtension)]
     public class TestGraphImporter : HNGraphImporter<TestGraph>

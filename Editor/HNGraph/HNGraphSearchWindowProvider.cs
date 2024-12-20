@@ -14,8 +14,8 @@ namespace HN.Graph.Editor
         public static List<SearchContextElement> elements;
         
         public HNGraphView graph;
-
         public HNGraphNode target;
+
         
         public Type GraphNodeInfoAttributeType
         {
@@ -131,9 +131,8 @@ namespace HN.Graph.Editor
             var graphMousePosition = graph.contentViewContainer.WorldToLocal(windowMousePosition);
 
             SearchContextElement element = (SearchContextElement)searchTreeEntry.userData;
-
-            IHNGraphNode nodeData = (IHNGraphNode)element.target;
-            HNGraphNode node = new HNGraphNode(graph.GraphEditorData, nodeData);
+            Type nodeDataType = element.target.GetType();
+            HNGraphNode node = new HNGraphNode(graph.GraphEditorData, nodeDataType);
             node.Initialize(graphMousePosition);
             graph.AddNode(node);
 

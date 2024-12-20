@@ -9,19 +9,19 @@ namespace HN.Graph.Editor
     [Serializable]
     public class HNGraphNode : HNGraphBaseNode
     {
-        public IHNGraphNode NodeViewData => nodeViewData;
+        public Type NodeDataType => nodeDataType;
 
         [SerializeReference]
-        private IHNGraphNode nodeViewData;
+        private Type nodeDataType;
 
         [SerializeReference]
         private HNGraphEditorData editorData;
 
 
-        public HNGraphNode(HNGraphEditorData editorData, IHNGraphNode nodeData)
+        public HNGraphNode(HNGraphEditorData editorData, Type nodeDataType)
         {
             this.editorData = editorData;
-            this.nodeViewData = nodeData;
+            this.nodeDataType = nodeDataType;
         }
 
         public override void Initialize(Vector2 position)

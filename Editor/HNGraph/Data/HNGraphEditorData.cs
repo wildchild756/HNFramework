@@ -8,27 +8,24 @@ using UnityEngine;
 
 namespace HN.Graph.Editor
 {
+    [Serializable]
     public abstract class HNGraphEditorData : ScriptableObject, ISerializable
     {
-        public HNGraphObject GraphData
+        public HNGraphObject GraphObject
         {
-            get { return graphData; }
-            set { graphData = value; }
+            get { return graphObject; }
+            set { graphObject = value; }
         }
 
         public IReadOnlyDictionary<string, HNGraphNode> Nodes => nodes;
-
         public IReadOnlyDictionary<string, HNGraphConnection> Connections => connections;
-
         public IReadOnlyDictionary<string, HNGraphGroup> Groups => groups;
-
         public IReadOnlyDictionary<string, HNGraphStickyNote> StickyNotes => stickyNotes;
-
         public IReadOnlyDictionary<string, HNGraphRelayNode> RelayNodes => relayNodes;
 
 
         [SerializeReference]
-        private HNGraphObject graphData;
+        private HNGraphObject graphObject;
 
         [SerializeField]
         private SerializableNodes nodes;
@@ -48,10 +45,10 @@ namespace HN.Graph.Editor
 
         public virtual void SaveAsset()
         {
-            GraphData.SerializedEditorData = Serialize();
-            GraphData.Serialize();
+            GraphObject.SerializedEditorData = Serialize();
+            GraphObject.Serialize();
             
-            EditorUtility.SetDirty(GraphData);
+            EditorUtility.SetDirty(GraphObject);
             AssetDatabase.SaveAssets();
         }
         
@@ -66,7 +63,7 @@ namespace HN.Graph.Editor
 
         public virtual void Initialize(HNGraphObject graphData)
         {
-            this.graphData = graphData;
+            this.graphObject = graphData;
 
             if(!string.IsNullOrEmpty(graphData.SerializedEditorData))
             {
@@ -81,6 +78,14 @@ namespace HN.Graph.Editor
                 return null;
 
             return nodes[guid];
+        }
+
+        public int GetNodeIndex(HNGraphNode node)
+        {
+            if(!nodes.ContainsValue(node))
+                return -1;
+            
+            return nodes.Values.ToList().IndexOf(node);
         }
 
         public HNGraphConnection GetConnection(string guid)
@@ -115,7 +120,7 @@ namespace HN.Graph.Editor
             return relayNodes[guid];
         }
 
-        public void AddNode(HNGraphNode node)
+         public virtual void AddNode(HNGraphNode node)
         {
             if(nodes.ContainsValue(node))
                 return;
@@ -123,7 +128,7 @@ namespace HN.Graph.Editor
             nodes.Add(node.Guid, node);
         }
 
-        public void AddConnection(HNGraphConnection connection)
+         public virtual void AddConnection(HNGraphConnection connection)
         {
             if(connections.ContainsValue(connection))
                 return;
@@ -131,7 +136,7 @@ namespace HN.Graph.Editor
             connections.Add(connection.Guid, connection);
         }
 
-        public void AddGroup(HNGraphGroup group)
+         public virtual void AddGroup(HNGraphGroup group)
         {
             if(groups.ContainsValue(group))
                 return;
@@ -139,7 +144,7 @@ namespace HN.Graph.Editor
             groups.Add(group.Guid, group);
         }
 
-        public void AddStickyNote(HNGraphStickyNote stickyNote)
+         public virtual void AddStickyNote(HNGraphStickyNote stickyNote)
         {
             if(stickyNotes.ContainsValue(stickyNote))
                 return;
@@ -147,7 +152,7 @@ namespace HN.Graph.Editor
             stickyNotes.Add(stickyNote.Guid, stickyNote);
         }
 
-        public void AddRelayNode(HNGraphRelayNode relayNode)
+         public virtual void AddRelayNode(HNGraphRelayNode relayNode)
         {
             if(relayNodes.ContainsValue(relayNode))
                 return;
@@ -155,7 +160,7 @@ namespace HN.Graph.Editor
             relayNodes.Add(relayNode.Guid, relayNode);
         }
 
-        public void RemoveNode(HNGraphNode node)
+         public virtual void RemoveNode(HNGraphNode node)
         {
             if(!nodes.ContainsValue(node))
                 return;
@@ -164,7 +169,7 @@ namespace HN.Graph.Editor
             node.Dispose();
         }
 
-        public void RemoveConnection(HNGraphConnection connection)
+         public virtual void RemoveConnection(HNGraphConnection connection)
         {
             if(!connections.ContainsValue(connection))
                 return;
@@ -173,7 +178,7 @@ namespace HN.Graph.Editor
             connection.Dispose();
         }
 
-        public void RemoveGroup(HNGraphGroup group)
+         public virtual void RemoveGroup(HNGraphGroup group)
         {
             if(!groups.ContainsValue(group))
                 return;
@@ -190,7 +195,7 @@ namespace HN.Graph.Editor
             group.Dispose();
         }
 
-        public void RemoveStickyNote(HNGraphStickyNote stickyNote)
+         public virtual void RemoveStickyNote(HNGraphStickyNote stickyNote)
         {
             if(!stickyNotes.ContainsValue(stickyNote))
                 return;
@@ -199,7 +204,7 @@ namespace HN.Graph.Editor
             stickyNote.Dispose();
         }
 
-        public void RemoveRelayNode(HNGraphRelayNode relayNode)
+         public virtual void RemoveRelayNode(HNGraphRelayNode relayNode)
         {
             if(!relayNodes.ContainsValue(relayNode))
                 return;
@@ -248,19 +253,18 @@ namespace HN.Graph.Editor
 
             foreach(var node in Nodes.Values)
             {
-                if (node.NodeViewData == null)
+                if (node.NodeDataType == null)
                     continue;
                 
-                T nodeData = node.NodeViewData as T;
-                if (nodeData == null)
-                    continue;
-                
-                list.Add(node);
+                if(node.NodeDataType == typeof(T))
+                {
+                    list.Add(node);
+                }
             }
             
             return list;
         }
-
+        
 
         private List<HNGraphNode> PackInputNodes(List<HNGraphNode> nodeList, HNGraphNode node)
         {

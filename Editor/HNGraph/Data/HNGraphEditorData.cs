@@ -18,7 +18,7 @@ namespace HN.Graph.Editor
         }
 
         public IReadOnlyDictionary<string, HNGraphNode> Nodes => nodes;
-        public IReadOnlyDictionary<string, HNGraphConnection> Connections => connections;
+        public IReadOnlyDictionary<string, HNGraphEdge> Edges => edges;
         public IReadOnlyDictionary<string, HNGraphGroup> Groups => groups;
         public IReadOnlyDictionary<string, HNGraphStickyNote> StickyNotes => stickyNotes;
         public IReadOnlyDictionary<string, HNGraphRelayNode> RelayNodes => relayNodes;
@@ -31,7 +31,7 @@ namespace HN.Graph.Editor
         private SerializableNodes nodes;
 
         [SerializeField]
-        private SerializableConnections connections;
+        private SerializableEdges edges;
 
         [SerializeField]
         private SerializableGroups groups;
@@ -55,7 +55,7 @@ namespace HN.Graph.Editor
         public HNGraphEditorData()
         {
             nodes = new SerializableNodes();
-            connections = new SerializableConnections();
+            edges = new SerializableEdges();
             groups = new SerializableGroups();
             stickyNotes = new SerializableStickyNotes();
             relayNodes = new SerializableRelayNodes();
@@ -88,12 +88,12 @@ namespace HN.Graph.Editor
             return nodes.Values.ToList().IndexOf(node);
         }
 
-        public HNGraphConnection GetConnection(string guid)
+        public HNGraphEdge GetEdge(string guid)
         {
-            if(!connections.ContainsKey(guid))
+            if(!edges.ContainsKey(guid))
                 return null;
 
-            return connections[guid];
+            return edges[guid];
         }
 
         public HNGraphGroup GetGroup(string guid)
@@ -128,12 +128,12 @@ namespace HN.Graph.Editor
             nodes.Add(node.Guid, node);
         }
 
-         public virtual void AddConnection(HNGraphConnection connection)
+         public virtual void AddEdge(HNGraphEdge edge)
         {
-            if(connections.ContainsValue(connection))
+            if(edges.ContainsValue(edge))
                 return;
 
-            connections.Add(connection.Guid, connection);
+            edges.Add(edge.Guid, edge);
         }
 
          public virtual void AddGroup(HNGraphGroup group)
@@ -169,13 +169,13 @@ namespace HN.Graph.Editor
             node.Dispose();
         }
 
-         public virtual void RemoveConnection(HNGraphConnection connection)
+         public virtual void RemoveEdge(HNGraphEdge edge)
         {
-            if(!connections.ContainsValue(connection))
+            if(!edges.ContainsValue(edge))
                 return;
                 
-            connections.Remove(connection.Guid);
-            connection.Dispose();
+            edges.Remove(edge.Guid);
+            edge.Dispose();
         }
 
          public virtual void RemoveGroup(HNGraphGroup group)
@@ -273,7 +273,7 @@ namespace HN.Graph.Editor
                 return nodeList;
             for(int i = inputPorts.Count - 1; i >= 0; i--)
             {
-                List<HNGraphNode> connectedNodes = inputPorts[i].GetConnectedNodes();
+                List<HNGraphNode> connectedNodes = inputPorts[i].GetConnectedNodes(true);
                 if(connectedNodes.Count == 0)
                     continue;
                 for(int j = connectedNodes.Count - 1; j >= 0; j--)
@@ -292,7 +292,7 @@ namespace HN.Graph.Editor
                 return nodeList;
             for(int i = outputPorts.Count - 1; i >= 0; i--)
             {
-                List<HNGraphNode> connectedNodes = outputPorts[i].GetConnectedNodes();
+                List<HNGraphNode> connectedNodes = outputPorts[i].GetConnectedNodes(false);
                 if(connectedNodes.Count == 0)
                     continue;
                 for(int j = connectedNodes.Count - 1; j >= 0; j--)

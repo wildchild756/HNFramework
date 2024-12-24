@@ -9,10 +9,13 @@ namespace HN.Graph.Editor
     public class SerializableNodes : SerializableDictionary<string, HNGraphNode> {}
     
     [Serializable]
-    public class SerializableConnections : SerializableDictionary<string, HNGraphConnection> {}
+    public class SerializableEdges : SerializableDictionary<string, HNGraphEdge> {}
 
     [Serializable]
     public class SerializablePorts : SerializableDictionary<string, HNGraphPort> {}
+
+    [Serializable]
+    public class SerializableRelayNodePorts : SerializableDictionary<string, HNGraphRelayNodePort> {}
 
     [Serializable]
     public class SerializableGroups : SerializableDictionary<string, HNGraphGroup> {}

@@ -10,27 +10,30 @@ namespace HN.Graph.Editor
 {
     public class HNGraphEdgeView : Edge
     {
-        public HNGraphPortView OutputPortView
-        {
-            get { return (HNGraphPortView)output; }
-            set { output = value; }
-        }
+        public HNGraphEdge EdgeData => edgeData;
 
-        public HNGraphPortView InputPortView
-        {
-            get { return (HNGraphPortView)input; }
-            set { input = value; }
-        }
+        public HNGraphBasePortView OutputPortView => output as HNGraphBasePortView;
+        // {
+        //     get { return (HNGraphBasePortView)output; }
+        //     set { output = value; }
+        // }
 
-        public HNGraphConnectionView ConnectionView
-        {
-            get { return connectionView; }
-            set { connectionView = value; }
-        }
+        public HNGraphBasePortView InputPortView => input as HNGraphBasePortView;
+        // {
+        //     get { return (HNGraphBasePortView)input; }
+        //     set { input = value; }
+        // }
+
+        // public HNGraphConnectionView ConnectionView
+        // {
+        //     get { return connectionView; }
+        //     set { connectionView = value; }
+        // }
 
 
-        private HNGraphConnectionView connectionView;
+        // private HNGraphConnectionView connectionView;
 
+        private HNGraphEdge edgeData;
         private HNGraphView graphView;
         
 
@@ -41,33 +44,22 @@ namespace HN.Graph.Editor
             RegisterCallback<MouseDownEvent>(OnMouseDown);
         }
 
-        public void Initialize(HNGraphConnectionView connectionView, HNGraphPortView output, HNGraphPortView input)
+        public void Initialize(HNGraphEdge edgeData, HNGraphBasePortView output, HNGraphBasePortView input)
         {
-            ConnectionView = connectionView;
-            OutputPortView = output;
+            // ConnectionView = connectionView;
+            this.edgeData = edgeData;
+            this.output = output;
             ConnectOutput(OutputPortView);
-            InputPortView = input;
+            this.input = input;
             ConnectInput(InputPortView);
         }
-
-        public void ConnectOutput(HNGraphPortView outputPortView)
-        {
-            OutputPortView = outputPortView;
-            OutputPortView.ConnectToEdge(this);
-        }
-
-        public void ConnectInput(HNGraphPortView inputPortView)
-        {
-            InputPortView = inputPortView;
-            inputPortView.ConnectToEdge(this);
-        }    
 
         public void DisconnectOutput()
         {
             if(OutputPortView != null)
             {
                 OutputPortView.DisconnectFromEdge(this);
-                OutputPortView = null;
+                this.output = null;
             }
         }
 
@@ -76,7 +68,7 @@ namespace HN.Graph.Editor
             if(InputPortView != null)
             {
                 InputPortView.DisconnectFromEdge(this);
-                InputPortView = null;
+                this.input = null;
             }
         }
 
@@ -86,7 +78,7 @@ namespace HN.Graph.Editor
             DisconnectInput();
         }
 
-        public HNGraphPortView GetAnotherPort(HNGraphPortView port)
+        public HNGraphBasePortView GetAnotherPort(HNGraphBasePortView port)
         {
             if(OutputPortView == port)
             {
@@ -101,6 +93,20 @@ namespace HN.Graph.Editor
                 return null;
             }
         }
+        
+
+        protected void ConnectOutput(HNGraphBasePortView outputPortView)
+        {
+            this.output = outputPortView;
+            OutputPortView.ConnectToEdge(this);
+        }
+
+        protected void ConnectInput(HNGraphBasePortView inputPortView)
+        {
+            this.input = inputPortView;
+            inputPortView.ConnectToEdge(this);
+        }    
+
 
         private void OnMouseDown(MouseDownEvent e)
         {

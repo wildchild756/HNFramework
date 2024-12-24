@@ -14,9 +14,6 @@ namespace HN.Graph.Editor
         
         public HNGraphEdgeConnectorListener EdgeConnectorListener => edgeConnectorListener;
 
-        public IReadOnlyList<HNGraphPortView> InputPortViews => inputPortViews;
-
-        public IReadOnlyList<HNGraphPortView> OutputPortViews => outputPortViews;
 
         public VisualElement TopPortContainer => topPortContainer;
 
@@ -25,19 +22,15 @@ namespace HN.Graph.Editor
         public HNGraphView GraphView => graphView;
 
 
-        private HNGraphBaseNode baseNodeData;
+        protected HNGraphBaseNode baseNodeData;
 
-        private HNGraphEdgeConnectorListener edgeConnectorListener;
+        protected HNGraphEdgeConnectorListener edgeConnectorListener;
 
-        private List<HNGraphPortView> inputPortViews;
+        protected VisualElement topPortContainer;
 
-        private List<HNGraphPortView> outputPortViews;
+        protected VisualElement bottomPortContainer;
 
-        private VisualElement topPortContainer;
-
-        private VisualElement bottomPortContainer;
-
-        private HNGraphView graphView;
+        protected HNGraphView graphView;
 
 
         public HNGraphBaseNodeView(HNGraphView graphView, HNGraphBaseNode nodeData, HNGraphEdgeConnectorListener edgeConnectorListener)
@@ -45,8 +38,6 @@ namespace HN.Graph.Editor
             this.graphView = graphView;
             this.edgeConnectorListener = edgeConnectorListener;
             this.baseNodeData = nodeData;
-            inputPortViews = new List<HNGraphPortView>();
-            outputPortViews = new List<HNGraphPortView>();
 
             topPortContainer = new VisualElement();
             topPortContainer.name = "TopPortContainer";
@@ -63,61 +54,7 @@ namespace HN.Graph.Editor
             SetPosition(baseNodeData.GetLayout());
         }
 
-        public void AddPortView(HNGraphPortView portView)
-        {
-            if(portView.direction == Direction.Input)
-            {
-                if(portView.orientation == Orientation.Vertical)
-                {
-                    TopPortContainer.Add(portView);
-                }
-                else
-                {
-                    inputContainer.Add(portView);
-                }
-                inputPortViews.Add(portView);
-
-                baseNodeData.AddInputPort(portView.PortData);
-            }
-            else
-            {
-                if(portView.orientation == Orientation.Vertical)
-                {
-                    BottomPortContainer.Add(portView);
-                }
-                else
-                {
-                    outputContainer.Add(portView);
-                }
-                outputPortViews.Add(portView);
-
-                baseNodeData.AddOutputPort(portView.PortData);
-            }
-        }
-
-        public void RemovePortView(HNGraphPortView portView)
-        {
-            if(inputContainer.Contains(portView))
-            {
-                inputContainer.Remove(portView);
-                baseNodeData.RemoveInputPort(portView.PortData.Guid);
-            }
-            if(topPortContainer.Contains(portView))
-            {
-                topPortContainer.Remove(portView);
-                baseNodeData.RemoveInputPort(portView.PortData.Guid);
-            }
-            if(outputContainer.Contains(portView))
-            {
-                outputContainer.Remove(portView);
-                baseNodeData.RemoveOutputPort(portView.PortData.Guid);
-            }
-            if(bottomPortContainer.Contains(portView))
-            {
-                bottomPortContainer.Remove(portView);
-                baseNodeData.RemoveOutputPort(portView.PortData.Guid);
-            }
-        }
+        protected abstract void AddPortView(HNGraphBasePortView portView);
 
         protected abstract void DrawNode();
 

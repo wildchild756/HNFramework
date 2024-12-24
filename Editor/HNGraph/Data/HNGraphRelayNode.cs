@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using HN.Serialize;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UIElements;
 
@@ -11,22 +12,26 @@ namespace HN.Graph.Editor
     [Serializable]
     public class HNGraphRelayNode : HNGraphBaseNode
     {
-        public HNGraphPort InputPort => InputPorts.Values.ToList()[0];
+        public HNGraphRelayNodePort InputPort => inputPort;
 
-        public HNGraphPort OutputPort => OutputPorts.Values.ToList()[0];
+        public HNGraphRelayNodePort OutputPort => outputPort;
+
+
+        [SerializeField]
+        protected HNGraphRelayNodePort inputPort;
         
-
-        [SerializeReference]
-        private HNGraphConnection connectionData;
+        [SerializeField]
+        protected HNGraphRelayNodePort outputPort;
+        
 
         [SerializeReference]
         private HNGraphEditorData editorData;
 
 
-        public HNGraphRelayNode(HNGraphEditorData editorData, HNGraphConnection edgeData)
+        public HNGraphRelayNode(HNGraphEditorData editorData, HNGraphEdge edgeData)
         {
             this.editorData = editorData;
-            this.connectionData = edgeData;
+
         }
 
         public override void Initialize(Vector2 position)
@@ -34,5 +39,28 @@ namespace HN.Graph.Editor
             base.Initialize(position);
         }
 
+        public override void AddInputPort(HNGraphBasePort port)
+        {
+            if(port == null || port is not HNGraphRelayNodePort)
+                return;
+
+            inputPort = port as HNGraphRelayNodePort;
+        }
+
+        public override void AddOutputPort(HNGraphBasePort port)
+        {
+            if(port == null || port is not HNGraphRelayNodePort)
+                return;
+
+            outputPort = port as HNGraphRelayNodePort;
+        }
+
+        public override void Dispose()
+        {
+            base.Dispose();
+
+            inputPort.Dispose();
+            outputPort.Dispose();
+        }
     }
 }

@@ -8,12 +8,12 @@ using UnityEngine.UIElements;
 
 namespace HN.Graph.Editor
 {
-    public class HNGraphPortView : HNGraphBasePortView
+    public class HNGraphRelayNodePortView : HNGraphBasePortView
     {
-        public new HNGraphPort PortData => portData as HNGraphPort;
+        public new HNGraphRelayNodePort PortData => portData as HNGraphRelayNodePort;
 
 
-        public HNGraphPortView(
+        public HNGraphRelayNodePortView(
             HNGraphView graphView, 
             HNGraphBasePort portData, 
             HNGraphBaseNodeView nodeView, 
@@ -21,10 +21,9 @@ namespace HN.Graph.Editor
             Orientation orientation, 
             Direction portDirection, 
             Capacity capacity, 
-            IEdgeConnectorListener connectListener,
+            IEdgeConnectorListener connectListener, 
             HNGraphBasePortView portView
-            ) 
-        : base(graphView, portData, nodeView, name, orientation, portDirection, capacity, connectListener, portView)
+            ) : base(graphView, portData, nodeView, name, orientation, portDirection, capacity, connectListener, portView)
         {
         }
     }

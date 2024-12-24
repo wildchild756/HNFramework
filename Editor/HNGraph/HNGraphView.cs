@@ -10,6 +10,7 @@ using UnityEditor.Experimental.GraphView;
 using HN.Serialize;
 using System.Security.Cryptography;
 using Unity.VisualScripting;
+using log4net.Appender;
 
 namespace HN.Graph.Editor
 {
@@ -25,7 +26,7 @@ namespace HN.Graph.Editor
 
         public IReadOnlyList<HNGraphNodeView> NodeViews => nodeViews;
 
-        public IReadOnlyList<HNGraphConnectionView> ConnectionViews => connectionViews;
+        public IReadOnlyList<HNGraphEdgeView> ConnectionViews => edgeViews;
 
         public IReadOnlyList<HNGraphGroupView> GroupViews => groupViews;
 
@@ -43,7 +44,7 @@ namespace HN.Graph.Editor
 
         private List<HNGraphNodeView> nodeViews;
 
-        private List<HNGraphConnectionView> connectionViews;
+        private List<HNGraphEdgeView> edgeViews;
 
         private List<HNGraphGroupView> groupViews;
 
@@ -62,7 +63,7 @@ namespace HN.Graph.Editor
             this.GraphEditorData = graphEditorData;
 
             nodeViews = new List<HNGraphNodeView>();
-            connectionViews = new List<HNGraphConnectionView>();
+            edgeViews = new List<HNGraphEdgeView>();
             groupViews = new List<HNGraphGroupView>();
             stickyNoteViews = new List<HNGraphStickyNoteView>();
             relayNodeViews = new List<HNGraphRelayNodeView>();
@@ -95,11 +96,11 @@ namespace HN.Graph.Editor
             edgeConnectorListener = new HNGraphEdgeConnectorListener();
             graphViewChanged = OnGraphViewChanged;
 
-            DrawNodes();
-            DrawRelayNodes();
-            DrawConnections();
-            DrawGroups();
-            DrawStickyNotes();
+            // DrawNodes();
+            // DrawRelayNodes();
+            // DrawEdges();
+            // DrawGroups();
+            // DrawStickyNotes();
 
             styleSheets.Add(Resources.Load<StyleSheet>(graphViewStyle));
         }
@@ -107,8 +108,8 @@ namespace HN.Graph.Editor
         public override List<Port> GetCompatiblePorts(Port startPort, NodeAdapter nodeAdapter)
         {
             List<Port> compatiblePorts = new List<Port>();
-            HNGraphPortView startPortView = startPort as HNGraphPortView;
-            if(startPortView == null || startPortView.OwnerNodeView is not HNGraphNodeView)
+            HNGraphBasePortView startPortView = startPort as HNGraphBasePortView;
+            if(startPortView == null)
                 return compatiblePorts;
 
             foreach (var nodeView in nodeViews)
@@ -130,6 +131,19 @@ namespace HN.Graph.Editor
                     }
                 }
             }
+
+            foreach (var relayNodeView in relayNodeViews)
+            {
+                if (startPortView.IsComptibleWith(relayNodeView.InputPortView.RefPortView))
+                {
+                    compatiblePorts.Add(relayNodeView.InputPortView);
+                }
+                if (startPortView.IsComptibleWith(relayNodeView.OutputPortView.RefPortView))
+                {
+                    compatiblePorts.Add(relayNodeView.OutputPortView);
+                }
+            }
+
             return compatiblePorts;
         }
 
@@ -203,28 +217,31 @@ namespace HN.Graph.Editor
             graphViewElementsCreated(new HNGraphViewCreateElements(nodeView));
         }
 
-        public void AddConnection(HNGraphEdgeView edgeView)
+        public void AddEdge(HNGraphEdgeView edgeView)
         {
             if (edgeView.output == null && edgeView.input == null)
                 return;
 
-            Undo.RecordObject(GraphEditorData, "Add Connection");
+            Undo.RecordObject(GraphEditorData, "Add Edge");
 
-            HNGraphPortView outputPort = (HNGraphPortView)edgeView.output;
-            HNGraphPortView inputPort = (HNGraphPortView)edgeView.input;
+            HNGraphBasePortView outputBasePortView = edgeView.OutputPortView;
+            HNGraphPortView refOutputPortView = outputBasePortView.RefPortView;
+            
+            HNGraphBasePortView inputBasePortView = edgeView.InputPortView;
+            HNGraphPortView refInputPortView = inputBasePortView.RefPortView;
 
-            HNGraphConnection connectionData = new HNGraphConnection(GraphEditorData, outputPort.PortData, inputPort.PortData);
-            connectionData.Initialize();
-            GraphEditorData.AddConnection(connectionData);
+            HNGraphEdge edgeData = new HNGraphEdge(GraphEditorData, outputBasePortView.PortData, inputBasePortView.PortData);
+            edgeData.Initialize();
+            GraphEditorData.AddEdge(edgeData);
+            edgeView.Initialize(edgeData, outputBasePortView, inputBasePortView);
 
-            AddConnectionView(connectionData, edgeView, out HNGraphConnectionView connectionView);
-            edgeView.ConnectionView = connectionView;
+            UpdateOutputRefPortView(edgeView.OutputPortView, refOutputPortView);
+            UpdateInputRefPortView(edgeView.InputPortView, refInputPortView);
+            
+            AddEdgeView(edgeData, ref edgeView);
 
-            OnConnectionAdded(connectionView);
-
-            AddElement(edgeView);
-
-            graphViewElementsCreated(new HNGraphViewCreateElements(connectionView, edgeView));
+            OnEdgeAdded(edgeView);
+            graphViewElementsCreated(new HNGraphViewCreateElements(edgeView));
         }
 
         public void AddGroup(HNGraphGroup group)
@@ -251,40 +268,52 @@ namespace HN.Graph.Editor
         {
             Undo.RecordObject(GraphEditorData, "Add Relay Node");
 
-            HNGraphConnectionView connectionView = edgeView.ConnectionView;
-            HNGraphConnection connectionData = connectionView.ConnectionData;
-            HNGraphRelayNode relayNodeData = new HNGraphRelayNode(GraphEditorData, connectionData);
+            HNGraphEdge edgeData = edgeView.EdgeData;
+            HNGraphRelayNode relayNodeData = new HNGraphRelayNode(GraphEditorData, edgeData);
             relayNodeData.Initialize(mousePos);
+            Debug.Log("mouse pos:" + mousePos);
             GraphEditorData.AddRelayNode(relayNodeData);
 
             AddRelayNodeView(relayNodeData, out HNGraphRelayNodeView relayNodeView);
-            
-            connectionView.CreateRelayNodeOnEdge(edgeView, relayNodeView);
+            relayNodeView.CreateRelayNodeOnEdge(edgeView, relayNodeView);
 
             graphViewElementsCreated(new HNGraphViewCreateElements(relayNodeView));
         }
 
         public void DeleteRelayNode(HNGraphRelayNodeView relayNodeView)
         {
-            HNGraphPortView relayNodeInputPortView = relayNodeView.InputPortView;
-            HNGraphEdgeView inputEdgeView = relayNodeInputPortView.EdgeViews[0];
-            HNGraphPortView outputPortView = inputEdgeView.GetAnotherPort(relayNodeInputPortView);
-            RemoveElement(inputEdgeView);
-            HNGraphPortView relayNodeOutputPortView = relayNodeView.OutputPortView;
-            HNGraphEdgeView outputEdgeView = relayNodeOutputPortView.EdgeViews[0];
-            HNGraphPortView inputPortView = outputEdgeView.GetAnotherPort(relayNodeOutputPortView);
-            RemoveElement(outputEdgeView);
-            HNGraphConnectionView connectionView = inputEdgeView.ConnectionView;
-            int index = connectionView.GetEdgeViewIndex(inputEdgeView);
-            connectionView.RemoveEdgeView(inputEdgeView);
-            connectionView.RemoveEdgeView(outputEdgeView);
-            connectionView.RemoveRelayNodeView(relayNodeView);
+            HNGraphBasePortView outputPortView = null, inputPortView = null;
+
+            HNGraphBasePortView relayNodeInputPortView = relayNodeView.InputPortView;
+            if(relayNodeInputPortView.EdgeViews.Count > 0)
+            {
+                HNGraphEdgeView inputEdgeView = relayNodeInputPortView.EdgeViews[0];
+                outputPortView = inputEdgeView.GetAnotherPort(relayNodeInputPortView);
+                RemoveElement(inputEdgeView);
+                GraphEditorData.RemoveEdge(inputEdgeView.EdgeData);
+            }
+
+            HNGraphBasePortView relayNodeOutputPortView = relayNodeView.OutputPortView;
+            if(relayNodeOutputPortView.EdgeViews.Count > 0)
+            {
+                HNGraphEdgeView outputEdgeView = relayNodeOutputPortView.EdgeViews[0];
+                inputPortView = outputEdgeView.GetAnotherPort(relayNodeOutputPortView);
+                RemoveElement(outputEdgeView);
+                GraphEditorData.RemoveEdge(outputEdgeView.EdgeData);
+            }
+
             RemoveElement(relayNodeView);
             GraphEditorData.RemoveRelayNode(relayNodeView.RelayNodeData);
-            HNGraphEdgeView newEdgeView = new HNGraphEdgeView(this);
-            newEdgeView.Initialize(connectionView, outputPortView, inputPortView);
-            connectionView.AddEdgeView(index, newEdgeView);
-            AddElement(newEdgeView);
+
+            if(outputPortView != null && inputPortView != null)
+            {
+                HNGraphEdge newEdge = new HNGraphEdge(GraphEditorData, outputPortView.PortData, inputPortView.PortData);
+                newEdge.Initialize();
+                HNGraphEdgeView newEdgeView = new HNGraphEdgeView(this);
+                newEdgeView.Initialize(newEdge, outputPortView, inputPortView);
+                AddElement(newEdgeView);
+            }
+
             EditorUtility.SetDirty(GraphEditorWindow);
         }
 
@@ -317,6 +346,46 @@ namespace HN.Graph.Editor
         }
 
 
+        private void UpdateOutputRefPortView(HNGraphBasePortView outputBasePortView, HNGraphPortView newOutputPortView)
+        {
+            if(outputBasePortView.OwnerNodeView is HNGraphNodeView)
+            {
+                outputBasePortView.UpdateRefPortView(newOutputPortView);
+            }
+            else if(outputBasePortView.OwnerNodeView is HNGraphRelayNodeView)
+            {
+                HNGraphRelayNodeView relayNodeView = outputBasePortView.OwnerNodeView as HNGraphRelayNodeView;
+                if(relayNodeView.InputPortView.EdgeViews.Count == 0)
+                    return;
+                
+                foreach(var edgeView in relayNodeView.InputPortView.EdgeViews)
+                {
+                    HNGraphBasePortView anotherPortView = edgeView.OutputPortView;
+                    UpdateOutputRefPortView(anotherPortView, newOutputPortView);
+                }
+            }
+        }
+
+        private void UpdateInputRefPortView(HNGraphBasePortView inputBasePortView, HNGraphPortView newInputPortView)
+        {
+            if(inputBasePortView.OwnerNodeView is HNGraphNodeView)
+            {
+                inputBasePortView.UpdateRefPortView(newInputPortView);
+            }
+            else if(inputBasePortView.OwnerNodeView is HNGraphRelayNodeView)
+            {
+                HNGraphRelayNodeView relayNodeView = inputBasePortView.OwnerNodeView as HNGraphRelayNodeView;
+                if(relayNodeView.OutputPortView.EdgeViews.Count == 0)
+                    return;
+                
+                foreach(var edgeView in relayNodeView.OutputPortView.EdgeViews)
+                {
+                    HNGraphBasePortView anotherPortView = edgeView.InputPortView;
+                    UpdateInputRefPortView(anotherPortView, newInputPortView);
+                }
+            }
+        }
+
         private void DrawNodes()
         {
             foreach(var nodeData in GraphEditorData.Nodes.Values)
@@ -334,11 +403,12 @@ namespace HN.Graph.Editor
             }
         }
 
-        private void DrawConnections()
+        private void DrawEdges()
         {
-            foreach(var connectionData in GraphEditorData.Connections.Values)
+            foreach(var edgeData in GraphEditorData.Edges.Values)
             {
-                AddConnectionViewFromData(connectionData);
+                HNGraphEdgeView edgeView = null;
+                AddEdgeView(edgeData, ref edgeView);
             }
 
         }
@@ -360,71 +430,71 @@ namespace HN.Graph.Editor
 
         }
 
-        private void AddConnectionViewFromData(HNGraphConnection connectionData)
-        {
-            HNGraphPortView output = null;
-            HNGraphPortView input = null;
-            foreach (var nodeView in nodeViews)
-            {
-                foreach (var outputPortView in nodeView.OutputPortViews)
-                {
-                    if (outputPortView.PortData.Guid == connectionData.OutputPort.Guid)
-                    {
-                        output = outputPortView;
-                        break;
-                    }
-                }
-                if(output != null)
-                    break;
-            }
-            foreach (var nodeView in nodeViews)
-            {
-                foreach (var inputPortView in nodeView.InputPortViews)
-                {
-                    if (inputPortView.PortData.Guid == connectionData.InputPort.Guid)
-                    {
-                        input = inputPortView;
-                        break;
-                    }
-                }
-                if(input != null)
-                    break;
-            }
+        // private void AddConnectionViewFromData(HNGraphEdge connectionData)
+        // {
+        //     HNGraphBasePortView output = null;
+        //     HNGraphBasePortView input = null;
+        //     foreach (var nodeView in nodeViews)
+        //     {
+        //         foreach (var outputPortView in nodeView.OutputPortViews)
+        //         {
+        //             if (outputPortView.PortData.Guid == connectionData.OutputPort.Guid)
+        //             {
+        //                 output = outputPortView;
+        //                 break;
+        //             }
+        //         }
+        //         if(output != null)
+        //             break;
+        //     }
+        //     foreach (var nodeView in nodeViews)
+        //     {
+        //         foreach (var inputPortView in nodeView.InputPortViews)
+        //         {
+        //             if (inputPortView.PortData.Guid == connectionData.InputPort.Guid)
+        //             {
+        //                 input = inputPortView;
+        //                 break;
+        //             }
+        //         }
+        //         if(input != null)
+        //             break;
+        //     }
                         
-            if (output != null && input != null)
-            {
-                HNGraphConnectionView connectionView = new HNGraphConnectionView(this, connectionData);
-                connectionView.Initialize(output, input);
-                connectionViews.Add(connectionView);
-                if(connectionData.RelayNodeGuids.Count == 0)
-                {
-                    HNGraphEdgeView edgeView = new HNGraphEdgeView(this);
-                    edgeView.Initialize(connectionView, output, input);
-                    connectionView.AddEdgeView(0, edgeView);
-                    AddElement(edgeView);
-                }
-                else
-                {
-                    HNGraphPortView lastRelayNodeOutputPortView = output;
-                    var relayNodeGuidList = connectionData.RelayNodeGuids;
-                    for(int i = 0; i < relayNodeGuidList.Count; i++)
-                    {
-                        HNGraphRelayNodeView currentRelayNodeView = GetRelayNodeViewFromGuid(relayNodeGuidList[i]);
-                        HNGraphEdgeView edgeView = new HNGraphEdgeView(this);
-                        edgeView.Initialize(connectionView, lastRelayNodeOutputPortView, currentRelayNodeView.InputPortView);
-                        connectionView.AddEdgeView(i, edgeView);
-                        AddElement(edgeView);
-                        connectionView.AddRelayNodeView(i, currentRelayNodeView);
-                        lastRelayNodeOutputPortView = currentRelayNodeView.OutputPortView;
-                    }
-                    HNGraphEdgeView lastEdgeView = new HNGraphEdgeView(this);
-                    lastEdgeView.Initialize(connectionView, lastRelayNodeOutputPortView, input);
-                    connectionView.AddEdgeView(relayNodeGuidList.Count, lastEdgeView);
-                    AddElement(lastEdgeView);
-                }
-            }
+        //     if (output != null && input != null)
+        //     {
+        //         HNGraphEdgeView connectionView = new HNGraphEdgeView(this, connectionData);
+        //         connectionView.Initialize(output, input);
+        //         edgeViews.Add(connectionView);
+        //         if(connectionData.RelayNodeGuids.Count == 0)
+        //         {
+        //             HNGraphEdgeView edgeView = new HNGraphEdgeView(this);
+        //             edgeView.Initialize(connectionView, output, input);
+        //             connectionView.AddEdgeView(0, edgeView);
+        //             AddElement(edgeView);
+        //         }
+        //         else
+        //         {
+        //             HNGraphBasePortView lastRelayNodeOutputPortView = output;
+        //             var relayNodeGuidList = connectionData.RelayNodeGuids;
+        //             for(int i = 0; i < relayNodeGuidList.Count; i++)
+        //             {
+        //                 HNGraphRelayNodeView currentRelayNodeView = GetRelayNodeViewFromGuid(relayNodeGuidList[i]);
+        //                 HNGraphEdgeView edgeView = new HNGraphEdgeView(this);
+        //                 edgeView.Initialize(connectionView, lastRelayNodeOutputPortView, currentRelayNodeView.InputPortView);
+        //                 connectionView.AddEdgeView(i, edgeView);
+        //                 AddElement(edgeView);
+        //                 connectionView.AddRelayNodeView(i, currentRelayNodeView);
+        //                 lastRelayNodeOutputPortView = currentRelayNodeView.OutputPortView;
+        //             }
+        //             HNGraphEdgeView lastEdgeView = new HNGraphEdgeView(this);
+        //             lastEdgeView.Initialize(connectionView, lastRelayNodeOutputPortView, input);
+        //             connectionView.AddEdgeView(relayNodeGuidList.Count, lastEdgeView);
+        //             AddElement(lastEdgeView);
+        //         }
+        //     }
 
-        }
+        // }
 
         private void AddNodeView(HNGraphNode nodeData, out HNGraphNodeView nodeView)
         {
@@ -434,12 +504,13 @@ namespace HN.Graph.Editor
             AddElement(nodeView);
         }
 
-        private void AddConnectionView(HNGraphConnection connectionData, HNGraphEdgeView edgeView, out HNGraphConnectionView connectionView)
+        private void AddEdgeView(HNGraphEdge edgeData, ref HNGraphEdgeView edgeView)
         {
-            connectionView = new HNGraphConnectionView(this, connectionData);
-            connectionView.Initialize(edgeView.OutputPortView, edgeView.InputPortView);
-            connectionView.AddEdgeView(0, edgeView);
-            connectionViews.Add(connectionView);
+            if(edgeView == null)
+                edgeView = new HNGraphEdgeView(this);
+            edgeView.Initialize(edgeData, edgeView.OutputPortView, edgeView.InputPortView);
+            edgeViews.Add(edgeView);
+            AddElement(edgeView);
         }
 
         private void AddGroupView(HNGraphGroup groupData, out HNGraphGroupView groupView)
@@ -462,11 +533,12 @@ namespace HN.Graph.Editor
         {
             relayNodeView = new HNGraphRelayNodeView(this, relayNodeData, edgeConnectorListener);
             relayNodeView.Initialize();
+            Debug.Log("relay node view:" + relayNodeView);
             relayNodeViews.Add(relayNodeView);
             AddElement(relayNodeView);
         }
 
-        private void OnConnectionAdded(HNGraphConnectionView connectionView)
+        private void OnEdgeAdded(HNGraphEdgeView connectionView)
         {
             connectionView?.InputPortView?.OwnerNodeView?.BaseNodeData.OnConnectionAdded(connectionView.InputPortView.PortData.Guid);
             connectionView?.OutputPortView?.OwnerNodeView?.BaseNodeData.OnConnectionAdded(connectionView.OutputPortView.PortData.Guid);
@@ -500,7 +572,7 @@ namespace HN.Graph.Editor
                     Undo.RecordObject(GraphEditorData, "Move Edge");
                     for(int i = edgeViews.Count - 1; i >= 0; i--)
                     {
-                        RemoveConnection(edgeViews[i].ConnectionView);
+                        RemoveEdge(edgeViews[i]);
                     }
                 }
 
@@ -553,7 +625,7 @@ namespace HN.Graph.Editor
                     Undo.RecordObject(GraphEditorData, "Remove Edge");
                     for (int i = edgeViews.Count - 1; i >= 0; i--)
                     {
-                        RemoveConnection(edgeViews[i].ConnectionView);
+                        RemoveEdge(edgeViews[i]);
                     }
                 }
 
@@ -583,8 +655,7 @@ namespace HN.Graph.Editor
                     Undo.RecordObject(GraphEditorData, "Remove Relay Node");
                     for(int i = relayNodeViews.Count - 1; i >= 0; i--)
                     {
-                        if(relayNodeViews[i].InputPortView.ConnectionViews.Count > 0)
-                            RemoveConnection(relayNodeViews[i].InputPortView.ConnectionViews[0]);
+                        DeleteRelayNode(relayNodeViews[i]);
                     }
                 }
             }
@@ -596,11 +667,11 @@ namespace HN.Graph.Editor
         {
             foreach(var portView in nodeView.InputPortViews)
             {
-                var connectionGuids = portView.PortData.ConnectionGuids;
-                foreach(var connectionGuid in connectionGuids)
+                var edgeGuids = portView.PortData.EdgeGuids;
+                foreach(var edgeGuid in edgeGuids)
                 {
-                    HNGraphConnectionView connectionView = GetConnectionViewFromGuid(connectionGuid);
-                    RemoveConnection(connectionView);
+                    HNGraphEdgeView edgeView = GetEdgeViewFromGuid(edgeGuid);
+                    RemoveEdge(edgeView);
                 }
             }
             GraphEditorData.RemoveNode(nodeView.NodeData);
@@ -608,23 +679,16 @@ namespace HN.Graph.Editor
             nodeViews.Remove(nodeView);
         }
 
-        private void RemoveConnection(HNGraphConnectionView connectionView)
+        private void RemoveEdge(HNGraphEdgeView edgeView)
         {
-            if(connectionView == null)
-                return;
+            if(edgeView == null)
+                return;    
 
-            connectionView.RemoveAllEdgeViews();
-
-            for(int i = relayNodeViews.Count - 1; i >= 0; i--)
-            {
-                connectionView.RemoveRelayNodeView(relayNodeViews[i]);
-                GraphEditorData.RemoveRelayNode(relayNodeViews[i].RelayNodeData);
-                RemoveElement(relayNodeViews[i]);
-                relayNodeViews.Remove(relayNodeViews[i]);
-            }
-
-            GraphEditorData.RemoveConnection(connectionView.ConnectionData);
-            connectionViews.Remove(connectionView);
+            UpdateOutputRefPortView(edgeView.OutputPortView, null);
+            UpdateInputRefPortView(edgeView.InputPortView, null);
+            edgeView.DisconnectOutput();
+            edgeView.DisconnectInput();
+            edgeViews.Remove(edgeView);
         }
 
         private void RemoveGroup(HNGraphGroupView groupView)
@@ -702,15 +766,16 @@ namespace HN.Graph.Editor
                         continue;
                     }
 
-                    var edges = inputPort.ConnectionGuids.ToList();
+                    var edges = inputPort.EdgeGuids.ToList();
                     foreach(var edge in edges)
                     {
-                        HNGraphPort connectPort = GraphEditorData.GetConnection(edge)?.OutputPort;
-                        if(connectPort != null && connectPort.PortCapacity != HNGraphPort.Capacity.Single)
+                        HNGraphBasePort connectPort = GraphEditorData.GetEdge(edge)?.OutputPort;
+                        if(connectPort != null && connectPort.PortCapacity != HNGraphBasePort.Capacity.Single)
                         {
-                            HNGraphConnection connection = new HNGraphConnection(GraphEditorData, connectPort, inputPort);
-                            connection.Initialize();
-                            AddConnectionViewFromData(connection);
+                            HNGraphEdge edgeData = new HNGraphEdge(GraphEditorData, connectPort, inputPort);
+                            edgeData.Initialize();
+                            HNGraphEdgeView edgeView = null;
+                            AddEdgeView(edgeData, ref edgeView);
                         }
                     }
                 }
@@ -735,12 +800,12 @@ namespace HN.Graph.Editor
             return null;
         }
 
-        private HNGraphConnectionView GetConnectionViewFromGuid(string guid)
+        private HNGraphEdgeView GetEdgeViewFromGuid(string guid)
         {
-            foreach(var connectionView in connectionViews)
+            foreach(var edgeView in edgeViews)
             {
-                if(guid == connectionView.ConnectionData.Guid)
-                    return connectionView;
+                if(guid == edgeView.EdgeData.Guid)
+                    return edgeView;
             }
             return null;
         }

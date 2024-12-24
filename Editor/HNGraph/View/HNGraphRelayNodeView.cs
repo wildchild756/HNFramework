@@ -13,9 +13,14 @@ namespace HN.Graph.Editor
     {
         public HNGraphRelayNode RelayNodeData => BaseNodeData as HNGraphRelayNode;
 
-        public HNGraphPortView InputPortView => InputPortViews[0];
+        public HNGraphRelayNodePortView InputPortView => inputPortView;
 
-        public HNGraphPortView OutputPortView => OutputPortViews[0];
+        public HNGraphRelayNodePortView OutputPortView => outputPortView;
+
+
+        private HNGraphRelayNodePortView inputPortView;
+
+        private HNGraphRelayNodePortView outputPortView;
     
     
         public HNGraphRelayNodeView(HNGraphView graphView, HNGraphRelayNode relayNodeData, HNGraphEdgeConnectorListener edgeConnectorListener)
@@ -32,6 +37,25 @@ namespace HN.Graph.Editor
             base.Initialize();
         }
 
+        protected override void AddPortView(HNGraphBasePortView portView)
+        {
+            if(portView is not HNGraphRelayNodePortView)
+                return;
+
+            if(portView.direction == Direction.Input)
+            {
+                inputContainer.Add(portView);
+                inputPortView = portView as HNGraphRelayNodePortView;
+                baseNodeData.AddInputPort(portView.PortData);
+            }
+            else
+            {
+                outputContainer.Add(portView);
+                outputPortView = portView as HNGraphRelayNodePortView;
+                baseNodeData.AddOutputPort(portView.PortData);
+            }
+        }
+
         protected override void DrawNode()
         {
             
@@ -39,15 +63,15 @@ namespace HN.Graph.Editor
 
         protected override void DrawPorts()
         {
-            HNGraphPort inputPortData = new HNGraphPort(
+            HNGraphRelayNodePort inputPortData = new HNGraphRelayNodePort(
                 RelayNodeData, 
                 GraphView.GraphEditorData, 
                 "", 
                 "", 
-                HNGraphPort.Direction.Input, 
-                HNGraphPort.Capacity.Single
+                HNGraphRelayNodePort.Direction.Input, 
+                HNGraphRelayNodePort.Capacity.Single
             );
-            HNGraphPortView inputPortView = new HNGraphPortView(
+            HNGraphRelayNodePortView inputPortView = new HNGraphRelayNodePortView(
                 GraphView,
                 inputPortData,
                 this,
@@ -55,20 +79,20 @@ namespace HN.Graph.Editor
                 Orientation.Horizontal,
                 Direction.Input,
                 Port.Capacity.Single,
-                EdgeConnectorListener
+                EdgeConnectorListener,
+                InputPortView
             );
             AddPortView(inputPortView);
-            RelayNodeData.AddInputPort(inputPortData);
 
-            HNGraphPort outputPortData = new HNGraphPort(
+            HNGraphRelayNodePort outputPortData = new HNGraphRelayNodePort(
                 RelayNodeData, 
                 GraphView.GraphEditorData, 
                 "", 
                 "", 
-                HNGraphPort.Direction.Output, 
-                HNGraphPort.Capacity.Single
+                HNGraphRelayNodePort.Direction.Output, 
+                HNGraphRelayNodePort.Capacity.Single
             );
-            HNGraphPortView outputPortView = new HNGraphPortView(
+            HNGraphRelayNodePortView outputPortView = new HNGraphRelayNodePortView(
                 GraphView,
                 outputPortData,
                 this,
@@ -76,10 +100,34 @@ namespace HN.Graph.Editor
                 Orientation.Horizontal,
                 Direction.Output,
                 Port.Capacity.Single,
-                EdgeConnectorListener
+                EdgeConnectorListener,
+                OutputPortView
             );
             AddPortView(outputPortView);
-            RelayNodeData.AddOutputPort(outputPortData);
+        }
+
+        public void CreateRelayNodeOnEdge(HNGraphEdgeView originEdgeView, HNGraphRelayNodeView relayNodeView)
+        {
+            if(originEdgeView == null || relayNodeView == null)
+                return;
+            
+            HNGraphBasePortView outputPortView = originEdgeView.OutputPortView;
+            HNGraphEdge outputEdge = new HNGraphEdge(graphView.GraphEditorData, OutputPortView.PortData, relayNodeView.InputPortView.PortData);
+            outputEdge.Initialize();
+            HNGraphEdgeView outputEdgeView = new HNGraphEdgeView(graphView);
+            outputEdgeView.Initialize(outputEdge, outputPortView, relayNodeView.InputPortView);
+
+            HNGraphBasePortView inputPortView = originEdgeView.InputPortView;
+            HNGraphEdge inputEdge = new HNGraphEdge(graphView.GraphEditorData, relayNodeView.InputPortView.PortData, inputPortView.PortData);
+            inputEdge.Initialize();
+            HNGraphEdgeView inputEdgeView = new HNGraphEdgeView(graphView);
+            inputEdgeView.Initialize(inputEdge, relayNodeView.OutputPortView, inputPortView);
+
+            originEdgeView.DisconnectAll();
+            graphView.RemoveElement(originEdgeView);
+
+            graphView.AddElement(outputEdgeView);
+            graphView.AddElement(inputEdgeView);
         }
 
         private void OnMouseDown(MouseDownEvent e)

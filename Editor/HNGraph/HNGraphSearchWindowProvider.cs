@@ -42,9 +42,6 @@ namespace HN.Graph.Editor
             return tree;
         }
 
-
-        // public abstract List<SearchContextElement> FindElements();
-
         public List<SearchContextElement> FindElements()
         {
             elements = new List<SearchContextElement>();

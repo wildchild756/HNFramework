@@ -65,7 +65,7 @@ namespace HN.Graph.Editor
             m_EdgeCandidate = new HNGraphEdgeView(graphView);
             m_EdgeDragHelper.draggedPort = graphElement;
             m_EdgeDragHelper.edgeCandidate = m_EdgeCandidate;
-
+            
             if (m_EdgeDragHelper.HandleMouseDown(e))
             {
                 m_Active = true;
@@ -90,7 +90,7 @@ namespace HN.Graph.Editor
         protected virtual void OnMouseMove(MouseMoveEvent e)
         {
             if (!m_Active) return;
-
+            
             m_EdgeDragHelper.HandleMouseMove(e);
             m_EdgeCandidate.candidatePosition = e.mousePosition;
             m_EdgeCandidate.UpdateEdgeControl();

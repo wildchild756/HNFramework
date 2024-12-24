@@ -64,12 +64,8 @@ namespace HN.Graph.Editor
                 PortData.RefPort = (portView as HNGraphRelayNodePortView).RefPortView.PortData;
             }
             
-            var edgeConnector = new HNGraphEdgeConnector(graphView, connectListener);
-            this.AddManipulator(edgeConnector);
-        }
-
-        public HNGraphBasePortView(Orientation portOrientation, Direction portDirection, Capacity portCapacity, Type type) : base(portOrientation, portDirection, portCapacity, type)
-        {
+            m_EdgeConnector = new HNGraphEdgeConnector(graphView, connectListener);
+            this.AddManipulator(m_EdgeConnector);
         }
 
         public void UpdateRefPortView(HNGraphPortView newPortView)

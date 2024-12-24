@@ -13,25 +13,9 @@ namespace HN.Graph.Editor
         public HNGraphEdge EdgeData => edgeData;
 
         public HNGraphBasePortView OutputPortView => output as HNGraphBasePortView;
-        // {
-        //     get { return (HNGraphBasePortView)output; }
-        //     set { output = value; }
-        // }
 
         public HNGraphBasePortView InputPortView => input as HNGraphBasePortView;
-        // {
-        //     get { return (HNGraphBasePortView)input; }
-        //     set { input = value; }
-        // }
 
-        // public HNGraphConnectionView ConnectionView
-        // {
-        //     get { return connectionView; }
-        //     set { connectionView = value; }
-        // }
-
-
-        // private HNGraphConnectionView connectionView;
 
         private HNGraphEdge edgeData;
         private HNGraphView graphView;
@@ -46,7 +30,6 @@ namespace HN.Graph.Editor
 
         public void Initialize(HNGraphEdge edgeData, HNGraphBasePortView output, HNGraphBasePortView input)
         {
-            // ConnectionView = connectionView;
             this.edgeData = edgeData;
             this.output = output;
             ConnectOutput(OutputPortView);

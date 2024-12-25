@@ -6,7 +6,7 @@ using UnityEngine;
 namespace HN.Graph
 {
     [AttributeUsage(AttributeTargets.Property, AllowMultiple = false)]
-    public abstract class HNGraphPortInfoAttribute : Attribute
+    public abstract class HNGraphPortInfo : Attribute
     {
         public string PortName => name;
         private string name;
@@ -20,7 +20,7 @@ namespace HN.Graph
         private Capacity capacity;
 
 
-        public HNGraphPortInfoAttribute(string slotName, Orientation orientation, Direction direction, Capacity capacity)
+        public HNGraphPortInfo(string slotName, Orientation orientation, Direction direction, Capacity capacity)
         {
             this.name = slotName;
             this.orientation = orientation;
@@ -50,7 +50,7 @@ namespace HN.Graph
 
 
     [AttributeUsage(AttributeTargets.Class, AllowMultiple = false)]
-    public abstract class HNGraphNodeInfoAttribute : Attribute
+    public abstract class HNGraphNodeInfo : Attribute
     {
         public string NodeTitle => nodeTitle;
         private string nodeTitle;
@@ -58,7 +58,7 @@ namespace HN.Graph
         public string MenuItem => menuItem;
         private string menuItem;
 
-        public HNGraphNodeInfoAttribute(string nodeTitle, string menuItem = "")
+        public HNGraphNodeInfo(string nodeTitle, string menuItem = "")
         {
             this.nodeTitle = nodeTitle;
             this.menuItem = menuItem;

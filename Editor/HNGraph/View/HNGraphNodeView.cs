@@ -42,7 +42,7 @@ namespace HN.Graph.Editor
 
         protected override void DrawNode()
         {
-            HNGraphNodeInfoAttribute info = passType.GetCustomAttribute<HNGraphNodeInfoAttribute>();
+            HNGraphNodeInfo info = passType.GetCustomAttribute<HNGraphNodeInfo>();
             title = info.NodeTitle;
             name = passType.Name;
 
@@ -58,7 +58,7 @@ namespace HN.Graph.Editor
             PropertyInfo[] propertiesInfo = passType.GetProperties();
             foreach (var propertyInfo in propertiesInfo)
             {
-                HNGraphPortInfoAttribute slotInfo = propertyInfo.GetCustomAttribute<HNGraphPortInfoAttribute>();
+                HNGraphPortInfo slotInfo = propertyInfo.GetCustomAttribute<HNGraphPortInfo>();
                 if (slotInfo != null)
                 {
                     HNGraphBasePort port = null;
@@ -86,8 +86,8 @@ namespace HN.Graph.Editor
                             GraphView.GraphEditorData,
                             propertyInfo.PropertyType.FullName, 
                             slotInfo.PortName, 
-                            slotInfo.PortDirection == HNGraphPortInfoAttribute.Direction.Input ? HNGraphBasePort.Direction.Input : HNGraphBasePort.Direction.Output, 
-                            slotInfo.PortCapacity == HNGraphPortInfoAttribute.Capacity.Single ? HNGraphBasePort.Capacity.Single : HNGraphBasePort.Capacity.Multi
+                            slotInfo.PortDirection == HNGraphPortInfo.Direction.Input ? HNGraphBasePort.Direction.Input : HNGraphBasePort.Direction.Output, 
+                            slotInfo.PortCapacity == HNGraphPortInfo.Capacity.Single ? HNGraphBasePort.Capacity.Single : HNGraphBasePort.Capacity.Multi
                             );
                         
                         if(port.PortDirection == HNGraphBasePort.Direction.Input)
@@ -160,16 +160,16 @@ namespace HN.Graph.Editor
             }
         }
 
-        private void CreatePortView(HNGraphBasePort port, HNGraphPortInfoAttribute slotInfo)
+        private void CreatePortView(HNGraphBasePort port, HNGraphPortInfo slotInfo)
         {
             HNGraphPortView portView = new HNGraphPortView(
                 GraphView,
                 port,
                 this,
                 slotInfo.PortName, 
-                slotInfo.orientation == HNGraphPortInfoAttribute.Orientation.Horizontal ? Orientation.Horizontal : Orientation.Vertical,
-                slotInfo.PortDirection == HNGraphPortInfoAttribute.Direction.Input ? Direction.Input : Direction.Output, 
-                slotInfo.PortCapacity == HNGraphPortInfoAttribute.Capacity.Single ? Port.Capacity.Single : Port.Capacity.Multi,
+                slotInfo.orientation == HNGraphPortInfo.Orientation.Horizontal ? Orientation.Horizontal : Orientation.Vertical,
+                slotInfo.PortDirection == HNGraphPortInfo.Direction.Input ? Direction.Input : Direction.Output, 
+                slotInfo.PortCapacity == HNGraphPortInfo.Capacity.Single ? Port.Capacity.Single : Port.Capacity.Multi,
                 EdgeConnectorListener,
                 null
                 );

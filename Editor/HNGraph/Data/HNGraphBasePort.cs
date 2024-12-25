@@ -79,13 +79,13 @@ namespace HN.Graph.Editor
             edgeGuids = new List<string>();
         }
 
-        public bool IsMatchWithAttribute(Type type, HNGraphPortInfoAttribute portInfo)
+        public bool IsMatchWithAttribute(Type type, HNGraphPortInfo portInfo)
         {
             bool b = true;
             b &= this.portTypeName == type.FullName;
             b &= this.name == portInfo.PortName;
-            b &= this.PortDirection == (portInfo.PortDirection == HNGraphPortInfoAttribute.Direction.Input ? Direction.Input : Direction.Output);
-            b &= this.portCapacity == (portInfo.PortCapacity == HNGraphPortInfoAttribute.Capacity.Single ? Capacity.Single : Capacity.Multi);
+            b &= this.PortDirection == (portInfo.PortDirection == HNGraphPortInfo.Direction.Input ? Direction.Input : Direction.Output);
+            b &= this.portCapacity == (portInfo.PortCapacity == HNGraphPortInfo.Capacity.Single ? Capacity.Single : Capacity.Multi);
             return b;
         }
 

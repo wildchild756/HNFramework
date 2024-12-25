@@ -5,9 +5,9 @@ using UnityEngine;
 
 namespace HN.Graph.Example.Editor
 {
-    public class TestGraphPortInfoAttribute : HNGraphPortInfoAttribute
+    public class TestGraphPortInfo : HNGraphPortInfo
     {
-        public TestGraphPortInfoAttribute(string slotName, Orientation orientation, Direction direction, Capacity capacity)
+        public TestGraphPortInfo(string slotName, Orientation orientation, Direction direction, Capacity capacity)
              : base(slotName, orientation, direction, capacity)
         {
 

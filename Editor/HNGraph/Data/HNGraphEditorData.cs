@@ -9,7 +9,7 @@ using UnityEngine;
 namespace HN.Graph.Editor
 {
     [Serializable]
-    public abstract class HNGraphEditorData : ScriptableObject, ISerializable
+    public abstract partial class HNGraphEditorData : ScriptableObject, ISerializable
     {
         public HNGraphObject GraphObject
         {
@@ -52,7 +52,7 @@ namespace HN.Graph.Editor
             AssetDatabase.SaveAssets();
         }
         
-        public HNGraphEditorData()
+        public void OnEnable()
         {
             nodes = new SerializableNodes();
             edges = new SerializableEdges();

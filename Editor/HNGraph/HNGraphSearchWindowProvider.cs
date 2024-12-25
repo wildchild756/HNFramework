@@ -55,7 +55,7 @@ namespace HN.Graph.Editor
                         var attribute = type.GetCustomAttribute(graphNodeInfoAttributeType);
                         if (attribute != null)
                         {
-                            HNGraphNodeInfoAttribute attr = (HNGraphNodeInfoAttribute)Convert.ChangeType(attribute, graphNodeInfoAttributeType);
+                            HNGraphNodeInfo attr = (HNGraphNodeInfo)Convert.ChangeType(attribute, graphNodeInfoAttributeType);
                             var node = Activator.CreateInstance(type);
 
                             if (string.IsNullOrEmpty(attr.MenuItem))

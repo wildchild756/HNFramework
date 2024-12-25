@@ -15,7 +15,7 @@ namespace HN.Graph.Example.Editor
         public override void CreateSearchWindowProvider()
         {
             SearchWindowProvider = ScriptableObject.CreateInstance<HNGraphSearchWindowProvider>();
-            SearchWindowProvider.GraphNodeInfoAttributeType = typeof(TestGraphNodeInfoAttribute);
+            SearchWindowProvider.GraphNodeInfoAttributeType = typeof(TestGraphNodeInfo);
         }
 
         public override void AdditionalToolButton(Toolbar toolbar)

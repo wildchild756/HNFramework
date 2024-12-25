@@ -5,9 +5,9 @@ using UnityEngine;
 
 namespace HN.Graph.Example.Editor
 {
-    public class TestGraphNodeInfoAttribute : HNGraphNodeInfoAttribute
+    public class TestGraphNodeInfo : HNGraphNodeInfo
     {
-        public TestGraphNodeInfoAttribute(string nodeTitle, string menuItem = "") : base(nodeTitle, menuItem)
+        public TestGraphNodeInfo(string nodeTitle, string menuItem = "") : base(nodeTitle, menuItem)
         {
             
         }

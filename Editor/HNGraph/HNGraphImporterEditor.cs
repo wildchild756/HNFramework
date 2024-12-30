@@ -13,26 +13,25 @@ namespace HN.Graph.Editor
 {
     public abstract class HNGraphImporterEditor : ScriptedImporterEditor
     {
-        public T LoadGraphData<T>() where T : HNGraphObject
+        public T LoadGraphData<T, U>() where T : HNGraphData where U : HNGraphObject
         {
-            var importer = (HNGraphImporter<T>)target;
-            T graphData = AssetDatabase.LoadAssetAtPath<T>(importer.assetPath);
-            graphData.AssetPath = importer.assetPath;
+            var importer = (HNGraphImporter<T, U>)target;
+
+            T graphData = Activator.CreateInstance<T>();
+            graphData.Initialize(importer.assetPath);
+            graphData.Deserialize();
             return graphData;
         }
 
-        public static bool OpenGraph<T, U>(string path, string targetExtension, HNGraphObject graphData) 
+        public static bool OpenGraph<T, U>(string path, string targetExtension, HNGraphData graphData) 
             where T : HNGraphEditorWindow 
-            where U : HNGraphEditorData
+            where U : HNGraphData
         {
             if(graphData == null)
-            {
                 return false;
-            }
 
-            U graphEditorData = ScriptableObject.CreateInstance<U>();
-            Json.DeserializeFromString(graphEditorData, graphData.SerializedEditorData);
-            graphEditorData.Initialize(graphData);
+            var graphDataWrapper = ScriptableObject.CreateInstance<HNGraphDataWrapper>();
+            graphDataWrapper.Initialize(graphData);
             
             var extension = Path.GetExtension(path);
             if (string.IsNullOrEmpty(extension))
@@ -57,7 +56,7 @@ namespace HN.Graph.Editor
 
             T window = HNGraphEditorWindow.ShowWindow<T>();
             window.Focus();
-            return window.Initialize(guid, graphEditorData);
+            return window.Initialize(guid, graphData);
         }
 
         

@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
@@ -12,7 +13,7 @@ using Unity.VisualScripting;
 namespace HN.Graph.Example.Editor
 {
     [ScriptedImporter(1, TestGraph.TestGraphExtension)]
-    public class TestGraphImporter : HNGraphImporter<TestGraph>
+    public class TestGraphImporter : HNGraphImporter<TestGraphData, TestGraph>
     {
         public override void OnImportAsset(AssetImportContext ctx)
         {
@@ -40,8 +41,8 @@ namespace HN.Graph.Example.Editor
         private void OnOpenButtonClick()
         {
             TestGraphImporter importer = target as TestGraphImporter;
-            TestGraph graphData = LoadGraphData<TestGraph>();
-            OpenGraph<TestGraphEditorWindow, TestGraphEditorData>(importer.assetPath, TestGraph.TestGraphExtension, graphData);
+            TestGraphData graphData = LoadGraphData<TestGraphData, TestGraph>();
+            OpenGraph<TestGraphEditorWindow, TestGraphData>(importer.assetPath, TestGraph.TestGraphExtension, graphData);
         }
 
 
@@ -49,8 +50,10 @@ namespace HN.Graph.Example.Editor
         public static bool OnOpenAsset(int instanceID, int line)
         {
             string path = AssetDatabase.GetAssetPath(instanceID);
-            TestGraph graphData = AssetDatabase.LoadAssetAtPath<TestGraph>(path);
-            return OpenGraph<TestGraphEditorWindow, TestGraphEditorData>(path, TestGraph.TestGraphExtension, graphData);
+            TestGraphData graphData = Activator.CreateInstance<TestGraphData>();
+            graphData.Initialize(path);
+            graphData.Deserialize();
+            return OpenGraph<TestGraphEditorWindow, TestGraphData>(path, TestGraph.TestGraphExtension, graphData);
         }
 
     }

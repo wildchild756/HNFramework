@@ -16,47 +16,34 @@ namespace HN.Graph.Editor
 
 
         public HNGraphEditorWindow GraphEditorWindow;
-
-        public HNGraphEditorData GraphEditorData;
-
+        public HNGraphData GraphEditorData;
+        public HNGraphSearchWindowProvider SearchWindowProvider;
 
         public IReadOnlyList<HNGraphNodeView> NodeViews => nodeViews;
-
         public IReadOnlyList<HNGraphEdgeView> EdgeViews => edgeViews;
-
         public IReadOnlyList<HNGraphGroupView> GroupViews => groupViews;
-
         public IReadOnlyList<HNGraphStickyNoteView> StickyNoteViews => stickyNoteViews;
-
         public IReadOnlyList<HNGraphRelayNodeView> RelayNodeViews => relayNodeViews;
-
         public IReadOnlyList<HNGraphFloatingPanelView> FloatingPanelViews => floatingPanelViews;
 
-
         public SelectionChanged OnSelectionChanged;
-
         public GraphViewElementsCreated graphViewElementsCreated;
 
 
         private List<HNGraphNodeView> nodeViews;
-
         private List<HNGraphEdgeView> edgeViews;
-
         private List<HNGraphGroupView> groupViews;
-
         private List<HNGraphStickyNoteView> stickyNoteViews;
-
         private List<HNGraphRelayNodeView> relayNodeViews;
-
         private List<HNGraphFloatingPanelView> floatingPanelViews;
-
         private HNGraphEdgeConnectorListener edgeConnectorListener;
 
 
-        public HNGraphView(HNGraphEditorWindow graphEditorWindow, HNGraphEditorData graphEditorData, HNGraphSearchWindowProvider searchWindowProvider)
+        public HNGraphView(HNGraphEditorWindow graphEditorWindow, HNGraphData graphEditorData, HNGraphSearchWindowProvider searchWindowProvider)
         {
             this.GraphEditorWindow = graphEditorWindow;
             this.GraphEditorData = graphEditorData;
+            this.SearchWindowProvider = searchWindowProvider;
 
             nodeViews = new List<HNGraphNodeView>();
             edgeViews = new List<HNGraphEdgeView>();
@@ -69,6 +56,15 @@ namespace HN.Graph.Editor
             canPasteSerializedData = CanPasteSerializedDataCallback;
             unserializeAndPaste = UnserializeAndPasteCallback;
 
+
+            edgeConnectorListener = new HNGraphEdgeConnectorListener();
+            graphViewChanged = OnGraphViewChanged;
+
+            styleSheets.Add(Resources.Load<StyleSheet>(graphViewStyle));
+        }
+
+        public void Initialize()
+        {
             AddManipulator(new ContentDragger());
             AddManipulator(new SelectionDragger());
             AddManipulator(new RectangleSelector());
@@ -79,25 +75,22 @@ namespace HN.Graph.Editor
 
             SetupZoom(0.05f, 8);
 
-            searchWindowProvider.graph = this;
+            SearchWindowProvider.graph = this;
             nodeCreationRequest += context =>
             {
                 Vector2 pos = context.screenMousePosition;
                 var searchWindowContext = new SearchWindowContext(pos, 0f, 0f);
-                SearchWindow.Open(searchWindowContext, searchWindowProvider);
-                EditorUtility.SetDirty(graphEditorWindow);
+                SearchWindow.Open(searchWindowContext, SearchWindowProvider);
+                EditorUtility.SetDirty(GraphEditorWindow);
             };
 
-            edgeConnectorListener = new HNGraphEdgeConnectorListener();
-            graphViewChanged = OnGraphViewChanged;
+            DrawAllElements();
+        }
 
-            DrawNodes();
-            DrawRelayNodes();
-            DrawEdges();
-            DrawGroups();
-            DrawStickyNotes();
-
-            styleSheets.Add(Resources.Load<StyleSheet>(graphViewStyle));
+        public void RedrawAllElements()
+        {
+            ClearAllElements();
+            DrawAllElements();
         }
 
         public override List<Port> GetCompatiblePorts(Port startPort, NodeAdapter nodeAdapter)
@@ -204,7 +197,7 @@ namespace HN.Graph.Editor
 
         public void AddNode(HNGraphNode nodeData)
         {
-            Undo.RecordObject(GraphEditorData, "Add Node");
+            GraphEditorData.Owner.RecordObject("Add Node");
             GraphEditorData.AddNode(nodeData);
 
             AddNodeView(nodeData, out HNGraphNodeView nodeView);
@@ -217,8 +210,7 @@ namespace HN.Graph.Editor
             if (edgeView.output == null && edgeView.input == null)
                 return;
 
-            Undo.RecordObject(GraphEditorData, "Add Edge");
-
+            GraphEditorData.Owner.RecordObject("Add Edge");
             HNGraphBasePortView outputBasePortView = edgeView.OutputPortView;
             HNGraphPortView refOutputPortView = outputBasePortView.RefPortView;
             
@@ -241,7 +233,7 @@ namespace HN.Graph.Editor
 
         public void AddGroup(HNGraphGroup group)
         {
-            Undo.RecordObject(GraphEditorData, "Add Group");
+            GraphEditorData.Owner.RecordObject("Add Group");
             GraphEditorData.AddGroup(group);
             
             AddGroupView(group, out HNGraphGroupView groupView);
@@ -251,7 +243,7 @@ namespace HN.Graph.Editor
 
         public void AddStickyNote(HNGraphStickyNote stickyNoteData)
         {
-            Undo.RecordObject(GraphEditorData, "Add Sticky Note");
+            GraphEditorData.Owner.RecordObject("Add Sticky Note");
             GraphEditorData.AddStickyNote(stickyNoteData);
 
             AddStickyNoteView(stickyNoteData, out HNGraphStickyNoteView stickyNoteView);
@@ -261,12 +253,10 @@ namespace HN.Graph.Editor
 
         public void AddRelayNode(HNGraphEdgeView edgeView, Vector2 mousePos)
         {
-            Undo.RecordObject(GraphEditorData, "Add Relay Node");
-
+            GraphEditorData.Owner.RecordObject("Add Relay Node");
             HNGraphEdge edgeData = edgeView.EdgeData;
             HNGraphRelayNode relayNodeData = new HNGraphRelayNode(GraphEditorData, edgeData);
             relayNodeData.Initialize(mousePos);
-            Debug.Log("mouse pos:" + mousePos);
             GraphEditorData.AddRelayNode(relayNodeData);
 
             AddRelayNodeView(relayNodeData, out HNGraphRelayNodeView relayNodeView);
@@ -340,6 +330,48 @@ namespace HN.Graph.Editor
             }
         }
 
+
+        private void DrawAllElements()
+        {
+            DrawNodes();
+            DrawRelayNodes();
+            DrawEdges();
+            DrawGroups();
+            DrawStickyNotes();
+        }
+
+        private void ClearAllElements()
+        {
+            foreach(var stickyNote in stickyNoteViews)
+            {
+                RemoveElement(stickyNote);
+            }
+            stickyNoteViews.Clear();
+
+            foreach(var group in groupViews)
+            {
+                RemoveElement(group);
+            }
+            groupViews.Clear();
+
+            foreach(var edge in edgeViews)
+            {
+                RemoveElement(edge);
+            }
+            edgeViews.Clear();
+
+            foreach(var relayNode in relayNodeViews)
+            {
+                RemoveElement(relayNode);
+            }
+            relayNodeViews.Clear();
+
+            foreach(var node in nodeViews)
+            {
+                RemoveElement(node);
+            }
+            nodeViews.Clear();
+        }
 
         private void UpdateOutputRefPortView(HNGraphBasePortView outputBasePortView, HNGraphPortView newOutputPortView)
         {
@@ -436,7 +468,32 @@ namespace HN.Graph.Editor
         private void AddEdgeView(HNGraphEdge edgeData, ref HNGraphEdgeView edgeView)
         {
             if(edgeView == null)
+            {
                 edgeView = new HNGraphEdgeView(this);
+                
+                HNGraphNodeView outputPortNodeView = GetNodeViewFromGuid(edgeData.OutputPort.OwnerNode.Guid);
+                string outputPortGuid = edgeData.OutputPort.Guid;
+                foreach(var outputPortView in outputPortNodeView.OutputPortViews)
+                {
+                    if(outputPortView.PortData.Guid == outputPortGuid)
+                    {
+                        edgeView.output = outputPortView;
+                        break;
+                    }
+                }
+
+                HNGraphNodeView inputPortNodeView = GetNodeViewFromGuid(edgeData.InputPort.OwnerNode.Guid);
+                string inputPortGuid = edgeData.InputPort.Guid;
+                foreach(var inputPortView in inputPortNodeView.InputPortViews)
+                {
+                    if(inputPortView.PortData.Guid == inputPortGuid)
+                    {
+                        edgeView.input = inputPortView;
+                        break;
+                    }
+                }
+            }
+
             edgeView.Initialize(edgeData, edgeView.OutputPortView, edgeView.InputPortView);
             edgeViews.Add(edgeView);
             AddElement(edgeView);
@@ -462,7 +519,6 @@ namespace HN.Graph.Editor
         {
             relayNodeView = new HNGraphRelayNodeView(this, relayNodeData, edgeConnectorListener);
             relayNodeView.Initialize();
-            Debug.Log("relay node view:" + relayNodeView);
             relayNodeViews.Add(relayNodeView);
             AddElement(relayNodeView);
         }
@@ -488,27 +544,17 @@ namespace HN.Graph.Editor
                 List<HNGraphNodeView> nodeViews = graphViewChange.movedElements.OfType<HNGraphNodeView>().ToList();
                 if(nodeViews.Count > 0)
                 {
-                    Undo.RecordObject(GraphEditorData, "Move Node");
+                    GraphEditorData.Owner.RecordObject("Move Node");
                     for(int i = 0; i < nodeViews.Count; i++)
                     {
                         nodeViews[i].SavePosition();
                     }
                 }
 
-                // List<HNGraphEdgeView> edgeViews = graphViewChange.movedElements.OfType<HNGraphEdgeView>().ToList();
-                // if(edgeViews.Count > 0)
-                // {
-                //     Undo.RecordObject(GraphEditorData, "Move Edge");
-                //     for(int i = edgeViews.Count - 1; i >= 0; i--)
-                //     {
-                //         RemoveEdge(edgeViews[i]);
-                //     }
-                // }
-
                 List<HNGraphGroupView> groupViews = graphViewChange.movedElements.OfType<HNGraphGroupView>().ToList();
                 if(groupViews.Count > 0)
                 {
-                    Undo.RecordObject(GraphEditorData, "Move Group");
+                    GraphEditorData.Owner.RecordObject("Move Group");
                     for(int i = 0; i < groupViews.Count; i++)
                     {
                         groupViews[i].SavePosition();
@@ -518,7 +564,7 @@ namespace HN.Graph.Editor
                 List<HNGraphStickyNoteView> stickyNoteViews = graphViewChange.movedElements.OfType<HNGraphStickyNoteView>().ToList();
                 if(stickyNoteViews.Count > 0)
                 {
-                    Undo.RecordObject(GraphEditorData, "Move Sticky Note");
+                    GraphEditorData.Owner.RecordObject("Move Sticky Note");
                     for(int i = 0; i < stickyNoteViews.Count; i++)
                     {
                         stickyNoteViews[i].SavePosition();
@@ -528,7 +574,7 @@ namespace HN.Graph.Editor
                 List<HNGraphRelayNodeView> relayNodeViews = graphViewChange.movedElements.OfType<HNGraphRelayNodeView>().ToList();
                 if(relayNodeViews.Count > 0)
                 {
-                    Undo.RecordObject(GraphEditorData, "Move Relay Node");
+                    GraphEditorData.Owner.RecordObject("Move Relay Node");
                     for(int i = 0; i < relayNodeViews.Count; i++)
                     {
                         relayNodeViews[i].SavePosition();
@@ -541,7 +587,7 @@ namespace HN.Graph.Editor
                 List<HNGraphNodeView> nodeViews = graphViewChange.elementsToRemove.OfType<HNGraphNodeView>().ToList();
                 if (nodeViews.Count > 0)
                 {
-                    Undo.RecordObject(GraphEditorData, "Remove Node");
+                    GraphEditorData.Owner.RecordObject("Remove Node");
                     for (int i = nodeViews.Count - 1; i >= 0; i--)
                     {
                         RemoveNode(nodeViews[i]);
@@ -551,7 +597,7 @@ namespace HN.Graph.Editor
                 List<HNGraphEdgeView> edgeViews = graphViewChange.elementsToRemove.OfType<HNGraphEdgeView>().ToList();
                 if (edgeViews.Count > 0)
                 {
-                    Undo.RecordObject(GraphEditorData, "Remove Edge");
+                    GraphEditorData.Owner.RecordObject("Remove Edge");
                     for (int i = edgeViews.Count - 1; i >= 0; i--)
                     {
                         RemoveEdge(edgeViews[i]);
@@ -561,7 +607,7 @@ namespace HN.Graph.Editor
                 List<HNGraphGroupView> groupViews = graphViewChange.elementsToRemove.OfType<HNGraphGroupView>().ToList();
                 if(groupViews.Count > 0)
                 {
-                    Undo.RecordObject(GraphEditorData, "Remove Group");
+                    GraphEditorData.Owner.RecordObject("Remove Group");
                     for(int i = groupViews.Count - 1; i >= 0; i--)
                     {
                         RemoveGroup(groupViews[i]);
@@ -571,7 +617,7 @@ namespace HN.Graph.Editor
                 List<HNGraphStickyNoteView> stickyNoteViews = graphViewChange.elementsToRemove.OfType<HNGraphStickyNoteView>().ToList();
                 if(stickyNoteViews.Count > 0)
                 {
-                    Undo.RecordObject(GraphEditorData, "Remove Sticky Note");
+                    GraphEditorData.Owner.RecordObject("Remove Sticky Note");
                     for(int i = stickyNoteViews.Count - 1; i >= 0; i--)
                     {
                         RemoveStickyNote(stickyNoteViews[i]);
@@ -581,7 +627,7 @@ namespace HN.Graph.Editor
                 List<HNGraphRelayNodeView> relayNodeViews = graphViewChange.elementsToRemove.OfType<HNGraphRelayNodeView>().ToList();
                 if(relayNodeViews.Count > 0)
                 {
-                    Undo.RecordObject(GraphEditorData, "Remove Relay Node");
+                    GraphEditorData.Owner.RecordObject("Remove Relay Node");
                     for(int i = relayNodeViews.Count - 1; i >= 0; i--)
                     {
                         DeleteRelayNode(relayNodeViews[i]);
@@ -677,7 +723,7 @@ namespace HN.Graph.Editor
             HNGraphCopyPasteData data = new HNGraphCopyPasteData();
             Json.DeserializeFromString(data, serializedData);
             
-            Undo.RecordObject(GraphEditorData, operationName);
+            GraphEditorData.Owner.RecordObject("Paste");
 
             foreach(var nodeData in data.serializedNodes)
             {
@@ -703,6 +749,7 @@ namespace HN.Graph.Editor
                         {
                             HNGraphEdge edgeData = new HNGraphEdge(GraphEditorData, connectPort, inputPort);
                             edgeData.Initialize();
+                            GraphEditorData.AddEdge(edgeData);
                             HNGraphEdgeView edgeView = null;
                             AddEdgeView(edgeData, ref edgeView);
                         }

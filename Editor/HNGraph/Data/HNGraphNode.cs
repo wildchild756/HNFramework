@@ -1,14 +1,19 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Reflection;
 using HN.Serialize;
 using UnityEngine;
 
 namespace HN.Graph.Editor
 {
     [Serializable]
-    public class HNGraphNode : HNGraphBaseNode
+    public class HNGraphNode : HNGraphBaseNode, ISerializationCallbackReceiver
     {
+        public JsonData NodeData => nodeData;
+
+        public string NodeDataTypeName => nodeDataTypeName;
+
         public Type NodeDataType => nodeDataType;
 
         public IReadOnlyDictionary<string, HNGraphPort> InputPorts => inputPorts;
@@ -23,19 +28,38 @@ namespace HN.Graph.Editor
         protected SerializablePorts outputPorts;
 
         [SerializeField]
+        private JsonData nodeData;
+
+        [SerializeField]
+        private string nodeDataTypeName;
+
         private Type nodeDataType;
 
         [SerializeReference]
-        private HNGraphEditorData editorData;
+        private HNGraphData editorData;
 
 
-        public HNGraphNode(HNGraphEditorData editorData, Type nodeDataType)
+        public HNGraphNode(HNGraphData editorData, string nodeDataTypeName)
         {
             this.editorData = editorData;
-            this.nodeDataType = nodeDataType;
+            this.nodeDataTypeName = nodeDataTypeName;
 
             inputPorts = new SerializablePorts();
             outputPorts = new SerializablePorts();
+            
+            Assembly assembly = Assembly.Load(editorData.GraphRuntimeAssemblyName);
+            if(assembly != null)
+            {
+                nodeDataType = assembly.GetType($"{editorData.GraphNodeDataNamespace}.{nodeDataTypeName}");
+                if(nodeDataType == null)
+                    return;
+
+                JsonObject jsonObject = Activator.CreateInstance(nodeDataType) as JsonObject;
+                if(jsonObject == null)
+                    return;
+                
+                nodeData = new JsonData(jsonObject);
+            }
         }
 
         public override void Initialize(Vector2 position)
@@ -104,6 +128,20 @@ namespace HN.Graph.Editor
             foreach(var port in outputPorts.Values)
             {
                 port.Dispose();
+            }
+        }
+
+        public void OnBeforeSerialize()
+        {
+            
+        }
+
+        public void OnAfterDeserialize()
+        {
+            Assembly assembly = Assembly.Load(editorData.GraphRuntimeAssemblyName);
+            if(assembly != null)
+            {
+                nodeDataType = assembly.GetType($"{editorData.GraphNodeDataNamespace}.{nodeDataTypeName}");
             }
         }
     }

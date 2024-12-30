@@ -1,7 +1,10 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Reflection;
+using HN.Serialize;
 using UnityEngine;
+using UnityEngine.UIElements;
 
 namespace HN.Graph
 {
@@ -63,5 +66,12 @@ namespace HN.Graph
             this.nodeTitle = nodeTitle;
             this.menuItem = menuItem;
         }
+    }
+
+
+    [AttributeUsage(AttributeTargets.Property, AllowMultiple = false)]
+    public abstract class HNGraphInspectableInfo : Attribute
+    {
+        public abstract VisualElement Inspect(JsonObject jsonObject, PropertyInfo propertyInfo);
     }
 }

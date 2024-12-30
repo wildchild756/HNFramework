@@ -128,8 +128,8 @@ namespace HN.Graph.Editor
             var graphMousePosition = graph.contentViewContainer.WorldToLocal(windowMousePosition);
 
             SearchContextElement element = (SearchContextElement)searchTreeEntry.userData;
-            Type nodeDataType = element.target.GetType();
-            HNGraphNode node = new HNGraphNode(graph.GraphEditorData, nodeDataType);
+            string nodeDataTypeName = element.target.GetType().Name;
+            HNGraphNode node = new HNGraphNode(graph.GraphEditorData, nodeDataTypeName);
             node.Initialize(graphMousePosition);
             graph.AddNode(node);
 

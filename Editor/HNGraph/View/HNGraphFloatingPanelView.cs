@@ -26,7 +26,6 @@ namespace HN.Graph.Editor
 
         protected VisualElement main;
         protected VisualElement root;
-        protected ScrollView scrollView;
 
 
         private event Action OnResized;
@@ -46,9 +45,6 @@ namespace HN.Graph.Editor
             main = tpl.CloneTree();
             main.AddToClassList("mainContainer");
             root = main.Q("Root");
-            scrollView = main.Q<ScrollView>("ScrollView");
-            Label label = new Label("test label");
-            scrollView.Add(label);
 
             ClearClassList();
             AddToClassList("floatingPanel");

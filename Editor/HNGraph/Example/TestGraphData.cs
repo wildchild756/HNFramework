@@ -8,8 +8,13 @@ using UnityEditor.ProjectWindowCallback;
 
 namespace HN.Graph.Example.Editor
 {
-    public class TestGraphEditorData : HNGraphEditorData
+    public class TestGraphData : HNGraphData
     {
+        public override void UpdateGraphObject(ref HNGraphObject graphObject)
+        {
+            throw new System.NotImplementedException();
+        }
+
         public override void SaveAsset()
         {
             base.SaveAsset();
@@ -22,8 +27,9 @@ namespace HN.Graph.Example.Editor
     {
         public override void Action(int instanceId, string pathName, string resourceFile)
         {
-            CreateGraphData();
-            Serialize(pathName);
+            CreateGraphData(pathName);
+            Serialize();
+            LoadAsset(pathName);
         }
 
 

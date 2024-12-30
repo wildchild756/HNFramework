@@ -5,26 +5,30 @@ using HN.Serialize;
 using UnityEngine;
 using UnityEditor;
 using UnityEditor.ProjectWindowCallback;
+using System;
 
 namespace HN.Graph.Editor
 {
-    public abstract class HNGraphNewAction<T> : EndNameEditAction where T : HNGraphObject
+    public abstract class HNGraphNewAction<T> : EndNameEditAction where T : new() 
     {
-        public T GraphData => graphData;
-
-        
-        private T graphData;
+        protected HNGraphData graphData;
 
 
-        public void CreateGraphData()
+        public void CreateGraphData(string pathName)
         {
-            graphData = ScriptableObject.CreateInstance<T>();
+            graphData = Activator.CreateInstance<T>() as HNGraphData;
+            graphData.Initialize(pathName);
         }
 
-        public void Serialize(string pathName)
+        public void Serialize()
         {
-            Json.Serialize(graphData, pathName);
+            graphData.Serialize();
             AssetDatabase.Refresh();
+        }
+
+        public void LoadAsset(string pathName)
+        {
+            graphData.GraphObject = AssetDatabase.LoadAssetAtPath<HNGraphObject>(pathName);
         }
     }
 }

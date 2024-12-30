@@ -1,35 +1,60 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.IO;
 using HN.Serialize;
 using UnityEngine;
 using UnityEditor;
 using UnityEditor.AssetImporters;
+using Unity.VisualScripting;
+using System.Text;
 
 namespace HN.Graph.Editor
 {
-    public abstract class HNGraphImporter<T> : ScriptedImporter where T : HNGraphObject
+    public abstract class HNGraphImporter<T, U> : ScriptedImporter 
+    where T : HNGraphData
+    where U : HNGraphObject
     {
-        private T graphData;
+        protected string iconPath = "";
+        protected HNGraphData graphData;
+        protected HNGraphObject graphObject;
 
 
         public virtual void LoadGraphData(string path)
         {
-            graphData = AssetDatabase.LoadAssetAtPath<T>(path);
+            graphData = Activator.CreateInstance<T>() as HNGraphData;
+            graphData.Initialize(path);
             if(graphData == null)
-            {
-                graphData = ScriptableObject.CreateInstance<T>();
-            }
+                return;
+            
+            graphData.Deserialize();
         }
 
         public virtual void DeserializeGraphData(AssetImportContext ctx)
         {
-            Json.Deserialize(graphData, ctx.assetPath);
+            if(graphData == null)
+                return;
+            
+            graphData.GenerateGraphObject<U>();
+            graphObject = graphData.GraphObject;
         }
 
         public virtual void SetObject(AssetImportContext ctx)
         {
-            ctx.AddObjectToAsset("MainAsset", graphData);
-            ctx.SetMainObject(graphData);
+            if(graphObject == null)
+                return;
+            
+            if(string.IsNullOrEmpty(iconPath))
+                ctx.AddObjectToAsset("MainAsset", graphObject);
+            else
+            {
+                Texture2D texture = Resources.Load<Texture2D>(iconPath);
+                if(texture == null)
+                    ctx.AddObjectToAsset("MainAsset", graphObject);
+                else
+                    ctx.AddObjectToAsset("MainAsset", graphObject, texture);
+            }
+            ctx.SetMainObject(graphObject);
         }
     }
 }

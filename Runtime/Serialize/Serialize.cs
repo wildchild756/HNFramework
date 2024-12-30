@@ -10,23 +10,35 @@ namespace HN.Serialize
 {
     public class Json
     {
-        public static bool Serialize(System.Object obj, string path)
+        public static bool WriteToDisk(string path, string text)
         {
-            if(string.IsNullOrEmpty(path) || obj == null)
-            {
+            if(string.IsNullOrEmpty(path))
                 return false;
-            }
+
             FileStream file = File.Open(path, FileMode.OpenOrCreate, FileAccess.Write);
             file.Seek(0, SeekOrigin.Begin);
             file.SetLength(0);
             file.Close();
             StreamWriter sw;
-            string jsonString = JsonUtility.ToJson(obj);
             sw = File.CreateText(path);
-            sw.Write(jsonString);
+            sw.Write(text);
             sw.Close();
             sw.Dispose();
             return true;
+        }
+
+        public static string ReadFromDisk(string path)
+        {
+            return File.ReadAllText(path, Encoding.UTF8);
+        }
+
+        public static bool Serialize(System.Object obj, string path)
+        {
+            if(obj == null)
+                return false;
+
+            string jsonString = JsonUtility.ToJson(obj, true);
+            return WriteToDisk(path, jsonString);
         }
 
         public static string Serialize(System.Object obj)
@@ -35,7 +47,7 @@ namespace HN.Serialize
             {
                 return string.Empty;
             }
-            return JsonUtility.ToJson(obj);
+            return JsonUtility.ToJson(obj, true);
         }
 
         public static bool Deserialize<T>(T obj, string path)
@@ -44,7 +56,7 @@ namespace HN.Serialize
             {
                 return false;
             }
-            string jsonString = File.ReadAllText(path, Encoding.UTF8);
+            string jsonString = ReadFromDisk(path);
             JsonUtility.FromJsonOverwrite(jsonString, obj);
             return true;
         }

@@ -25,10 +25,10 @@ namespace HN.Graph.Editor
         
 
         [SerializeReference]
-        private HNGraphEditorData editorData;
+        private HNGraphData editorData;
 
 
-        public HNGraphRelayNode(HNGraphEditorData editorData, HNGraphEdge edgeData)
+        public HNGraphRelayNode(HNGraphData editorData, HNGraphEdge edgeData)
         {
             this.editorData = editorData;
 

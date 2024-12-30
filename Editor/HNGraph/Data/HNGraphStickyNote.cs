@@ -30,10 +30,10 @@ namespace HN.Graph.Editor
         private Rect layout;
         
         [SerializeReference]
-        private HNGraphEditorData editorData;
+        private HNGraphData editorData;
 
 
-        public HNGraphStickyNote(HNGraphEditorData editorData, string title)
+        public HNGraphStickyNote(HNGraphData editorData, string title)
         {
             this.editorData = editorData;
             

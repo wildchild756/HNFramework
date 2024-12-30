@@ -28,10 +28,10 @@ namespace HN.Graph.Editor
         private List<string> innerNodeGuids;
         
         [SerializeReference]
-        private HNGraphEditorData editorData;
+        private HNGraphData editorData;
 
 
-        public HNGraphGroup(HNGraphEditorData editorData, string title)
+        public HNGraphGroup(HNGraphData editorData, string title)
         {
             this.editorData = editorData;
             

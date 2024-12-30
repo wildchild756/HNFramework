@@ -26,10 +26,10 @@ namespace HN.Graph.Editor
         private HNGraphBasePort inputPort;
         
         [SerializeReference]
-        private HNGraphEditorData editorData;
+        private HNGraphData editorData;
 
 
-        public HNGraphEdge(HNGraphEditorData editorData, HNGraphBasePort outputPort, HNGraphBasePort inputPort)
+        public HNGraphEdge(HNGraphData editorData, HNGraphBasePort outputPort, HNGraphBasePort inputPort)
         {
             this.editorData = editorData;
             this.outputPort = outputPort;

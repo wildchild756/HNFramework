@@ -1,7 +1,9 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Text;
 using HN.Serialize;
 using UnityEditor;
 using UnityEngine;
@@ -9,12 +11,18 @@ using UnityEngine;
 namespace HN.Graph.Editor
 {
     [Serializable]
-    public abstract partial class HNGraphEditorData : ScriptableObject, ISerializable
+    public abstract partial class HNGraphData : JsonObject
     {
         public HNGraphObject GraphObject
         {
             get { return graphObject; }
             set { graphObject = value; }
+        }
+
+        public HNGraphDataWrapper Owner
+        {
+            get { return owner; }
+            set { owner = value; }
         }
 
         public IReadOnlyDictionary<string, HNGraphNode> Nodes => nodes;
@@ -43,16 +51,11 @@ namespace HN.Graph.Editor
         private SerializableRelayNodes relayNodes;
 
 
-        public virtual void SaveAsset()
-        {
-            GraphObject.SerializedEditorData = Serialize();
-            GraphObject.Serialize();
-            
-            EditorUtility.SetDirty(GraphObject);
-            AssetDatabase.SaveAssets();
-        }
-        
-        public void OnEnable()
+        private string assetPath;
+        private HNGraphDataWrapper owner;
+
+
+        public HNGraphData()
         {
             nodes = new SerializableNodes();
             edges = new SerializableEdges();
@@ -61,15 +64,45 @@ namespace HN.Graph.Editor
             relayNodes = new SerializableRelayNodes();
         }
 
-        public virtual void Initialize(HNGraphObject graphData)
+        public virtual void SaveAsset()
         {
-            this.graphObject = graphData;
+            Serialize();
+            UpdateGraphObject(ref graphObject);
+            EditorUtility.SetDirty(GraphObject);
+            AssetDatabase.SaveAssets();
+        }
 
-            if(!string.IsNullOrEmpty(graphData.SerializedEditorData))
-            {
-                Deserialize(graphData.SerializedEditorData);
-            }
-            
+
+        public abstract void UpdateGraphObject(ref HNGraphObject graphObject);
+
+
+        public void GenerateGraphObject<T>() where T : HNGraphObject
+        {
+            if(graphObject == null)
+                graphObject = ScriptableObject.CreateInstance<T>();
+
+            UpdateGraphObject(ref graphObject);
+        }
+
+        public virtual void Initialize(string assetPath)
+        {
+            this.assetPath = assetPath;
+        }
+
+        public bool Serialize()
+        {
+            string jsonText = SerializeToJson();
+            return Json.WriteToDisk(assetPath, jsonText);
+        }
+
+        public void Deserialize()
+        {
+            if(string.IsNullOrEmpty(assetPath))
+                return;
+            if(!File.Exists(assetPath))
+                return;
+
+            DeserializeFromString(Json.ReadFromDisk(assetPath));
         }
 
         public HNGraphNode GetNode(string guid)
@@ -213,16 +246,6 @@ namespace HN.Graph.Editor
             relayNode.Dispose();
         }
 
-        public string Serialize()
-        {
-            return Json.Serialize(this);
-        }
-
-        public void Deserialize(string serializeData)
-        {
-            Json.DeserializeFromString(this, serializeData);
-        }
-
         public List<HNGraphNode> PackNodesFromOutput(HNGraphNode outputNode)
         {
             List<HNGraphNode> nodeList = new List<HNGraphNode>();
@@ -253,10 +276,10 @@ namespace HN.Graph.Editor
 
             foreach(var node in Nodes.Values)
             {
-                if (node.NodeDataType == null)
+                if (node.NodeDataTypeName == null)
                     continue;
                 
-                if(node.NodeDataType == typeof(T))
+                if(node.NodeDataTypeName == typeof(T).Name)
                 {
                     list.Add(node);
                 }

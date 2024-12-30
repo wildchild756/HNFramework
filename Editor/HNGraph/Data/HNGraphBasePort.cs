@@ -59,13 +59,13 @@ namespace HN.Graph.Editor
         protected List<string> edgeGuids;
         
         [SerializeReference]
-        protected HNGraphEditorData editorData;
+        protected HNGraphData editorData;
 
         [SerializeReference]
         protected HNGraphPort refPort;
 
 
-        public HNGraphBasePort(HNGraphBaseNode ownerNode, HNGraphEditorData editorData, string typeName, string name, Direction direction, Capacity capacity)
+        public HNGraphBasePort(HNGraphBaseNode ownerNode, HNGraphData editorData, string typeName, string name, Direction direction, Capacity capacity)
         {
             guid = HNGraphUtils.NewGuid();
             

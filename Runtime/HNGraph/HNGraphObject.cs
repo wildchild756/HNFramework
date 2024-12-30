@@ -11,14 +11,17 @@ namespace HN.Graph
             get { return assetPath; }
             set { assetPath = value; }
         }
-        [SerializeField]
-        private string assetPath;
 
         public string SerializedEditorData
         {
             get { return serializedEditorData; }
             set { serializedEditorData = value; }
         }
+        
+        
+        [SerializeField]
+        private string assetPath;
+
         [SerializeField, HideInInspector]
         private string serializedEditorData = "{}";
 

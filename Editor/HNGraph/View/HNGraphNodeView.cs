@@ -24,7 +24,7 @@ namespace HN.Graph.Editor
         protected List<HNGraphPortView> outputPortViews;
         
 
-        private Type passType;
+        private Type nodeDataType;
 
 
         public HNGraphNodeView(HNGraphView graphView, HNGraphNode nodeData, HNGraphEdgeConnectorListener edgeConnectorListener) 
@@ -36,15 +36,15 @@ namespace HN.Graph.Editor
 
         public override void Initialize()
         {
-            passType = NodeData.NodeDataType;
+            nodeDataType = NodeData.NodeDataType;
             base.Initialize();
         }
 
         protected override void DrawNode()
         {
-            HNGraphNodeInfo info = passType.GetCustomAttribute<HNGraphNodeInfo>();
+            HNGraphNodeInfo info = nodeDataType.GetCustomAttribute<HNGraphNodeInfo>();
             title = info.NodeTitle;
-            name = passType.Name;
+            name = nodeDataType.Name;
 
             // string[] depths = info.MenuItem.Split('/');
             // foreach (string depth in depths)
@@ -55,7 +55,7 @@ namespace HN.Graph.Editor
 
         protected override void DrawPorts()
         {
-            PropertyInfo[] propertiesInfo = passType.GetProperties();
+            PropertyInfo[] propertiesInfo = nodeDataType.GetProperties();
             foreach (var propertyInfo in propertiesInfo)
             {
                 HNGraphPortInfo slotInfo = propertyInfo.GetCustomAttribute<HNGraphPortInfo>();

@@ -7,6 +7,7 @@ using UnityEditor;
 using UnityEditor.Experimental.GraphView;
 using UnityEngine.UIElements;
 using UnityEditor.UIElements;
+using Unity.VisualScripting;
 
 namespace HN.Graph.Editor
 {
@@ -22,17 +23,17 @@ namespace HN.Graph.Editor
 
         public HNGraphView GraphView => graphView;
 
-        public HNGraphEditorData GraphEditorData => graphEditorData;
+        public HNGraphData GraphData => graphData;
 
 
         private string guid;
         private HNGraphSearchWindowProvider searchWindowProvider;
 
-        private HNGraphEditorData graphEditorData;
+        private HNGraphData graphData;
         private HNGraphView graphView;
         private IMGUIContainer toolbar;
-        private string graphEditorDataPath;
-        private string graphEditorDataName;
+        private string graphDataPath;
+        private string graphDataName;
         private string extension;
 
 
@@ -40,18 +41,18 @@ namespace HN.Graph.Editor
         public abstract void AdditionalToolButton(Toolbar toolbar);
 
 
-        public bool Initialize(string assetGuid, HNGraphEditorData graphEditorData)
+        public bool Initialize(string assetGuid, HNGraphData graphData)
         {
             guid = assetGuid;
-            graphEditorDataPath = AssetDatabase.GUIDToAssetPath(assetGuid);
-            graphEditorDataName = Path.GetFileNameWithoutExtension(graphEditorDataPath);
-            titleContent = new GUIContent($"{graphEditorDataName}({graphEditorData.GraphObject.GetType().Name})");
-            extension = Path.GetExtension(graphEditorDataPath).Split(".")[1];
-            if (graphEditorData == null)
+            graphDataPath = AssetDatabase.GUIDToAssetPath(assetGuid);
+            graphDataName = Path.GetFileNameWithoutExtension(graphDataPath);
+            titleContent = new GUIContent($"{graphDataName}({graphData.GraphObject.GetType().Name})");
+            extension = Path.GetExtension(graphDataPath).Split(".")[1];
+            if (graphData == null)
             {
                 return false;
             }
-            this.graphEditorData = graphEditorData;
+            this.graphData = graphData;
 
             CreateSearchWindowProvider();
 
@@ -60,7 +61,8 @@ namespace HN.Graph.Editor
                 return false;
             }
 
-            graphView = new HNGraphView(this, graphEditorData, searchWindowProvider);
+            graphView = new HNGraphView(this, graphData, searchWindowProvider);
+            graphView.Initialize();
             graphView.name = "GraphView";
             graphView.graphViewChanged += OnChange;
             graphView.graphViewElementsCreated += OnElementsCreate;
@@ -101,7 +103,7 @@ namespace HN.Graph.Editor
         {
             base.SaveChanges();
 
-            graphEditorData.SaveAsset();
+            graphData.SaveAsset();
         }
 
 
@@ -109,6 +111,11 @@ namespace HN.Graph.Editor
         {
             T window = CreateWindow<T>(typeof(T), typeof(SceneView));
             return window;
+        }
+
+        void OnDestroy()
+        {
+            Undo.ClearUndo(graphData.Owner);
         }
 
 
@@ -127,54 +134,54 @@ namespace HN.Graph.Editor
         private void SetWindowDirty()
         {
             this.hasUnsavedChanges = true;
-            EditorUtility.SetDirty(graphEditorData);
+            graphData.Dirty = true;
         }
 
         private void OnSaveAsset()
         {
-            graphEditorData.SaveAsset();
+            graphData.SaveAsset();
             hasUnsavedChanges = false;
         }
 
 
         private void OnSaveAs()
         {
-            if(string.IsNullOrEmpty(graphEditorDataPath) || string.IsNullOrEmpty(extension))
+            if(string.IsNullOrEmpty(graphDataPath) || string.IsNullOrEmpty(extension))
             {
                 return;
             }
 
-            string oldDirectory = Path.GetDirectoryName(graphEditorDataPath);
-            string newPath = EditorUtility.SaveFilePanelInProject("Save Graph As...", graphEditorDataName, extension, "", oldDirectory);
+            string oldDirectory = Path.GetDirectoryName(graphDataPath);
+            string newPath = EditorUtility.SaveFilePanelInProject("Save Graph As...", graphDataName, extension, "", oldDirectory);
             newPath = newPath.Replace(Application.dataPath, "Assets");
 
             if(!string.IsNullOrEmpty(newPath))
             {
-                if (newPath != graphEditorDataPath)
+                if (newPath != graphDataPath)
                 {
-                    Type type = graphEditorData.GraphObject.GetType();
+                    Type type = graphData.GraphObject.GetType();
                     HNGraphObject newGraphData = (HNGraphObject)ScriptableObject.CreateInstance(type);
                     if (newGraphData != null)
                     {
                         newGraphData.AssetPath = newPath;
-                        graphEditorData.GraphObject = newGraphData;
+                        graphData.GraphObject = newGraphData;
                     }
-                    graphEditorData.SaveAsset();
+                    graphData.SaveAsset();
                     AssetDatabase.ImportAsset(newPath);
 
                     newGraphData = (HNGraphObject)AssetDatabase.LoadAssetAtPath(newPath, type);
-                    graphEditorData.GraphObject = newGraphData;
+                    graphData.GraphObject = newGraphData;
                     guid = AssetDatabase.AssetPathToGUID(newPath);
-                    graphEditorDataPath = newPath;
-                    graphEditorDataName = Path.GetFileNameWithoutExtension(graphEditorDataPath);
-                    titleContent = new GUIContent(($"{graphEditorDataName}({graphEditorData.GraphObject.GetType().Name})"));
+                    graphDataPath = newPath;
+                    graphDataName = Path.GetFileNameWithoutExtension(graphDataPath);
+                    titleContent = new GUIContent(($"{graphDataName}({graphData.GraphObject.GetType().Name})"));
                 }
             }
         }
         
         private void OnShowInProject()
         {
-            var asset = AssetDatabase.LoadAssetAtPath<UnityEngine.Object>(graphEditorDataPath);
+            var asset = AssetDatabase.LoadAssetAtPath<UnityEngine.Object>(graphDataPath);
             EditorGUIUtility.PingObject(asset);
         }
 

@@ -138,6 +138,9 @@ namespace HN.Graph.Editor
 
         public void OnAfterDeserialize()
         {
+            if(editorData == null)
+                return;
+            
             Assembly assembly = Assembly.Load(editorData.GraphRuntimeAssemblyName);
             if(assembly != null)
             {

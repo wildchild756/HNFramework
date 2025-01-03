@@ -41,16 +41,10 @@ namespace HN.Serialize
         public string SerializeToJson()
         {
             if(obj == null)
-            {
-                Debug.LogError("JsonObject is null.");
                 return "";
-            }
 
             if(string.IsNullOrEmpty(objTypeName))
-            {
-                Debug.LogError("JsonObject type is empty.");
                 return "";
-            }
             
             Assembly assembly = Assembly.Load(objAssemblyName);
             Type type = assembly.GetType(objTypeName);
@@ -61,16 +55,10 @@ namespace HN.Serialize
         public void DeserializeFromString(string jsonString)
         {
             if(string.IsNullOrEmpty(jsonString))
-            {
-                Debug.LogError("Json string is empty.");
                 return;
-            }
 
             if(string.IsNullOrEmpty(objTypeName))
-            {
-                Debug.LogError("JsonObject type is empty.");
                 return;
-            }
             
             Assembly assembly = Assembly.Load(objAssemblyName);
             Type type = assembly.GetType(objTypeName);

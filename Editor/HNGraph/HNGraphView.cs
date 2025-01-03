@@ -663,6 +663,8 @@ namespace HN.Graph.Editor
             UpdateInputRefPortView(edgeView.InputPortView, null);
             edgeView.DisconnectOutput();
             edgeView.DisconnectInput();
+            GraphEditorData.RemoveEdge(edgeView.EdgeData);
+            RemoveElement(edgeView);
             edgeViews.Remove(edgeView);
         }
 

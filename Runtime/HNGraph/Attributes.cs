@@ -8,7 +8,7 @@ using UnityEngine.UIElements;
 
 namespace HN.Graph
 {
-    [AttributeUsage(AttributeTargets.Property, AllowMultiple = false)]
+    [AttributeUsage(AttributeTargets.Property | AttributeTargets.Field, AllowMultiple = false)]
     public abstract class HNGraphPortInfo : Attribute
     {
         public string PortName => name;

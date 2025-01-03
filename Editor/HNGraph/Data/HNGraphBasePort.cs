@@ -91,7 +91,7 @@ namespace HN.Graph.Editor
 
         public void ConnectToEdge(string edgeGuid)
         {
-            if(!edgeGuids.Contains(edgeGuid))
+            if(edgeGuids.Contains(edgeGuid))
                 return;
 
             edgeGuids.Add(edgeGuid);
@@ -99,7 +99,7 @@ namespace HN.Graph.Editor
 
         public void DisconnectFromEdge(string edgeGuid)
         {
-            if(edgeGuids.Contains(edgeGuid))
+            if(!edgeGuids.Contains(edgeGuid))
                 return;
 
             edgeGuids.Remove(edgeGuid);

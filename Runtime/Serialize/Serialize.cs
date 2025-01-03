@@ -63,6 +63,9 @@ namespace HN.Serialize
 
         public static void DeserializeFromString<T>(T obj, string jsonString)
         {
+            if(obj == null)
+                return;
+
             if(string.IsNullOrEmpty(jsonString))
             {
                 jsonString = "{}";

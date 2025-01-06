@@ -9,6 +9,7 @@ namespace HN.Graph.Editor
     {
         public void OnDrop(GraphView graphView, Edge edge)
         {
+            Debug.Log("on drop");
             HNGraphEdgeView edgeView = (HNGraphEdgeView)edge;
             HNGraphView hnGraphView = (HNGraphView)graphView;
             if (edgeView == null || hnGraphView == null)
@@ -30,7 +31,7 @@ namespace HN.Graph.Editor
 
         public void OnDropOutsidePort(Edge edge, Vector2 position)
         {
-            
+            Debug.Log("on drop outside port");
         }
     }
 }

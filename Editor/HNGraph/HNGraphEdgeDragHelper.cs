@@ -312,11 +312,29 @@ namespace HN.Graph.Editor
 
             if (endPort != null)
             {
+                HNGraphView graphView = m_GraphView as HNGraphView;
+
+                HNGraphEdgeView newEdgeView = edgeCandidate as HNGraphEdgeView;
+                HNGraphBasePortView inputPortView = edgeCandidate.input as HNGraphBasePortView;
+                HNGraphBasePortView outputPortView = edgeCandidate.output as HNGraphBasePortView;
                 if (endPort.direction == Direction.Output)
-                    edgeCandidate.output = endPort;
+                {
+                    newEdgeView.DisconnectOutput();
+                    outputPortView = endPort as HNGraphBasePortView;
+                }
                 else
-                    edgeCandidate.input = endPort;
-                m_Listener.OnDrop(m_GraphView, edgeCandidate);
+                {
+                    newEdgeView.DisconnectInput();
+                    inputPortView = endPort as HNGraphBasePortView;
+                }
+                HNGraphEdge oldEdgeData = newEdgeView.EdgeData;
+                if(oldEdgeData != null)
+                    graphView.GraphEditorData.RemoveEdge(oldEdgeData);
+                HNGraphEdge newEdgeData = new HNGraphEdge(graphView.GraphEditorData, outputPortView.PortData, inputPortView.PortData);
+                newEdgeData.Initialize();
+                newEdgeView.Initialize(newEdgeData, outputPortView, inputPortView);
+
+                m_Listener.OnDrop(m_GraphView, newEdgeView);
                 didConnect = true;
             }
             else

@@ -217,10 +217,8 @@ namespace HN.Graph.Editor
             HNGraphBasePortView inputBasePortView = edgeView.InputPortView;
             HNGraphPortView refInputPortView = inputBasePortView.RefPortView;
 
-            HNGraphEdge edgeData = new HNGraphEdge(GraphEditorData, outputBasePortView.PortData, inputBasePortView.PortData);
-            edgeData.Initialize();
+            HNGraphEdge edgeData = edgeView.EdgeData;
             GraphEditorData.AddEdge(edgeData);
-            edgeView.Initialize(edgeData, outputBasePortView, inputBasePortView);
 
             UpdateOutputRefPortView(edgeView.OutputPortView, refOutputPortView);
             UpdateInputRefPortView(edgeView.InputPortView, refInputPortView);
@@ -375,6 +373,9 @@ namespace HN.Graph.Editor
 
         private void UpdateOutputRefPortView(HNGraphBasePortView outputBasePortView, HNGraphPortView newOutputPortView)
         {
+            if(outputBasePortView == null || outputBasePortView.OwnerNodeView == null)
+                return;
+            
             if(outputBasePortView.OwnerNodeView is HNGraphNodeView)
             {
                 outputBasePortView.UpdateRefPortView(newOutputPortView);
@@ -395,6 +396,9 @@ namespace HN.Graph.Editor
 
         private void UpdateInputRefPortView(HNGraphBasePortView inputBasePortView, HNGraphPortView newInputPortView)
         {
+            if(inputBasePortView == null || inputBasePortView.OwnerNodeView == null)
+                return;
+
             if(inputBasePortView.OwnerNodeView is HNGraphNodeView)
             {
                 inputBasePortView.UpdateRefPortView(newInputPortView);
@@ -654,7 +658,7 @@ namespace HN.Graph.Editor
             nodeViews.Remove(nodeView);
         }
 
-        private void RemoveEdge(HNGraphEdgeView edgeView)
+        public void RemoveEdge(HNGraphEdgeView edgeView)
         {
             if(edgeView == null)
                 return;    

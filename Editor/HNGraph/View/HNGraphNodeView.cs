@@ -30,6 +30,7 @@ namespace HN.Graph.Editor
         public HNGraphNodeView(HNGraphView graphView, HNGraphNode nodeData, HNGraphEdgeConnectorListener edgeConnectorListener) 
         : base(graphView, nodeData, edgeConnectorListener)
         {
+            NodeData.EditorData = graphView.GraphEditorData;
             inputPortViews = new List<HNGraphPortView>();
             outputPortViews = new List<HNGraphPortView>();
         }

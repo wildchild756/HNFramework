@@ -26,6 +26,8 @@ namespace HN.Graph.Editor
         public HNGraphRelayNodeView(HNGraphView graphView, HNGraphRelayNode relayNodeData, HNGraphEdgeConnectorListener edgeConnectorListener)
          : base(graphView, relayNodeData, edgeConnectorListener)
         {
+            RelayNodeData.EditorData = graphView.GraphEditorData;
+            
             var nodeBorder = this.Q("node-border");
             nodeBorder.Remove(nodeBorder.Q("title"));
 

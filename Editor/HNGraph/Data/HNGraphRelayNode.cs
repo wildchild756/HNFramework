@@ -16,6 +16,12 @@ namespace HN.Graph.Editor
 
         public HNGraphRelayNodePort OutputPort => outputPort;
 
+        public HNGraphData EditorData
+        {
+            get { return editorData; }
+            set { editorData = value; }
+        }
+
 
         [SerializeField]
         protected HNGraphRelayNodePort inputPort;
@@ -24,7 +30,6 @@ namespace HN.Graph.Editor
         protected HNGraphRelayNodePort outputPort;
         
 
-        [SerializeReference]
         private HNGraphData editorData;
 
 

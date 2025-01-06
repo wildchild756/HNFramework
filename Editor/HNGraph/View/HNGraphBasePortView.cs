@@ -50,6 +50,7 @@ namespace HN.Graph.Editor
             PortName = orientation == Orientation.Horizontal ? name : "";
             tooltip = orientation == Orientation.Horizontal ? "" : name;
             this.portData = portData;
+            this.portData.EditorData = graphView.GraphEditorData;
             this.ownerNodeView = nodeView;
             edgeViews = new List<HNGraphEdgeView>();
 

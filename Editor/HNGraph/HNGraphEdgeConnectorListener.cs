@@ -7,6 +7,14 @@ namespace HN.Graph.Editor
 {
     public class HNGraphEdgeConnectorListener : IEdgeConnectorListener
     {
+        private HNGraphView graphView;
+
+
+        public HNGraphEdgeConnectorListener(HNGraphView graphView)
+        {
+            this.graphView = graphView;
+        }
+
         public void OnDrop(GraphView graphView, Edge edge)
         {
             Debug.Log("on drop");

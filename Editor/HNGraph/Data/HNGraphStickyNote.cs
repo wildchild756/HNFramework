@@ -16,6 +16,12 @@ namespace HN.Graph.Editor
 
         public string Content => content;
 
+        public HNGraphData EditorData
+        {
+            get { return editorData; }
+            set { editorData = value; }
+        }
+
 
         [SerializeField]
         private string guid;
@@ -29,7 +35,6 @@ namespace HN.Graph.Editor
         [SerializeField]
         private Rect layout;
         
-        [SerializeReference]
         private HNGraphData editorData;
 
 

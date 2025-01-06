@@ -15,6 +15,12 @@ namespace HN.Graph.Editor
 
         public HNGraphBasePort InputPort => inputPort;
 
+        public HNGraphData EditorData
+        {
+            get { return editorData; }
+            set { editorData = value; }
+        }
+
 
         [SerializeField]
         private string guid;
@@ -25,7 +31,6 @@ namespace HN.Graph.Editor
         [SerializeReference]
         private HNGraphBasePort inputPort;
         
-        [SerializeReference]
         private HNGraphData editorData;
 
 

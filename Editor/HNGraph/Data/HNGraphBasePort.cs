@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 namespace HN.Graph.Editor
@@ -36,6 +37,12 @@ namespace HN.Graph.Editor
             set { refPort = value; }
         }
 
+        public HNGraphData EditorData
+        {
+            get { return editorData; }
+            set { editorData = value; }
+        }
+
 
         [SerializeField]
         protected string guid;
@@ -58,7 +65,6 @@ namespace HN.Graph.Editor
         [SerializeField]
         protected List<string> edgeGuids;
         
-        [SerializeReference]
         protected HNGraphData editorData;
 
         [SerializeReference]

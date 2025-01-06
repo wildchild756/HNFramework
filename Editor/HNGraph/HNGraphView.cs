@@ -57,7 +57,7 @@ namespace HN.Graph.Editor
             unserializeAndPaste = UnserializeAndPasteCallback;
 
 
-            edgeConnectorListener = new HNGraphEdgeConnectorListener();
+            edgeConnectorListener = new HNGraphEdgeConnectorListener(this);
             graphViewChanged = OnGraphViewChanged;
 
             styleSheets.Add(Resources.Load<StyleSheet>(graphViewStyle));

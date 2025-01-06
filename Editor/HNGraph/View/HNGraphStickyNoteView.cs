@@ -21,6 +21,7 @@ namespace HN.Graph.Editor
         {
             this.graphView = graphView;
             this.stickyNoteData = stickyNoteData;
+            this.stickyNoteData.EditorData = graphView.GraphEditorData;
             
             this.Q<TextField>("title-field").RegisterCallback<ChangeEvent<string>>(e => 
             {

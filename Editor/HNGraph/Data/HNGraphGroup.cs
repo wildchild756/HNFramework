@@ -14,6 +14,12 @@ namespace HN.Graph.Editor
 
         public IReadOnlyList<string> InnerNodeGuids => innerNodeGuids;
 
+        public HNGraphData EditorData
+        {
+            get { return editorData; }
+            set { editorData = value; }
+        }
+
 
         [SerializeField]
         private string guid;
@@ -27,7 +33,6 @@ namespace HN.Graph.Editor
         [SerializeField]
         private List<string> innerNodeGuids;
         
-        [SerializeReference]
         private HNGraphData editorData;
 
 

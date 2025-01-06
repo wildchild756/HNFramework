@@ -14,11 +14,27 @@ namespace HN.Graph.Editor
 
         public string NodeDataTypeName => nodeDataTypeName;
 
-        public Type NodeDataType => nodeDataType;
+        public Type NodeDataType
+        {
+            get
+            {
+                Assembly assembly = Assembly.Load(editorData.GraphRuntimeAssemblyName);
+                Type nodeDataType = null;
+                if(assembly != null)
+                    nodeDataType =  assembly.GetType($"{editorData.GraphNodeDataNamespace}.{nodeDataTypeName}");
+                return nodeDataType;
+            }
+        }
 
         public IReadOnlyDictionary<string, HNGraphPort> InputPorts => inputPorts;
 
         public IReadOnlyDictionary<string, HNGraphPort> OutputPorts => outputPorts;
+
+        public HNGraphData EditorData
+        {
+            get { return editorData; }
+            set { editorData = value; }
+        }
 
 
         [SerializeField]
@@ -35,7 +51,6 @@ namespace HN.Graph.Editor
 
         private Type nodeDataType;
 
-        [SerializeReference]
         private HNGraphData editorData;
 
 

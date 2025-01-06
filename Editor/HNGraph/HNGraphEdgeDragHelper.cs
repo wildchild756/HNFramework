@@ -281,6 +281,8 @@ namespace HN.Graph.Editor
             if (endPort == null && m_Listener != null)
             {
                 m_Listener.OnDropOutsidePort(edgeCandidate, mousePosition);
+                // HNGraphView graphView = m_GraphView as HNGraphView;
+                // graphView.RemoveEdge(edgeCandidate as HNGraphEdgeView);
             }
 
             edgeCandidate.SetEnabled(true);

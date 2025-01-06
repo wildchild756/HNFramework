@@ -50,6 +50,8 @@ namespace HN.Graph.Example.Editor
         public static bool OnOpenAsset(int instanceID, int line)
         {
             string path = AssetDatabase.GetAssetPath(instanceID);
+            if(Path.GetExtension(path) != TestGraph.TestGraphExtension)
+                return false;
             TestGraphData graphData = Activator.CreateInstance<TestGraphData>();
             graphData.Initialize(path);
             graphData.Deserialize();

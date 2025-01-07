@@ -8,7 +8,7 @@ namespace HN.Graph.Editor
     [Serializable]
     public class HNGraphPort : HNGraphBasePort
     {
-        public HNGraphPort(HNGraphBaseNode ownerNode, HNGraphData editorData, string typeName, string name, Direction direction, Capacity capacity) : base(ownerNode, editorData, typeName, name, direction, capacity)
+        public HNGraphPort(HNGraphBaseNode ownerNode, string typeName, string name, Direction direction, Capacity capacity) : base(ownerNode, typeName, name, direction, capacity)
         {
         }
     }

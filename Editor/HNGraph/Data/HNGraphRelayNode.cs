@@ -18,7 +18,6 @@ namespace HN.Graph.Editor
 
         public HNGraphData EditorData
         {
-            get { return editorData; }
             set { editorData = value; }
         }
 
@@ -33,9 +32,8 @@ namespace HN.Graph.Editor
         private HNGraphData editorData;
 
 
-        public HNGraphRelayNode(HNGraphData editorData, HNGraphEdge edgeData)
+        public HNGraphRelayNode(HNGraphEdge edgeData)
         {
-            this.editorData = editorData;
 
         }
 

@@ -25,6 +25,7 @@ namespace HN.Graph.Editor
             HNGraphBasePortView portView
             ) : base(graphView, portData, nodeView, name, orientation, portDirection, capacity, connectListener, portView)
         {
+            PortData.EditorData = graphView.GraphEditorData;
         }
     }
 }

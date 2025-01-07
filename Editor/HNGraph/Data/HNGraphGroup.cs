@@ -16,7 +16,6 @@ namespace HN.Graph.Editor
 
         public HNGraphData EditorData
         {
-            get { return editorData; }
             set { editorData = value; }
         }
 
@@ -36,10 +35,8 @@ namespace HN.Graph.Editor
         private HNGraphData editorData;
 
 
-        public HNGraphGroup(HNGraphData editorData, string title)
+        public HNGraphGroup(string title)
         {
-            this.editorData = editorData;
-            
             innerNodeGuids = new List<string>();
             this.title = title;
         }

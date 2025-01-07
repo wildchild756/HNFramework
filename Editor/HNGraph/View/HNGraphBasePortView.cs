@@ -50,7 +50,6 @@ namespace HN.Graph.Editor
             PortName = orientation == Orientation.Horizontal ? name : "";
             tooltip = orientation == Orientation.Horizontal ? "" : name;
             this.portData = portData;
-            this.portData.EditorData = graphView.GraphEditorData;
             this.ownerNodeView = nodeView;
             edgeViews = new List<HNGraphEdgeView>();
 
@@ -83,7 +82,7 @@ namespace HN.Graph.Editor
                 edgeViews.Add(edgeView);
             }
 
-            portData.ConnectToEdge(edgeView.EdgeData.Guid);
+            portData.ConnectToEdge(edgeView.EdgeData);
         }
 
         public void DisconnectFromEdge(HNGraphEdgeView edgeView)
@@ -95,7 +94,7 @@ namespace HN.Graph.Editor
                 OwnerNodeView.RefreshPorts();
             }
 
-            portData.DisconnectFromEdge(edgeView.EdgeData.Guid);
+            portData.DisconnectFromEdge(edgeView.EdgeData);
         }
 
         public List<HNGraphBasePortView> GetConnectPorts()

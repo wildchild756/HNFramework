@@ -129,7 +129,7 @@ namespace HN.Graph.Editor
 
             SearchContextElement element = (SearchContextElement)searchTreeEntry.userData;
             string nodeDataTypeName = element.target.GetType().Name;
-            HNGraphNode node = new HNGraphNode(graph.GraphEditorData, nodeDataTypeName);
+            HNGraphNode node = new HNGraphNode(nodeDataTypeName);
             node.Initialize(graphMousePosition);
             graph.AddNode(node);
 

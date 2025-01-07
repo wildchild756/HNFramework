@@ -332,7 +332,7 @@ namespace HN.Graph.Editor
                 HNGraphEdge oldEdgeData = newEdgeView.EdgeData;
                 if(oldEdgeData != null)
                     graphView.GraphEditorData.RemoveEdge(oldEdgeData);
-                HNGraphEdge newEdgeData = new HNGraphEdge(graphView.GraphEditorData, outputPortView.PortData, inputPortView.PortData);
+                HNGraphEdge newEdgeData = new HNGraphEdge(outputPortView.PortData, inputPortView.PortData);
                 newEdgeData.Initialize();
                 newEdgeView.Initialize(newEdgeData, outputPortView, inputPortView);
 

@@ -18,7 +18,6 @@ namespace HN.Graph.Editor
 
         public HNGraphData EditorData
         {
-            get { return editorData; }
             set { editorData = value; }
         }
 
@@ -38,10 +37,8 @@ namespace HN.Graph.Editor
         private HNGraphData editorData;
 
 
-        public HNGraphStickyNote(HNGraphData editorData, string title)
-        {
-            this.editorData = editorData;
-            
+        public HNGraphStickyNote(string title)
+        {            
             this.title = title;
         }
 

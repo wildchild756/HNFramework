@@ -39,7 +39,6 @@ namespace HN.Graph.Editor
 
         public HNGraphData EditorData
         {
-            get { return editorData; }
             set { editorData = value; }
         }
 
@@ -71,12 +70,11 @@ namespace HN.Graph.Editor
         protected HNGraphPort refPort;
 
 
-        public HNGraphBasePort(HNGraphBaseNode ownerNode, HNGraphData editorData, string typeName, string name, Direction direction, Capacity capacity)
+        public HNGraphBasePort(HNGraphBaseNode ownerNode, string typeName, string name, Direction direction, Capacity capacity)
         {
             guid = HNGraphUtils.NewGuid();
             
             this.ownerNode = ownerNode;
-            this.editorData = editorData;
             this.portTypeName = typeName;
             this.name = name;
             this.portDirection = direction;
@@ -95,16 +93,24 @@ namespace HN.Graph.Editor
             return b;
         }
 
-        public void ConnectToEdge(string edgeGuid)
+        public virtual void ConnectToEdge(HNGraphEdge edgeData)
         {
+            if(edgeData == null)
+                return;
+
+            string edgeGuid = edgeData.Guid;
             if(edgeGuids.Contains(edgeGuid))
                 return;
 
             edgeGuids.Add(edgeGuid);
         }
 
-        public void DisconnectFromEdge(string edgeGuid)
+        public virtual void DisconnectFromEdge(HNGraphEdge edgeData)
         {
+            if(edgeData == null)
+                return;
+
+            string edgeGuid = edgeData.Guid;
             if(!edgeGuids.Contains(edgeGuid))
                 return;
 
@@ -113,8 +119,9 @@ namespace HN.Graph.Editor
 
         public List<HNGraphNode> GetConnectedNodes(bool isInputPort)
         {
+            
             List<HNGraphNode> connectedNodes = new List<HNGraphNode>();
-            if(edgeGuids.Count == 0)
+            if(editorData == null || edgeGuids.Count == 0)
                 return connectedNodes;
             
             for(int i = 0; i < edgeGuids.Count; i++)

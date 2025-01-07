@@ -174,7 +174,7 @@ namespace HN.Graph.Editor
                 return;
 
             Vector2 position = target.ChangeCoordinatesTo(contentViewContainer, evt.localMousePosition);
-            HNGraphGroup groupData = new HNGraphGroup(GraphEditorData, "New Group");
+            HNGraphGroup groupData = new HNGraphGroup("New Group");
             groupData.Initialize(position);
             evt.menu.InsertAction(menuPosition, "Create Group", (e) => AddGroup(groupData), DropdownMenuAction.AlwaysEnabled);
         }
@@ -189,7 +189,7 @@ namespace HN.Graph.Editor
                 return;
 
             Vector2 position = target.ChangeCoordinatesTo(contentViewContainer, evt.localMousePosition);
-            HNGraphStickyNote stickyNoteData = new HNGraphStickyNote(GraphEditorData, "Create Note");
+            HNGraphStickyNote stickyNoteData = new HNGraphStickyNote("Create Note");
             stickyNoteData.Initialize(position);
             evt.menu.InsertAction(menuPosition, "Create Sticky Note", (e) => AddStickyNote(stickyNoteData), DropdownMenuAction.AlwaysEnabled);
         }
@@ -253,7 +253,7 @@ namespace HN.Graph.Editor
         {
             GraphEditorData.Owner.RecordObject("Add Relay Node");
             HNGraphEdge edgeData = edgeView.EdgeData;
-            HNGraphRelayNode relayNodeData = new HNGraphRelayNode(GraphEditorData, edgeData);
+            HNGraphRelayNode relayNodeData = new HNGraphRelayNode(edgeData);
             relayNodeData.Initialize(mousePos);
             GraphEditorData.AddRelayNode(relayNodeData);
 
@@ -290,7 +290,7 @@ namespace HN.Graph.Editor
 
             if(outputPortView != null && inputPortView != null)
             {
-                HNGraphEdge newEdge = new HNGraphEdge(GraphEditorData, outputPortView.PortData, inputPortView.PortData);
+                HNGraphEdge newEdge = new HNGraphEdge(outputPortView.PortData, inputPortView.PortData);
                 newEdge.Initialize();
                 HNGraphEdgeView newEdgeView = new HNGraphEdgeView(this);
                 newEdgeView.Initialize(newEdge, outputPortView, inputPortView);
@@ -753,7 +753,7 @@ namespace HN.Graph.Editor
                         HNGraphBasePort connectPort = GraphEditorData.GetEdge(edge)?.OutputPort;
                         if(connectPort != null && connectPort.PortCapacity != HNGraphBasePort.Capacity.Single)
                         {
-                            HNGraphEdge edgeData = new HNGraphEdge(GraphEditorData, connectPort, inputPort);
+                            HNGraphEdge edgeData = new HNGraphEdge(connectPort, inputPort);
                             edgeData.Initialize();
                             GraphEditorData.AddEdge(edgeData);
                             HNGraphEdgeView edgeView = null;

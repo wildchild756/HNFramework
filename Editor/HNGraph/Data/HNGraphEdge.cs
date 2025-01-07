@@ -17,7 +17,6 @@ namespace HN.Graph.Editor
 
         public HNGraphData EditorData
         {
-            get { return editorData; }
             set { editorData = value; }
         }
 
@@ -34,9 +33,8 @@ namespace HN.Graph.Editor
         private HNGraphData editorData;
 
 
-        public HNGraphEdge(HNGraphData editorData, HNGraphBasePort outputPort, HNGraphBasePort inputPort)
+        public HNGraphEdge(HNGraphBasePort outputPort, HNGraphBasePort inputPort)
         {
-            this.editorData = editorData;
             this.outputPort = outputPort;
             this.inputPort = inputPort;
         }
@@ -44,8 +42,8 @@ namespace HN.Graph.Editor
         public virtual void Initialize()
         {
             guid = HNGraphUtils.NewGuid();
-            outputPort?.ConnectToEdge(guid);
-            inputPort?.ConnectToEdge(guid);
+            outputPort?.ConnectToEdge(this);
+            inputPort?.ConnectToEdge(this);
         }
 
         public virtual void Dispose()

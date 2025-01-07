@@ -32,7 +32,6 @@ namespace HN.Graph.Editor
 
         public HNGraphData EditorData
         {
-            get { return editorData; }
             set { editorData = value; }
         }
 
@@ -54,9 +53,8 @@ namespace HN.Graph.Editor
         private HNGraphData editorData;
 
 
-        public HNGraphNode(HNGraphData editorData, string nodeDataTypeName)
+        public HNGraphNode(string nodeDataTypeName)
         {
-            this.editorData = editorData;
             this.nodeDataTypeName = nodeDataTypeName;
 
             inputPorts = new SerializablePorts();

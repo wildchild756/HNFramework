@@ -84,7 +84,6 @@ namespace HN.Graph.Editor
                     {
                         port = new HNGraphPort(
                             BaseNodeData,
-                            GraphView.GraphEditorData,
                             propertyInfo.PropertyType.FullName, 
                             slotInfo.PortName, 
                             slotInfo.PortDirection == HNGraphPortInfo.Direction.Input ? HNGraphBasePort.Direction.Input : HNGraphBasePort.Direction.Output, 

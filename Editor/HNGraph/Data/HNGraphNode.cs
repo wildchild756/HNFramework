@@ -59,7 +59,12 @@ namespace HN.Graph.Editor
 
             inputPorts = new SerializablePorts();
             outputPorts = new SerializablePorts();
-            
+        }
+
+        public void Initialize(Vector2 position, HNGraphData editorData)
+        {
+            base.Initialize(position);
+
             Assembly assembly = Assembly.Load(editorData.GraphRuntimeAssemblyName);
             if(assembly != null)
             {
@@ -73,11 +78,6 @@ namespace HN.Graph.Editor
                 
                 nodeData = new JsonData(jsonObject);
             }
-        }
-
-        public override void Initialize(Vector2 position)
-        {
-            base.Initialize(position);
         }
 
         public override void AddInputPort(HNGraphBasePort port)

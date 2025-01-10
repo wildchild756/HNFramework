@@ -16,8 +16,10 @@ namespace HN.Graph.Editor
 
 
         public VisualElement TopPortContainer => topPortContainer;
-
         public VisualElement BottomPortContainer => bottomPortContainer;
+
+        public IReadOnlyList<HNGraphBasePortView> InputPortViews => inputPortViews;
+        public IReadOnlyList<HNGraphBasePortView> OutputPortViews => outputPortViews;
 
         public HNGraphView GraphView => graphView;
 
@@ -27,8 +29,10 @@ namespace HN.Graph.Editor
         protected HNGraphEdgeConnectorListener edgeConnectorListener;
 
         protected VisualElement topPortContainer;
-
         protected VisualElement bottomPortContainer;
+
+        protected List<HNGraphBasePortView> inputPortViews;
+        protected List<HNGraphBasePortView> outputPortViews;
 
         protected HNGraphView graphView;
 
@@ -45,6 +49,9 @@ namespace HN.Graph.Editor
             bottomPortContainer = new VisualElement();
             bottomPortContainer.name = "BottomPortContainer";
             this.Add(bottomPortContainer);
+
+            inputPortViews = new List<HNGraphBasePortView>();
+            outputPortViews = new List<HNGraphBasePortView>();
         }
 
         public virtual void Initialize()

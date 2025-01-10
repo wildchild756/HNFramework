@@ -18,7 +18,6 @@ namespace HN.Graph.Example.Editor
         public override void OnImportAsset(AssetImportContext ctx)
         {
             LoadGraphData(ctx.assetPath);
-            DeserializeGraphData(ctx);
             SetObject(ctx);
         }
     }

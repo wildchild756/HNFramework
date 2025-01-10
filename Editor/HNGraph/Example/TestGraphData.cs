@@ -10,10 +10,10 @@ namespace HN.Graph.Example.Editor
 {
     public class TestGraphData : HNGraphData
     {
-        public override void UpdateGraphObject(ref HNGraphObject graphObject)
-        {
-            throw new System.NotImplementedException();
-        }
+        // public override void UpdateGraphObject(ref HNGraphObject graphObject)
+        // {
+        //     throw new System.NotImplementedException();
+        // }
 
         public override void SaveAsset()
         {
@@ -27,9 +27,9 @@ namespace HN.Graph.Example.Editor
     {
         public override void Action(int instanceId, string pathName, string resourceFile)
         {
-            CreateGraphData(pathName);
-            Serialize();
-            LoadAsset(pathName);
+            // CreateGraphData(pathName);
+            // Serialize();
+            // LoadAsset(pathName);
         }
 
 

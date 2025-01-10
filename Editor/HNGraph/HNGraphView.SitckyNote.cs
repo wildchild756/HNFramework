@@ -38,15 +38,13 @@ namespace HN.Graph.Editor
         {
             stickyNoteView = new HNGraphStickyNoteView(this, stickyNoteData);
             stickyNoteView.Initialize();
-            stickyNoteViews.Add(stickyNoteView);
-            AddElement(stickyNoteView);
+            AddGraphElement(stickyNoteView);
         }
 
         private void RemoveStickyNote(HNGraphStickyNoteView stickyNoteView)
         {
             GraphEditorData.RemoveStickyNote(stickyNoteView.StickyNoteData);
-            RemoveElement(stickyNoteView);
-            stickyNoteViews.Remove(stickyNoteView);
+            RemoveGraphElement(stickyNoteView);
         }
 
         private HNGraphStickyNoteView GetStickyNoteViewFromGuid(string guid)

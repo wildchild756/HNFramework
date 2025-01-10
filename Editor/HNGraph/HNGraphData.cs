@@ -33,7 +33,7 @@ namespace HN.Graph.Editor
 
 
         [SerializeReference]
-        private HNGraphObject graphObject;
+        protected HNGraphObject graphObject;
 
         [SerializeField]
         private SerializableNodes nodes;
@@ -67,26 +67,30 @@ namespace HN.Graph.Editor
         public virtual void SaveAsset()
         {
             Serialize();
-            UpdateGraphObject(ref graphObject);
-            EditorUtility.SetDirty(GraphObject);
+            
+            EditorUtility.SetDirty(graphObject);
             AssetDatabase.SaveAssets();
         }
 
 
-        public abstract void UpdateGraphObject(ref HNGraphObject graphObject);
-
-
-        public void GenerateGraphObject<T>() where T : HNGraphObject
+        public void GetGraphObject<T>(string path) where T : HNGraphObject
         {
             if(graphObject == null)
-                graphObject = ScriptableObject.CreateInstance<T>();
-
-            UpdateGraphObject(ref graphObject);
+            {
+                graphObject = AssetDatabase.LoadAssetAtPath(path, typeof(T)) as T;
+                if(graphObject == null)
+                {
+                    graphObject = ScriptableObject.CreateInstance<T>();
+                }
+            }
         }
 
         public virtual void Initialize(string assetPath)
         {
             this.assetPath = assetPath;
+
+            var graphDataWrapper = ScriptableObject.CreateInstance<HNGraphDataWrapper>();
+            graphDataWrapper.Initialize(this);
         }
 
         public bool Serialize()
@@ -296,7 +300,7 @@ namespace HN.Graph.Editor
                 return nodeList;
             for(int i = inputPorts.Count - 1; i >= 0; i--)
             {
-                List<HNGraphNode> connectedNodes = inputPorts[i].GetConnectedNodes(true);
+                List<HNGraphNode> connectedNodes = inputPorts[i].GetConnectedNodes(true, this);
                 if(connectedNodes.Count == 0)
                     continue;
                 for(int j = connectedNodes.Count - 1; j >= 0; j--)
@@ -315,7 +319,7 @@ namespace HN.Graph.Editor
                 return nodeList;
             for(int i = outputPorts.Count - 1; i >= 0; i--)
             {
-                List<HNGraphNode> connectedNodes = outputPorts[i].GetConnectedNodes(false);
+                List<HNGraphNode> connectedNodes = outputPorts[i].GetConnectedNodes(false, this);
                 if(connectedNodes.Count == 0)
                     continue;
                 for(int j = connectedNodes.Count - 1; j >= 0; j--)

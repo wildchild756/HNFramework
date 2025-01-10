@@ -11,29 +11,11 @@ namespace HN.Graph
             get { return assetPath; }
             set { assetPath = value; }
         }
-
-        public string SerializedEditorData
-        {
-            get { return serializedEditorData; }
-            set { serializedEditorData = value; }
-        }
         
         
         [SerializeField]
         private string assetPath;
 
-        [SerializeField, HideInInspector]
-        private string serializedEditorData = "{}";
-
-
-#if UNITY_EDITOR
-        public abstract void Serialize();
-#endif
-
-        public HNGraphObject()
-        {
-            
-        }
 
     }
 }

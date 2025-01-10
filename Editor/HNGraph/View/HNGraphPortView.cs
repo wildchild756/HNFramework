@@ -21,10 +21,9 @@ namespace HN.Graph.Editor
             Orientation orientation, 
             Direction portDirection, 
             Capacity capacity, 
-            IEdgeConnectorListener connectListener,
-            HNGraphBasePortView portView
+            IEdgeConnectorListener connectListener
             ) 
-        : base(graphView, portData, nodeView, name, orientation, portDirection, capacity, connectListener, portView)
+        : base(graphView, portData, nodeView, name, orientation, portDirection, capacity, connectListener)
         {
             PortData.EditorData = graphView.GraphEditorData;
         }

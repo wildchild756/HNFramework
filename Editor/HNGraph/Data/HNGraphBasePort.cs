@@ -31,12 +31,6 @@ namespace HN.Graph.Editor
 
         public IReadOnlyList<string> EdgeGuids => edgeGuids;
 
-        public HNGraphPort RefPort
-        {
-            get { return refPort; }
-            set { refPort = value; }
-        }
-
         public HNGraphData EditorData
         {
             set { editorData = value; }
@@ -65,9 +59,6 @@ namespace HN.Graph.Editor
         protected List<string> edgeGuids;
         
         protected HNGraphData editorData;
-
-        [SerializeReference]
-        protected HNGraphPort refPort;
 
 
         public HNGraphBasePort(HNGraphBaseNode ownerNode, string typeName, string name, Direction direction, Capacity capacity)
@@ -113,39 +104,15 @@ namespace HN.Graph.Editor
             string edgeGuid = edgeData.Guid;
             if(!edgeGuids.Contains(edgeGuid))
                 return;
-
+            
             edgeGuids.Remove(edgeGuid);
         }
 
-        public List<HNGraphNode> GetConnectedNodes(bool isInputPort)
-        {
-            
-            List<HNGraphNode> connectedNodes = new List<HNGraphNode>();
-            if(editorData == null || edgeGuids.Count == 0)
-                return connectedNodes;
-            
-            for(int i = 0; i < edgeGuids.Count; i++)
-            {
-                HNGraphEdge edge = editorData.Edges[edgeGuids[i]];
-                HNGraphBaseNode node = isInputPort ? edge.OutputPort.OwnerNode : edge.InputPort.OwnerNode;
-                if(node == null)
-                    continue;
-                if(node is HNGraphNode)
-                    connectedNodes.Add(node as HNGraphNode);
-                else if(node is HNGraphRelayNode)
-                    connectedNodes.Add(
-                        isInputPort ? 
-                        (node as HNGraphRelayNode).OutputPort.RefPort.OwnerNode as HNGraphNode :
-                        (node as HNGraphRelayNode).InputPort.RefPort.OwnerNode as HNGraphNode
-                        );
-            }
-
-            return connectedNodes;
-        }
+        public abstract List<HNGraphNode> GetConnectedNodes(bool isInputPort, HNGraphData editorData);
 
         public virtual void Dispose()
         {
-            // connectionGuids.Clear();
+            
         }
 
 

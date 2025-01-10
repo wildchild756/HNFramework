@@ -37,15 +37,13 @@ namespace HN.Graph.Editor
         {
             groupView = new HNGraphGroupView(this, groupData);
             groupView.Initialize();
-            groupViews.Add(groupView);
-            AddElement(groupView);
+            AddGraphElement(groupView);
         }
 
         private void RemoveGroup(HNGraphGroupView groupView)
         {
             GraphEditorData.RemoveGroup(groupView.GroupData);
-            RemoveElement(groupView);
-            groupViews.Remove(groupView);
+            RemoveGraphElement(groupView);
         }
 
         private HNGraphGroupView GetGroupViewFromGuid(string guid)

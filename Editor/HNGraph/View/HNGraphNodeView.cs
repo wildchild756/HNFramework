@@ -6,22 +6,12 @@ using System.Reflection;
 using UnityEngine;
 using UnityEngine.UIElements;
 using UnityEditor.Experimental.GraphView;
-using Unity.VisualScripting;
 
 namespace HN.Graph.Editor
 {
     public class HNGraphNodeView : HNGraphBaseNodeView
-    {
-        public IReadOnlyList<HNGraphPortView> InputPortViews => inputPortViews;
-
-        public IReadOnlyList<HNGraphPortView> OutputPortViews => outputPortViews;
-        
+    {        
         public HNGraphNode NodeData => BaseNodeData as HNGraphNode;
-
-
-        protected List<HNGraphPortView> inputPortViews;
-
-        protected List<HNGraphPortView> outputPortViews;
         
 
         private Type nodeDataType;
@@ -31,8 +21,6 @@ namespace HN.Graph.Editor
         : base(graphView, nodeData, edgeConnectorListener)
         {
             NodeData.EditorData = graphView.GraphEditorData;
-            inputPortViews = new List<HNGraphPortView>();
-            outputPortViews = new List<HNGraphPortView>();
         }
 
         public override void Initialize()
@@ -170,8 +158,7 @@ namespace HN.Graph.Editor
                 slotInfo.orientation == HNGraphPortInfo.Orientation.Horizontal ? Orientation.Horizontal : Orientation.Vertical,
                 slotInfo.PortDirection == HNGraphPortInfo.Direction.Input ? Direction.Input : Direction.Output, 
                 slotInfo.PortCapacity == HNGraphPortInfo.Capacity.Single ? Port.Capacity.Single : Port.Capacity.Multi,
-                EdgeConnectorListener,
-                null
+                EdgeConnectorListener
                 );
             AddPortView(portView);
         }

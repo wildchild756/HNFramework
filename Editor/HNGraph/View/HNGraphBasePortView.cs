@@ -42,8 +42,7 @@ namespace HN.Graph.Editor
             Orientation orientation,
             Direction portDirection, 
             Capacity capacity, 
-            IEdgeConnectorListener connectListener, 
-            HNGraphBasePortView portView
+            IEdgeConnectorListener connectListener
             ): base(orientation, portDirection, capacity, null)
         {
             this.graphView = graphView;
@@ -52,26 +51,9 @@ namespace HN.Graph.Editor
             this.portData = portData;
             this.ownerNodeView = nodeView;
             edgeViews = new List<HNGraphEdgeView>();
-
-            if(portView is HNGraphPortView)
-            {
-                this.refPortView = portView as HNGraphPortView;
-                PortData.RefPort = (portView as HNGraphPortView).PortData;
-            }
-            else if(portView is HNGraphRelayNodePortView)
-            {
-                this.refPortView = (portView as HNGraphRelayNodePortView).RefPortView;
-                PortData.RefPort = (portView as HNGraphRelayNodePortView).RefPortView.PortData;
-            }
             
             m_EdgeConnector = new HNGraphEdgeConnector(graphView, connectListener);
             this.AddManipulator(m_EdgeConnector);
-        }
-
-        public void UpdateRefPortView(HNGraphPortView newPortView)
-        {
-            refPortView = newPortView;
-            portData.RefPort = newPortView?.PortData;
         }
 
         public void ConnectToEdge(HNGraphEdgeView edgeView)

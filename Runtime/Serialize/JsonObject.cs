@@ -10,7 +10,7 @@ namespace HN.Serialize
 {
     [Serializable]
     public abstract class JsonObject
-    {
+    {        
         public bool Dirty
         {
             get { return isDirty; }

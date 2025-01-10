@@ -25,5 +25,9 @@ namespace HN.Graph.Example.Editor
             toolbar.Add(showInspector);
         }
 
+        protected override bool LoadGraphData(string path)
+        {
+            return false;
+        }
     }
 }

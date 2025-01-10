@@ -58,6 +58,12 @@ namespace HN.Graph.Editor
             outputPort = port as HNGraphRelayNodePort;
         }
 
+        public void SetRefPort(HNGraphPort refPortData)
+        {
+            inputPort.RefPort = refPortData;
+            outputPort.RefPort = refPortData;
+        }
+
         public override void Dispose()
         {
             base.Dispose();

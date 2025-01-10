@@ -6,8 +6,6 @@ using HN.Serialize;
 using UnityEngine;
 using UnityEditor;
 using UnityEditor.AssetImporters;
-using Unity.VisualScripting;
-using System.Text;
 
 namespace HN.Graph.Editor
 {
@@ -19,23 +17,14 @@ namespace HN.Graph.Editor
         protected HNGraphData graphData;
         protected HNGraphObject graphObject;
 
+        private string graphDataPath;
+
 
         public virtual void LoadGraphData(string path)
         {
+            graphDataPath = path;
             graphData = Activator.CreateInstance<T>() as HNGraphData;
             graphData.Initialize(path);
-            if(graphData == null)
-                return;
-            
-            graphData.Deserialize();
-        }
-
-        public virtual void DeserializeGraphData(AssetImportContext ctx)
-        {
-            if(graphData == null)
-                return;
-            
-            graphData.GenerateGraphObject<U>();
             graphObject = graphData.GraphObject;
         }
 

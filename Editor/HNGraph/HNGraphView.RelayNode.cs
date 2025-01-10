@@ -35,8 +35,7 @@ namespace HN.Graph.Editor
             {
                 HNGraphEdgeView inputEdgeView = relayNodeInputPortView.EdgeViews[0];
                 outputPortView = inputEdgeView.GetAnotherPort(relayNodeInputPortView);
-                RemoveElement(inputEdgeView);
-                GraphEditorData.RemoveEdge(inputEdgeView.EdgeData);
+                RemoveEdge(inputEdgeView);
             }
 
             HNGraphBasePortView relayNodeOutputPortView = relayNodeView.OutputPortView;
@@ -44,11 +43,10 @@ namespace HN.Graph.Editor
             {
                 HNGraphEdgeView outputEdgeView = relayNodeOutputPortView.EdgeViews[0];
                 inputPortView = outputEdgeView.GetAnotherPort(relayNodeOutputPortView);
-                RemoveElement(outputEdgeView);
-                GraphEditorData.RemoveEdge(outputEdgeView.EdgeData);
+                RemoveEdge(outputEdgeView);
             }
 
-            RemoveElement(relayNodeView);
+            RemoveGraphElement(relayNodeView);
             GraphEditorData.RemoveRelayNode(relayNodeView.RelayNodeData);
 
             if(outputPortView != null && inputPortView != null)
@@ -57,7 +55,7 @@ namespace HN.Graph.Editor
                 newEdge.Initialize();
                 HNGraphEdgeView newEdgeView = new HNGraphEdgeView(this);
                 newEdgeView.Initialize(newEdge, outputPortView, inputPortView);
-                AddElement(newEdgeView);
+                AddGraphElement(newEdgeView);
             }
 
             EditorUtility.SetDirty(GraphEditorWindow);
@@ -76,8 +74,7 @@ namespace HN.Graph.Editor
         {
             relayNodeView = new HNGraphRelayNodeView(this, relayNodeData, edgeConnectorListener);
             relayNodeView.Initialize();
-            relayNodeViews.Add(relayNodeView);
-            AddElement(relayNodeView);
+            AddGraphElement(relayNodeView);
         }
 
         private HNGraphRelayNodeView GetRelayNodeViewFromGuid(string guid)

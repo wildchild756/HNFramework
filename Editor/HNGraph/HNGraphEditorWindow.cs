@@ -7,7 +7,6 @@ using UnityEditor;
 using UnityEditor.Experimental.GraphView;
 using UnityEngine.UIElements;
 using UnityEditor.UIElements;
-using Unity.VisualScripting;
 
 namespace HN.Graph.Editor
 {
@@ -29,16 +28,17 @@ namespace HN.Graph.Editor
         private string guid;
         private HNGraphSearchWindowProvider searchWindowProvider;
 
-        private HNGraphData graphData;
+        protected HNGraphData graphData;
         private HNGraphView graphView;
         private IMGUIContainer toolbar;
-        private string graphDataPath;
+        protected string graphDataPath;
         private string graphDataName;
         private string extension;
 
 
         public abstract void CreateSearchWindowProvider();
         public abstract void AdditionalToolButton(Toolbar toolbar);
+        protected abstract bool LoadGraphData(string path);
 
 
         public bool Initialize(string assetGuid, HNGraphData graphData)
@@ -113,9 +113,32 @@ namespace HN.Graph.Editor
             return window;
         }
 
+        void Update()
+        {
+            if(File.Exists(graphDataPath))
+            {
+                if(graphData == null || graphView == null)
+                {
+                    if(LoadGraphData(graphDataPath))
+                    {
+                        Initialize(AssetDatabase.AssetPathToGUID(graphDataPath), graphData);
+                    }
+                }
+            }
+            else
+            {
+                if(graphView != null)
+                {
+                    rootVisualElement.Remove(graphView);
+                    graphView = null;
+                }
+            }
+        }
+
         void OnDestroy()
         {
-            Undo.ClearUndo(graphData.Owner);
+            if(graphData != null && graphData.Owner != null)
+                Undo.ClearUndo(graphData.Owner);
         }
 
 

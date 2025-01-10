@@ -20,6 +20,7 @@ namespace HN.Graph.Editor
             T graphData = Activator.CreateInstance<T>();
             graphData.Initialize(importer.assetPath);
             graphData.Deserialize();
+                        
             return graphData;
         }
 
@@ -30,9 +31,6 @@ namespace HN.Graph.Editor
             if(graphData == null)
                 return false;
 
-            var graphDataWrapper = ScriptableObject.CreateInstance<HNGraphDataWrapper>();
-            graphDataWrapper.Initialize(graphData);
-            
             var extension = Path.GetExtension(path);
             if (string.IsNullOrEmpty(extension))
             {

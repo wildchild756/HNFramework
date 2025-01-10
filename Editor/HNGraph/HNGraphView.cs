@@ -102,7 +102,7 @@ namespace HN.Graph.Editor
 
             foreach (var nodeView in nodeViews)
             {
-                List<HNGraphPortView> nodeViewPortViews = new List<HNGraphPortView>();
+                List<HNGraphBasePortView> nodeViewPortViews = new List<HNGraphBasePortView>();
                 if (startPortView.direction == Direction.Output)
                 {
                     nodeViewPortViews = nodeView.InputPortViews.ToList();
@@ -154,6 +154,46 @@ namespace HN.Graph.Editor
             base.ClearSelection();
 
             OnSelectionChanged?.Invoke(selection);
+        }
+
+        public void AddGraphElement(GraphElement graphElement)
+        {
+            if(graphElement is HNGraphNodeView)
+                nodeViews.Add(graphElement as HNGraphNodeView);
+            else if(graphElement is HNGraphEdgeView)
+                edgeViews.Add(graphElement as HNGraphEdgeView);
+            else if(graphElement is HNGraphGroupView)
+                groupViews.Add(graphElement as HNGraphGroupView);
+            else if(graphElement is HNGraphStickyNoteView)
+                stickyNoteViews.Add(graphElement as HNGraphStickyNoteView);
+            else if(graphElement is HNGraphRelayNodeView)
+                relayNodeViews.Add(graphElement as HNGraphRelayNodeView);
+            else if(graphElement is HNGraphFloatingPanelView)
+                floatingPanelViews.Add(graphElement as HNGraphFloatingPanelView);
+            else
+                return;
+
+            AddElement(graphElement);
+        }
+
+        public void RemoveGraphElement(GraphElement graphElement)
+        {
+            if(nodeViews.Contains(graphElement as HNGraphNodeView))
+                nodeViews.Remove(graphElement as HNGraphNodeView);
+            else if(edgeViews.Contains(graphElement as HNGraphEdgeView))
+                edgeViews.Remove(graphElement as HNGraphEdgeView);
+            else if(groupViews.Contains(graphElement as HNGraphGroupView))
+                groupViews.Remove(graphElement as HNGraphGroupView);
+            else if(stickyNoteViews.Contains(graphElement as HNGraphStickyNoteView))
+                stickyNoteViews.Remove(graphElement as HNGraphStickyNoteView);
+            else if(relayNodeViews.Contains(graphElement as HNGraphRelayNodeView))
+                relayNodeViews.Remove(graphElement as HNGraphRelayNodeView);
+            else if(floatingPanelViews.Contains(graphElement as HNGraphFloatingPanelView))
+                floatingPanelViews.Remove(graphElement as HNGraphFloatingPanelView);
+            else
+                return;
+
+            RemoveElement(graphElement);
         }
 
 
@@ -309,7 +349,7 @@ namespace HN.Graph.Editor
 
             return graphViewChange;
         }
-        
+
     
         public delegate void SelectionChanged(List<ISelectable> selection);
 

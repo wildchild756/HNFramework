@@ -29,11 +29,6 @@ namespace HN.Graph.Editor
             SetLayout(new Rect(position, Vector2.zero));
         }
 
-        public virtual void OnConnectionAdded(string portGuid)
-        {
-
-        }
-
         public abstract void AddInputPort(HNGraphBasePort port);
 
         public abstract void AddOutputPort(HNGraphBasePort port);

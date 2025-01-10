@@ -13,14 +13,33 @@ namespace HN.Graph.Editor
     {
         public HNGraphRelayNode RelayNodeData => BaseNodeData as HNGraphRelayNode;
 
-        public HNGraphRelayNodePortView InputPortView => inputPortView;
+        public HNGraphRelayNodePortView InputPortView
+        {
+            get { return (HNGraphRelayNodePortView)(inputPortViews.Count == 0 ? null : inputPortViews[0]); }
+            set 
+            { 
+                if(inputPortViews.Count == 0)
+                    inputPortViews.Add(value);
+                else
+                    inputPortViews[0] = value; 
+            }
+        }
 
-        public HNGraphRelayNodePortView OutputPortView => outputPortView;
+        public HNGraphRelayNodePortView OutputPortView
+        {
+            get { return (HNGraphRelayNodePortView)(outputPortViews.Count == 0 ? null : outputPortViews[0]); }
+            set 
+            { 
+                if(outputPortViews.Count == 0)
+                    outputPortViews.Add(value);
+                else
+                    outputPortViews[0] = value; 
+            }
+        }
 
 
-        private HNGraphRelayNodePortView inputPortView;
-
-        private HNGraphRelayNodePortView outputPortView;
+        // private HNGraphRelayNodePortView inputPortView;
+        // private HNGraphRelayNodePortView outputPortView;
     
     
         public HNGraphRelayNodeView(HNGraphView graphView, HNGraphRelayNode relayNodeData, HNGraphEdgeConnectorListener edgeConnectorListener)
@@ -47,13 +66,13 @@ namespace HN.Graph.Editor
             if(portView.direction == Direction.Input)
             {
                 inputContainer.Add(portView);
-                inputPortView = portView as HNGraphRelayNodePortView;
+                InputPortView = portView as HNGraphRelayNodePortView;
                 baseNodeData.AddInputPort(portView.PortData);
             }
             else
             {
                 outputContainer.Add(portView);
-                outputPortView = portView as HNGraphRelayNodePortView;
+                OutputPortView = portView as HNGraphRelayNodePortView;
                 baseNodeData.AddOutputPort(portView.PortData);
             }
         }
@@ -65,13 +84,15 @@ namespace HN.Graph.Editor
 
         protected override void DrawPorts()
         {
-            HNGraphRelayNodePort inputPortData = new HNGraphRelayNodePort(
-                RelayNodeData, 
-                "", 
-                "", 
-                HNGraphRelayNodePort.Direction.Input, 
-                HNGraphRelayNodePort.Capacity.Single
-            );
+            HNGraphRelayNodePort inputPortData = RelayNodeData.InputPort;
+            if(inputPortData == null)
+                inputPortData = new HNGraphRelayNodePort(
+                    RelayNodeData, 
+                    "", 
+                    "", 
+                    HNGraphRelayNodePort.Direction.Input, 
+                    HNGraphRelayNodePort.Capacity.Single
+                );
             HNGraphRelayNodePortView inputPortView = new HNGraphRelayNodePortView(
                 GraphView,
                 inputPortData,
@@ -80,18 +101,19 @@ namespace HN.Graph.Editor
                 Orientation.Horizontal,
                 Direction.Input,
                 Port.Capacity.Single,
-                EdgeConnectorListener,
-                InputPortView
+                EdgeConnectorListener
             );
             AddPortView(inputPortView);
 
-            HNGraphRelayNodePort outputPortData = new HNGraphRelayNodePort(
-                RelayNodeData, 
-                "", 
-                "", 
-                HNGraphRelayNodePort.Direction.Output, 
-                HNGraphRelayNodePort.Capacity.Single
-            );
+            HNGraphRelayNodePort outputPortData = RelayNodeData.OutputPort;
+            if(outputPortData == null)
+                outputPortData = new HNGraphRelayNodePort(
+                    RelayNodeData, 
+                    "", 
+                    "", 
+                    HNGraphRelayNodePort.Direction.Output, 
+                    HNGraphRelayNodePort.Capacity.Single
+                );
             HNGraphRelayNodePortView outputPortView = new HNGraphRelayNodePortView(
                 GraphView,
                 outputPortData,
@@ -100,8 +122,7 @@ namespace HN.Graph.Editor
                 Orientation.Horizontal,
                 Direction.Output,
                 Port.Capacity.Single,
-                EdgeConnectorListener,
-                OutputPortView
+                EdgeConnectorListener
             );
             AddPortView(outputPortView);
         }
@@ -112,22 +133,21 @@ namespace HN.Graph.Editor
                 return;
             
             HNGraphBasePortView outputPortView = originEdgeView.OutputPortView;
-            HNGraphEdge outputEdge = new HNGraphEdge(OutputPortView.PortData, relayNodeView.InputPortView.PortData);
+            HNGraphEdge outputEdge = new HNGraphEdge(outputPortView.PortData, relayNodeView.InputPortView.PortData);
             outputEdge.Initialize();
             HNGraphEdgeView outputEdgeView = new HNGraphEdgeView(graphView);
             outputEdgeView.Initialize(outputEdge, outputPortView, relayNodeView.InputPortView);
 
             HNGraphBasePortView inputPortView = originEdgeView.InputPortView;
-            HNGraphEdge inputEdge = new HNGraphEdge(relayNodeView.InputPortView.PortData, inputPortView.PortData);
+            HNGraphEdge inputEdge = new HNGraphEdge(relayNodeView.OutputPortView.PortData, inputPortView.PortData);
             inputEdge.Initialize();
             HNGraphEdgeView inputEdgeView = new HNGraphEdgeView(graphView);
             inputEdgeView.Initialize(inputEdge, relayNodeView.OutputPortView, inputPortView);
 
-            originEdgeView.DisconnectAll();
-            graphView.RemoveElement(originEdgeView);
+            graphView.RemoveEdge(originEdgeView);
 
-            graphView.AddElement(outputEdgeView);
-            graphView.AddElement(inputEdgeView);
+            graphView.AddEdge(outputEdgeView);
+            graphView.AddEdge(inputEdgeView);
         }
 
         private void OnMouseDown(MouseDownEvent e)

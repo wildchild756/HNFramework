@@ -36,8 +36,7 @@ namespace HN.Graph.Editor
         {
             nodeView = new HNGraphNodeView(this, nodeData, edgeConnectorListener);
             nodeView.Initialize();
-            nodeViews.Add(nodeView);
-            AddElement(nodeView);
+            AddGraphElement(nodeView);
         }
 
         private void RemoveNode(HNGraphNodeView nodeView)
@@ -52,8 +51,7 @@ namespace HN.Graph.Editor
                 }
             }
             GraphEditorData.RemoveNode(nodeView.NodeData);
-            RemoveElement(nodeView);
-            nodeViews.Remove(nodeView);
+            RemoveGraphElement(nodeView);
         }
 
         private HNGraphNodeView GetNodeViewFromGuid(string guid)

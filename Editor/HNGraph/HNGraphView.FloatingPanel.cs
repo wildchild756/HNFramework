@@ -42,8 +42,7 @@ namespace HN.Graph.Editor
 
         private void RemoveFloatingPanelView(HNGraphFloatingPanelView floatingPanelView)
         {
-            RemoveElement(floatingPanelView);
-            floatingPanelViews.Remove(floatingPanelView);
+            RemoveGraphElement(floatingPanelView);
             floatingPanelView.Dispose();
         }
 

@@ -18,12 +18,5 @@ namespace HN.Graph.Example
             
         }
 
-#if UNITY_EDITOR
-        public override void Serialize()
-        {
-            Json.Serialize(this, AssetPath);
-        }
-#endif
-
     }
 }

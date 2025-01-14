@@ -8,7 +8,7 @@ using UnityEngine;
 namespace HN.Graph.Editor
 {
     [Serializable]
-    public class HNGraphNode : HNGraphBaseNode, ISerializationCallbackReceiver
+    public class HNGraphNode : HNGraphBaseNode//, ISerializationCallbackReceiver
     {
         public JsonData NodeData => nodeData;
 
@@ -144,21 +144,5 @@ namespace HN.Graph.Editor
             }
         }
 
-        public void OnBeforeSerialize()
-        {
-            
-        }
-
-        public void OnAfterDeserialize()
-        {
-            if(editorData == null)
-                return;
-            
-            Assembly assembly = Assembly.Load(editorData.GraphRuntimeAssemblyName);
-            if(assembly != null)
-            {
-                nodeDataType = assembly.GetType($"{editorData.GraphNodeDataNamespace}.{nodeDataTypeName}");
-            }
-        }
     }
 }

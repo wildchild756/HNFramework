@@ -20,12 +20,6 @@ namespace HN.Graph.Editor
             graphData.Initialize(pathName);
         }
 
-        // public void Serialize()
-        // {
-        //     graphData.Serialize();
-        //     AssetDatabase.Refresh();
-        // }
-
         public void LoadAsset(string pathName)
         {
             graphData.GraphObject = AssetDatabase.LoadAssetAtPath<HNGraphObject>(pathName);

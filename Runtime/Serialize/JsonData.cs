@@ -14,7 +14,14 @@ namespace HN.Serialize
     public class JsonData : ISerializationCallbackReceiver
     {
         public string JsonText => jsonText;
-        public JsonObject Obj => obj;
+        public JsonObject Obj
+        {
+            get
+            {
+                DeserializeFromString(jsonText);
+                return obj;
+            }
+        }
 
 
         [SerializeField]

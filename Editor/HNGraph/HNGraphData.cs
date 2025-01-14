@@ -11,7 +11,7 @@ using UnityEngine;
 namespace HN.Graph.Editor
 {
     [Serializable]
-    public abstract partial class HNGraphData : JsonObject
+    public abstract partial class HNGraphData
     {
         public HNGraphObject GraphObject
         {
@@ -66,10 +66,10 @@ namespace HN.Graph.Editor
 
         public virtual void SaveAsset()
         {
-            Serialize();
-            
             EditorUtility.SetDirty(graphObject);
-            AssetDatabase.SaveAssets();
+            AssetDatabase.SaveAssetIfDirty(graphObject);
+
+            Serialize();
         }
 
 
@@ -77,11 +77,7 @@ namespace HN.Graph.Editor
         {
             if(graphObject == null)
             {
-                graphObject = AssetDatabase.LoadAssetAtPath(path, typeof(T)) as T;
-                if(graphObject == null)
-                {
-                    graphObject = ScriptableObject.CreateInstance<T>();
-                }
+                graphObject = AssetDatabase.LoadAssetAtPath<T>(path);
             }
         }
 
@@ -105,8 +101,18 @@ namespace HN.Graph.Editor
                 return;
             if(!File.Exists(assetPath))
                 return;
-
+            
             DeserializeFromString(Json.ReadFromDisk(assetPath));
+        }
+
+        public string SerializeToJson()
+        {            
+            return Json.Serialize(this);
+        }
+
+        public void DeserializeFromString(string jsonString)
+        {
+            Json.DeserializeFromString(this, jsonString);
         }
 
         public HNGraphNode GetNode(string guid)

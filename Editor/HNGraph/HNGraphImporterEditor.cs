@@ -19,7 +19,6 @@ namespace HN.Graph.Editor
 
             T graphData = Activator.CreateInstance<T>();
             graphData.Initialize(importer.assetPath);
-            graphData.Deserialize();
                         
             return graphData;
         }

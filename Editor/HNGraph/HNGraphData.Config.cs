@@ -6,7 +6,7 @@ using HN.Serialize;
 
 namespace HN.Graph.Editor
 {
-    public abstract partial class HNGraphData : JsonObject
+    public abstract partial class HNGraphData
     {
         public string GraphEditorAssemblyName
         {

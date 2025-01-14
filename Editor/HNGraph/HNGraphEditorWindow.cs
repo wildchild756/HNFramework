@@ -157,7 +157,7 @@ namespace HN.Graph.Editor
         private void SetWindowDirty()
         {
             this.hasUnsavedChanges = true;
-            graphData.Dirty = true;
+            // graphData.Dirty = true;
         }
 
         private void OnSaveAsset()

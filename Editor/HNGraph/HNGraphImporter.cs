@@ -16,16 +16,17 @@ namespace HN.Graph.Editor
         protected string iconPath = "";
         protected HNGraphData graphData;
         protected HNGraphObject graphObject;
-
+        
         private string graphDataPath;
 
 
         public virtual void LoadGraphData(string path)
         {
             graphDataPath = path;
-            graphData = Activator.CreateInstance<T>() as HNGraphData;
+            graphData = Activator.CreateInstance<T>();
             graphData.Initialize(path);
-            graphObject = graphData.GraphObject;
+            graphObject = ScriptableObject.CreateInstance<U>();
+            graphData.GraphObject = graphObject;
         }
 
         public virtual void SetObject(AssetImportContext ctx)

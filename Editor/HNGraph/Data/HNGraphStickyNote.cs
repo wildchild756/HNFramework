@@ -16,10 +16,10 @@ namespace HN.Graph.Editor
 
         public string Content => content;
 
-        public HNGraphData EditorData
-        {
-            set { editorData = value; }
-        }
+        // public HNGraphData EditorData
+        // {
+        //     set { editorData = value; }
+        // }
 
 
         [SerializeField]
@@ -34,7 +34,7 @@ namespace HN.Graph.Editor
         [SerializeField]
         private Rect layout;
         
-        private HNGraphData editorData;
+        // private HNGraphData editorData;
 
 
         public HNGraphStickyNote(string title)

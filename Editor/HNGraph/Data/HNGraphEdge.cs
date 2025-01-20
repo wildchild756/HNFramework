@@ -11,45 +11,56 @@ namespace HN.Graph.Editor
     {
         public string Guid => guid;
 
-        public HNGraphBasePort OutputPort => outputPort;
+        // public HNGraphBasePort OutputPort => editorData.GetBasePort(outputPortGuid);
+        // public HNGraphBasePort InputPort => editorData.GetBasePort(inputPortGuid);
+        public string OutputPortGuid => outputPortGuid;
+        public string InputPortGuid => inputPortGuid;
 
-        public HNGraphBasePort InputPort => inputPort;
-
-        public HNGraphData EditorData
-        {
-            set { editorData = value; }
-        }
+        // public HNGraphData EditorData
+        // {
+        //     set { editorData = value; }
+        // }
 
 
         [SerializeField]
         private string guid;
 
-        [SerializeReference]
-        private HNGraphBasePort outputPort;
+        [SerializeField]
+        private string outputPortGuid;
 
-        [SerializeReference]
-        private HNGraphBasePort inputPort;
+        [SerializeField]
+        private string inputPortGuid;
         
-        private HNGraphData editorData;
+        // private HNGraphData editorData;
 
 
         public HNGraphEdge(HNGraphBasePort outputPort, HNGraphBasePort inputPort)
         {
-            this.outputPort = outputPort;
-            this.inputPort = inputPort;
+            this.outputPortGuid = outputPort.Guid;
+            this.inputPortGuid = inputPort.Guid;
         }
 
         public virtual void Initialize()
         {
             guid = HNGraphUtils.NewGuid();
-            outputPort?.ConnectToEdge(this);
-            inputPort?.ConnectToEdge(this);
+            // editorData.GetBasePort(outputPortGuid)?.ConnectToEdge(this);
+            // editorData.GetBasePort(inputPortGuid)?.ConnectToEdge(this);
         }
 
         public virtual void Dispose()
         {
-            outputPort = null;
-            inputPort = null;
+            outputPortGuid = null;
+            inputPortGuid = null;
+        }
+
+        public HNGraphBasePort GetOutputPort(HNGraphData editorData)
+        {
+            return editorData.GetBasePort(outputPortGuid);
+        }
+
+        public HNGraphBasePort GetInputPort(HNGraphData editorData)
+        {
+            return editorData.GetBasePort(inputPortGuid);
         }
 
     }

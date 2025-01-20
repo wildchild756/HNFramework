@@ -26,8 +26,14 @@ namespace HN.Graph.Editor
             graphViewElementsCreated(new HNGraphViewCreateElements(relayNodeView));
         }
 
-        public void DeleteRelayNode(HNGraphRelayNodeView relayNodeView)
+        public void RemoveRelayNode(HNGraphRelayNodeView relayNodeView)
         {
+            if(!ContainsElement(relayNodeView))
+                return;
+
+            relayNodeView.RemovePortView(GraphEditorData, relayNodeView.InputPortView);
+            relayNodeView.RemovePortView(GraphEditorData, relayNodeView.OutputPortView);
+
             HNGraphBasePortView outputPortView = null, inputPortView = null;
 
             HNGraphBasePortView relayNodeInputPortView = relayNodeView.InputPortView;
@@ -55,7 +61,7 @@ namespace HN.Graph.Editor
                 newEdge.Initialize();
                 HNGraphEdgeView newEdgeView = new HNGraphEdgeView(this);
                 newEdgeView.Initialize(newEdge, outputPortView, inputPortView);
-                AddGraphElement(newEdgeView);
+                AddEdge(newEdgeView);
             }
 
             EditorUtility.SetDirty(GraphEditorWindow);
@@ -63,17 +69,17 @@ namespace HN.Graph.Editor
 
         private void DrawRelayNodes()
         {
-            var relayNodeDataList = GraphEditorData.RelayNodes.Values.ToList();
-            for(int i = 0; i < relayNodeDataList.Count; i++)
+            foreach(string relayNodeGuid in GraphEditorData.GetAllRelayNodeGuids())
             {
-                AddRelayNodeView(relayNodeDataList[i], out HNGraphRelayNodeView relayNodeView);
+                HNGraphRelayNode relayNodeData = GraphEditorData.GetRelayNode(relayNodeGuid);
+                AddRelayNodeView(relayNodeData, out HNGraphRelayNodeView relayNodeView);
             }
         }
 
         private void AddRelayNodeView(HNGraphRelayNode relayNodeData, out HNGraphRelayNodeView relayNodeView)
         {
             relayNodeView = new HNGraphRelayNodeView(this, relayNodeData, edgeConnectorListener);
-            relayNodeView.Initialize();
+            relayNodeView.Initialize(GraphEditorData);
             AddGraphElement(relayNodeView);
         }
 

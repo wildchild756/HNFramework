@@ -12,24 +12,25 @@ namespace HN.Graph.Editor
     [Serializable]
     public class HNGraphRelayNode : HNGraphBaseNode
     {
-        public HNGraphRelayNodePort InputPort => inputPort;
+        // public HNGraphRelayNodePort InputPort => editorData.GetRelayNodePort(inputPortGuid);
+        // public HNGraphRelayNodePort OutputPort => editorData.GetRelayNodePort(outputPortGuid);
+        public string InputPortGuid => inputPortGuid;
+        public string OutputPortGuid => outputPortGuid;
 
-        public HNGraphRelayNodePort OutputPort => outputPort;
-
-        public HNGraphData EditorData
-        {
-            set { editorData = value; }
-        }
+        // public HNGraphData EditorData
+        // {
+        //     set { editorData = value; }
+        // }
 
 
         [SerializeField]
-        protected HNGraphRelayNodePort inputPort;
+        protected string inputPortGuid = "";
         
         [SerializeField]
-        protected HNGraphRelayNodePort outputPort;
+        protected string outputPortGuid = "";
         
 
-        private HNGraphData editorData;
+        // private HNGraphData editorData;
 
 
         public HNGraphRelayNode(HNGraphEdge edgeData)
@@ -42,34 +43,66 @@ namespace HN.Graph.Editor
             base.Initialize(position);
         }
 
-        public override void AddInputPort(HNGraphBasePort port)
+        public HNGraphRelayNodePort GetInputPort(HNGraphData editorData)
+        {
+            return editorData.GetRelayNodePort(inputPortGuid);
+        }
+
+        public HNGraphRelayNodePort GetOutputPort(HNGraphData editorData)
+        {
+            return editorData.GetRelayNodePort(outputPortGuid);
+        }
+
+        public override void AddInputPort(HNGraphData editorData, HNGraphBasePort port)
+        {
+            if(port == null || port is not HNGraphRelayNodePort)
+                return;
+            
+            editorData.AddRelayNodePort(port as HNGraphRelayNodePort);
+            inputPortGuid = port.Guid;
+        }
+
+        public override void AddOutputPort(HNGraphData editorData, HNGraphBasePort port)
         {
             if(port == null || port is not HNGraphRelayNodePort)
                 return;
 
-            inputPort = port as HNGraphRelayNodePort;
+            editorData.AddRelayNodePort(port as HNGraphRelayNodePort);
+            outputPortGuid = port.Guid;
         }
 
-        public override void AddOutputPort(HNGraphBasePort port)
+        public override void RemoveInputPort(HNGraphData editorData, HNGraphBasePort port)
         {
-            if(port == null || port is not HNGraphRelayNodePort)
-                return;
-
-            outputPort = port as HNGraphRelayNodePort;
+            editorData.RemoveRelayNodePort(port as HNGraphRelayNodePort);
+            inputPortGuid = "";
         }
 
-        public void SetRefPort(HNGraphPort refPortData)
+        public override void RemoveOutputPort(HNGraphData editorData, HNGraphBasePort port)
         {
-            inputPort.RefPort = refPortData;
-            outputPort.RefPort = refPortData;
+            editorData.RemoveRelayNodePort(port as HNGraphRelayNodePort);
+            outputPortGuid = "";
+        }
+
+        public void SetRefPort(HNGraphData editorData, HNGraphNodePort refPortData)
+        {
+            if(refPortData == null)
+            {
+                editorData.GetRelayNodePort(inputPortGuid).RefPortGuid = "";
+                editorData.GetRelayNodePort(outputPortGuid).RefPortGuid = "";
+            }
+            else
+            {
+                editorData.GetRelayNodePort(inputPortGuid).RefPortGuid = refPortData.Guid;
+                editorData.GetRelayNodePort(outputPortGuid).RefPortGuid = refPortData.Guid;
+            }
         }
 
         public override void Dispose()
         {
-            base.Dispose();
+            // base.Dispose();
 
-            inputPort.Dispose();
-            outputPort.Dispose();
+            // editorData.GetRelayNodePort(inputPortGuid).Dispose();
+            // editorData.GetRelayNodePort(outputPortGuid).Dispose();
         }
     }
 }

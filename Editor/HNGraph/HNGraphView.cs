@@ -196,6 +196,11 @@ namespace HN.Graph.Editor
             RemoveElement(graphElement);
         }
 
+        public bool ContainsElement(GraphElement graphElement)
+        {
+            return Contains(graphElement);
+        }
+
 
 
         private void DrawAllElements()
@@ -342,7 +347,7 @@ namespace HN.Graph.Editor
                     GraphEditorData.Owner.RecordObject("Remove Relay Node");
                     for(int i = relayNodeViews.Count - 1; i >= 0; i--)
                     {
-                        DeleteRelayNode(relayNodeViews[i]);
+                        RemoveRelayNode(relayNodeViews[i]);
                     }
                 }
             }

@@ -56,8 +56,9 @@ namespace HN.Graph.Editor
             
             foreach(var nodeData in data.serializedNodes)
             {
-                foreach(var inputPort in nodeData.InputPorts.Values)
+                foreach(string inputPortGuid in nodeData.InputPortGuids)
                 {
+                    var inputPort = GraphEditorData.GetNodePort(inputPortGuid);
                     if(inputPort == null)
                     {
                         continue;
@@ -66,7 +67,7 @@ namespace HN.Graph.Editor
                     var edges = inputPort.EdgeGuids.ToList();
                     foreach(var edge in edges)
                     {
-                        HNGraphBasePort connectPort = GraphEditorData.GetEdge(edge)?.OutputPort;
+                        HNGraphBasePort connectPort = GraphEditorData.GetEdge(edge)?.GetOutputPort(GraphEditorData);
                         if(connectPort != null && connectPort.PortCapacity != HNGraphBasePort.Capacity.Single)
                         {
                             HNGraphEdge edgeData = new HNGraphEdge(connectPort, inputPort);

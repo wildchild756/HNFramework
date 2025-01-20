@@ -44,21 +44,19 @@ namespace HN.Graph.Editor
     
         public HNGraphRelayNodeView(HNGraphView graphView, HNGraphRelayNode relayNodeData, HNGraphEdgeConnectorListener edgeConnectorListener)
          : base(graphView, relayNodeData, edgeConnectorListener)
-        {
-            RelayNodeData.EditorData = graphView.GraphEditorData;
-            
+        {            
             var nodeBorder = this.Q("node-border");
             nodeBorder.Remove(nodeBorder.Q("title"));
 
             RegisterCallback<MouseDownEvent>(OnMouseDown);
         }
 
-        public override void Initialize()
+        public override void Initialize(HNGraphData editorData)
         {
-            base.Initialize();
+            base.Initialize(editorData);
         }
 
-        protected override void AddPortView(HNGraphBasePortView portView)
+        public override void AddPortView(HNGraphData editorData, HNGraphBasePortView portView)
         {
             if(portView is not HNGraphRelayNodePortView)
                 return;
@@ -67,27 +65,42 @@ namespace HN.Graph.Editor
             {
                 inputContainer.Add(portView);
                 InputPortView = portView as HNGraphRelayNodePortView;
-                baseNodeData.AddInputPort(portView.PortData);
+                baseNodeData.AddInputPort(editorData, portView.PortData);
             }
             else
             {
                 outputContainer.Add(portView);
                 OutputPortView = portView as HNGraphRelayNodePortView;
-                baseNodeData.AddOutputPort(portView.PortData);
+                baseNodeData.AddOutputPort(editorData, portView.PortData);
             }
         }
 
-        protected override void DrawNode()
+        public override void RemovePortView(HNGraphData editorData, HNGraphBasePortView portView)
+        {
+            if(inputContainer.Contains(portView))
+            {
+                inputContainer.Remove(portView);
+                RelayNodeData.RemoveInputPort(editorData, portView.PortData);
+            }
+            if(outputContainer.Contains(portView))
+            {
+                outputContainer.Remove(portView);
+                RelayNodeData.RemoveOutputPort(editorData, portView.PortData);
+            }
+        }
+
+        protected override void DrawNode(HNGraphData editorData)
         {
             
         }
 
-        protected override void DrawPorts()
+        protected override void DrawPorts(HNGraphData editorData)
         {
-            HNGraphRelayNodePort inputPortData = RelayNodeData.InputPort;
+            HNGraphRelayNodePort inputPortData = null;
+            inputPortData = editorData.GetRelayNodePort(RelayNodeData.InputPortGuid);
             if(inputPortData == null)
                 inputPortData = new HNGraphRelayNodePort(
-                    RelayNodeData, 
+                    RelayNodeData.Guid, 
                     "", 
                     "", 
                     HNGraphRelayNodePort.Direction.Input, 
@@ -103,12 +116,13 @@ namespace HN.Graph.Editor
                 Port.Capacity.Single,
                 EdgeConnectorListener
             );
-            AddPortView(inputPortView);
+            AddPortView(editorData, inputPortView);
 
-            HNGraphRelayNodePort outputPortData = RelayNodeData.OutputPort;
+            HNGraphRelayNodePort outputPortData = null;
+            outputPortData = editorData.GetRelayNodePort(RelayNodeData.OutputPortGuid);
             if(outputPortData == null)
                 outputPortData = new HNGraphRelayNodePort(
-                    RelayNodeData, 
+                    RelayNodeData.Guid, 
                     "", 
                     "", 
                     HNGraphRelayNodePort.Direction.Output, 
@@ -124,7 +138,7 @@ namespace HN.Graph.Editor
                 Port.Capacity.Single,
                 EdgeConnectorListener
             );
-            AddPortView(outputPortView);
+            AddPortView(editorData, outputPortView);
         }
 
         public void CreateRelayNodeOnEdge(HNGraphEdgeView originEdgeView, HNGraphRelayNodeView relayNodeView)
@@ -154,7 +168,7 @@ namespace HN.Graph.Editor
         {
             if(e.altKey)
             {
-                GraphView.DeleteRelayNode(this);
+                GraphView.RemoveRelayNode(this);
             }
         }
     }

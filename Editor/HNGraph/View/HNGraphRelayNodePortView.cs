@@ -24,8 +24,6 @@ namespace HN.Graph.Editor
             IEdgeConnectorListener connectListener
             ) : base(graphView, portData, nodeView, name, orientation, portDirection, capacity, connectListener)
         {
-            PortData.EditorData = graphView.GraphEditorData;
-
             // this.refPortView = (portView as HNGraphRelayNodePortView).RefPortView;
             // PortData.RefPort = (portView as HNGraphRelayNodePortView).RefPortView.PortData;
         }
@@ -33,7 +31,7 @@ namespace HN.Graph.Editor
         public void UpdateRefPortView(HNGraphPortView newPortView)
         {
             refPortView = newPortView;
-            PortData.RefPort = newPortView?.PortData;
+            PortData.RefPortGuid = newPortView?.PortData.Guid;
         }
     }
 }

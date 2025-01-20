@@ -10,7 +10,7 @@ namespace HN.Graph.Editor
 {
     public class HNGraphPortView : HNGraphBasePortView
     {
-        public new HNGraphPort PortData => portData as HNGraphPort;
+        public new HNGraphNodePort PortData => portData as HNGraphNodePort;
 
 
         public HNGraphPortView(
@@ -25,7 +25,7 @@ namespace HN.Graph.Editor
             ) 
         : base(graphView, portData, nodeView, name, orientation, portDirection, capacity, connectListener)
         {
-            PortData.EditorData = graphView.GraphEditorData;
+            
         }
     }
 }

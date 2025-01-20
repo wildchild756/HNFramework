@@ -27,8 +27,9 @@ namespace HN.Graph.Editor
 
         private void DrawGroups()
         {
-            foreach(var groupData in GraphEditorData.Groups.Values)
+            foreach(var groupGuid in GraphEditorData.GetAllGroupGuids())
             {
+                HNGraphGroup groupData = GraphEditorData.GetGroup(groupGuid);
                 AddGroupView(groupData, out HNGraphGroupView groupView);
             }
         }
@@ -42,6 +43,9 @@ namespace HN.Graph.Editor
 
         private void RemoveGroup(HNGraphGroupView groupView)
         {
+            if(ContainsElement(groupView))
+                return;
+
             GraphEditorData.RemoveGroup(groupView.GroupData);
             RemoveGraphElement(groupView);
         }

@@ -6,20 +6,15 @@ using UnityEngine;
 namespace HN.Graph.Editor
 {
     [Serializable]
-    public class HNGraphRelayNodePort : HNGraphBasePort
+    public class HNGraphNodePort : HNGraphBasePort
     {
-        public string RefPortGuid
+        public string PropertyName => propertyName;
+
+        private string propertyName;
+
+        public HNGraphNodePort(string ownerNodeGuid, string typeName, string name, string propertyName, Direction direction, Capacity capacity) : base(ownerNodeGuid, typeName, name, direction, capacity)
         {
-            get { return refPortGuid; }
-            set { refPortGuid = value; }
-        }
-
-
-        private string refPortGuid;
-        
-
-        public HNGraphRelayNodePort(string ownerNodeGuid, string typeName, string name, Direction direction, Capacity capacity) : base(ownerNodeGuid, typeName, name, direction, capacity)
-        {
+            this.propertyName = propertyName;
         }
 
 
@@ -43,8 +38,8 @@ namespace HN.Graph.Editor
                 else if(node is HNGraphRelayNode)
                 {
                     HNGraphRelayNode relayNode = node as HNGraphRelayNode;
-                    HNGraphRelayNodePort relayNodeInputPort = editorData.GetRelayNodePort(relayNode.InputPortGuid);
-                    HNGraphRelayNodePort relayNodeOutputPort = editorData.GetRelayNodePort(relayNode.OutputPortGuid);
+                    HNGraphRelayNodePort relayNodeInputPort = relayNode.GetInputPort(editorData);
+                    HNGraphRelayNodePort relayNodeOutputPort = relayNode.GetOutputPort(editorData);
                     List<HNGraphNode> nextConnectedNodes = isInputPort ? 
                         relayNodeInputPort.GetConnectedNodes(isInputPort, editorData) :
                         relayNodeOutputPort.GetConnectedNodes(isInputPort, editorData);

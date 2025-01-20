@@ -14,23 +14,23 @@ namespace HN.Graph.Editor
         public HNGraphNode NodeData => BaseNodeData as HNGraphNode;
         
 
-        private Type nodeDataType;
+        // private Type nodeDataType;
 
 
         public HNGraphNodeView(HNGraphView graphView, HNGraphNode nodeData, HNGraphEdgeConnectorListener edgeConnectorListener) 
         : base(graphView, nodeData, edgeConnectorListener)
         {
-            NodeData.EditorData = graphView.GraphEditorData;
+
         }
 
-        public override void Initialize()
+        public override void Initialize(HNGraphData editorData)
         {
-            nodeDataType = NodeData.NodeDataType;
-            base.Initialize();
+            base.Initialize(editorData);
         }
 
-        protected override void DrawNode()
+        protected override void DrawNode(HNGraphData editorData)
         {
+            Type nodeDataType = NodeData.GetNodeDataType(editorData);
             HNGraphNodeInfo info = nodeDataType.GetCustomAttribute<HNGraphNodeInfo>();
             title = info.NodeTitle;
             name = nodeDataType.Name;
@@ -42,8 +42,9 @@ namespace HN.Graph.Editor
             // }
         }
 
-        protected override void DrawPorts()
+        protected override void DrawPorts(HNGraphData editorData)
         {
+            Type nodeDataType = NodeData.GetNodeDataType(editorData);
             PropertyInfo[] propertiesInfo = nodeDataType.GetProperties();
             foreach (var propertyInfo in propertiesInfo)
             {
@@ -52,16 +53,18 @@ namespace HN.Graph.Editor
                 {
                     HNGraphBasePort port = null;
 
-                    foreach(var inputPort in NodeData.InputPorts.Values)
+                    foreach(string inputPortGuid in NodeData.InputPortGuids)
                     {
+                        var inputPort = graphView.GraphEditorData.GetNodePort(inputPortGuid);
                         if(inputPort.IsMatchWithAttribute(propertyInfo.PropertyType, slotInfo))
                         {
                             port = inputPort;
                         }
                     }
 
-                    foreach(var outputPort in NodeData.OutputPorts.Values)
+                    foreach(string outputPortGuid in NodeData.OutputPortGuids)
                     {
+                        var outputPort = graphView.GraphEditorData.GetNodePort(outputPortGuid);
                         if(outputPort.IsMatchWithAttribute(propertyInfo.PropertyType, slotInfo))
                         {
                             port = outputPort;
@@ -70,26 +73,27 @@ namespace HN.Graph.Editor
 
                     if(port == null)
                     {
-                        port = new HNGraphPort(
-                            BaseNodeData,
-                            propertyInfo.PropertyType.FullName, 
+                        port = new HNGraphNodePort(
+                            BaseNodeData.Guid,
+                            propertyInfo.PropertyType.FullName,
                             slotInfo.PortName, 
+                            propertyInfo.Name,
                             slotInfo.PortDirection == HNGraphPortInfo.Direction.Input ? HNGraphBasePort.Direction.Input : HNGraphBasePort.Direction.Output, 
                             slotInfo.PortCapacity == HNGraphPortInfo.Capacity.Single ? HNGraphBasePort.Capacity.Single : HNGraphBasePort.Capacity.Multi
                             );
                         
-                        if(port.PortDirection == HNGraphBasePort.Direction.Input)
-                            BaseNodeData.AddInputPort(port);
-                        else if(port.PortDirection == HNGraphBasePort.Direction.Output)
-                            BaseNodeData.AddOutputPort(port);
+                        // if(port.PortDirection == HNGraphBasePort.Direction.Input)
+                        //     BaseNodeData.AddInputPort(port);
+                        // else if(port.PortDirection == HNGraphBasePort.Direction.Output)
+                        //     BaseNodeData.AddOutputPort(port);
                     }
 
-                    CreatePortView(port, slotInfo);
+                    CreatePortView(editorData, port, slotInfo);
                 }
             }
         }
 
-        protected override void AddPortView(HNGraphBasePortView portView)
+        public override void AddPortView(HNGraphData editorData, HNGraphBasePortView portView)
         {
             if(portView is not HNGraphPortView)
                 return;
@@ -106,7 +110,7 @@ namespace HN.Graph.Editor
                 }
                 inputPortViews.Add(portView as HNGraphPortView);
 
-                baseNodeData.AddInputPort(portView.PortData);
+                baseNodeData.AddInputPort(editorData, portView.PortData);
             }
             else
             {
@@ -120,35 +124,35 @@ namespace HN.Graph.Editor
                 }
                 outputPortViews.Add(portView as HNGraphPortView);
 
-                baseNodeData.AddOutputPort(portView.PortData);
+                baseNodeData.AddOutputPort(editorData, portView.PortData);
             }
         }
 
-        public void RemovePortView(HNGraphBasePortView portView)
+        public override void RemovePortView(HNGraphData editorData, HNGraphBasePortView portView)
         {
             if(inputContainer.Contains(portView))
             {
                 inputContainer.Remove(portView);
-                NodeData.RemoveInputPort(portView.PortData.Guid);
+                NodeData.RemoveInputPort(editorData, portView.PortData);
             }
             if(topPortContainer.Contains(portView))
             {
                 topPortContainer.Remove(portView);
-                NodeData.RemoveInputPort(portView.PortData.Guid);
+                NodeData.RemoveInputPort(editorData, portView.PortData);
             }
             if(outputContainer.Contains(portView))
             {
                 outputContainer.Remove(portView);
-                NodeData.RemoveOutputPort(portView.PortData.Guid);
+                NodeData.RemoveOutputPort(editorData, portView.PortData);
             }
             if(bottomPortContainer.Contains(portView))
             {
                 bottomPortContainer.Remove(portView);
-                NodeData.RemoveOutputPort(portView.PortData.Guid);
+                NodeData.RemoveOutputPort(editorData, portView.PortData);
             }
         }
 
-        private void CreatePortView(HNGraphBasePort port, HNGraphPortInfo slotInfo)
+        private void CreatePortView(HNGraphData editorData, HNGraphBasePort port, HNGraphPortInfo slotInfo)
         {
             HNGraphPortView portView = new HNGraphPortView(
                 GraphView,
@@ -160,7 +164,7 @@ namespace HN.Graph.Editor
                 slotInfo.PortCapacity == HNGraphPortInfo.Capacity.Single ? Port.Capacity.Single : Port.Capacity.Multi,
                 EdgeConnectorListener
                 );
-            AddPortView(portView);
+            AddPortView(editorData, portView);
         }
 
     }

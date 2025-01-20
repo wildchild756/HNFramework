@@ -12,20 +12,20 @@ namespace HN.Graph
     public abstract class HNGraphPortInfo : Attribute
     {
         public string PortName => name;
-        private string name;
-
+        // public string Identity => identity;
         public Orientation orientation;
-
         public Direction PortDirection => direction;
-        private Direction direction;
-
         public Capacity PortCapacity => capacity;
-        private Capacity capacity;
 
+        protected string name;
+        // protected string identity;
+        protected Direction direction;
+        protected Capacity capacity;
 
-        public HNGraphPortInfo(string slotName, Orientation orientation, Direction direction, Capacity capacity)
+        public HNGraphPortInfo(string slotName, /* string identity,  */Orientation orientation, Direction direction, Capacity capacity)
         {
             this.name = slotName;
+            // this.identity = identity;
             this.orientation = orientation;
             this.direction = direction;
             this.capacity = capacity;
@@ -56,14 +56,17 @@ namespace HN.Graph
     public abstract class HNGraphNodeInfo : Attribute
     {
         public string NodeTitle => nodeTitle;
-        private string nodeTitle;
-
+        // public string Identity => identity;
         public string MenuItem => menuItem;
+
+        private string nodeTitle;
+        // protected string identity;
         private string menuItem;
 
-        public HNGraphNodeInfo(string nodeTitle, string menuItem = "")
+        public HNGraphNodeInfo(string nodeTitle, /* string identity,  */string menuItem = "")
         {
             this.nodeTitle = nodeTitle;
+            // this.identity = identity;
             this.menuItem = menuItem;
         }
     }

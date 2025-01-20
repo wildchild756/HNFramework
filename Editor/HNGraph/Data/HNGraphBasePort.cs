@@ -27,14 +27,14 @@ namespace HN.Graph.Editor
 
         public Capacity PortCapacity => portCapacity;
 
-        public HNGraphBaseNode OwnerNode => ownerNode;
+        public string OwnerNodeGuid => ownerNodeGuid;
 
         public IReadOnlyList<string> EdgeGuids => edgeGuids;
 
-        public HNGraphData EditorData
-        {
-            set { editorData = value; }
-        }
+        // public HNGraphData EditorData
+        // {
+        //     set { editorData = value; }
+        // }
 
 
         [SerializeField]
@@ -52,20 +52,20 @@ namespace HN.Graph.Editor
         [SerializeField]
         protected Capacity portCapacity;
 
-        [SerializeReference]
-        protected HNGraphBaseNode ownerNode;
+        [SerializeField]
+        protected string ownerNodeGuid;
 
         [SerializeField]
         protected List<string> edgeGuids;
         
-        protected HNGraphData editorData;
+        // protected HNGraphData editorData;
 
 
-        public HNGraphBasePort(HNGraphBaseNode ownerNode, string typeName, string name, Direction direction, Capacity capacity)
+        public HNGraphBasePort(string ownerNodeGuid, string typeName, string name, Direction direction, Capacity capacity)
         {
             guid = HNGraphUtils.NewGuid();
             
-            this.ownerNode = ownerNode;
+            this.ownerNodeGuid = ownerNodeGuid;
             this.portTypeName = typeName;
             this.name = name;
             this.portDirection = direction;

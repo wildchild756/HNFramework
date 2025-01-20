@@ -127,7 +127,7 @@ namespace HN.Graph.Editor
             }
             else
             {
-                if(graphView != null)
+                if(graphView != null && rootVisualElement.Contains(graphView))
                 {
                     rootVisualElement.Remove(graphView);
                     graphView = null;

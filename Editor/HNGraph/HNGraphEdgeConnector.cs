@@ -62,7 +62,7 @@ namespace HN.Graph.Editor
 
             m_MouseDownPosition = e.localMousePosition;
             
-            m_EdgeCandidate = new HNGraphEdgeView(graphView);
+            m_EdgeCandidate = new Edge();
             m_EdgeDragHelper.draggedPort = graphElement;
             m_EdgeDragHelper.edgeCandidate = m_EdgeCandidate;
             

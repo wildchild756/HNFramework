@@ -14,10 +14,10 @@ namespace HN.Graph.Editor
 
         public IReadOnlyList<string> InnerNodeGuids => innerNodeGuids;
 
-        public HNGraphData EditorData
-        {
-            set { editorData = value; }
-        }
+        // public HNGraphData EditorData
+        // {
+        //     set { editorData = value; }
+        // }
 
 
         [SerializeField]
@@ -32,7 +32,7 @@ namespace HN.Graph.Editor
         [SerializeField]
         private List<string> innerNodeGuids;
         
-        private HNGraphData editorData;
+        // private HNGraphData editorData;
 
 
         public HNGraphGroup(string title)
@@ -81,11 +81,11 @@ namespace HN.Graph.Editor
 
         public virtual void Dispose()
         {
-            foreach(var nodeGuid in innerNodeGuids)
-            {
-                HNGraphNode node = editorData.GetNode(nodeGuid);
-                node.Dispose();
-            }
+            // foreach(var nodeGuid in innerNodeGuids)
+            // {
+            //     HNGraphNode node = editorData.GetNode(nodeGuid);
+            //     node.Dispose();
+            // }
         }
     }
 }

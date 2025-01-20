@@ -27,8 +27,9 @@ namespace HN.Graph.Editor
 
         private void DrawStickyNotes()
         {
-            foreach(var stickyNoteData in GraphEditorData.StickyNotes.Values)
+            foreach(var stickyNoteGuid in GraphEditorData.GetAllStickyNoteGuids())
             {
+                HNGraphStickyNote stickyNoteData = GraphEditorData.GetStickyNote(stickyNoteGuid);
                 AddStickyNoteView(stickyNoteData, out HNGraphStickyNoteView stickyNoteView);
             }
 
@@ -43,6 +44,9 @@ namespace HN.Graph.Editor
 
         private void RemoveStickyNote(HNGraphStickyNoteView stickyNoteView)
         {
+            if(!ContainsElement(stickyNoteView))
+                return;
+
             GraphEditorData.RemoveStickyNote(stickyNoteView.StickyNoteData);
             RemoveGraphElement(stickyNoteView);
         }

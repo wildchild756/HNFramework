@@ -54,18 +54,20 @@ namespace HN.Graph.Editor
             outputPortViews = new List<HNGraphBasePortView>();
         }
 
-        public virtual void Initialize()
+        public virtual void Initialize(HNGraphData editorData)
         {
-            DrawNode();
-            DrawPorts();
+            DrawNode(editorData);
+            DrawPorts(editorData);
             SetPosition(baseNodeData.GetLayout());
         }
 
-        protected abstract void AddPortView(HNGraphBasePortView portView);
+        public abstract void AddPortView(HNGraphData editorData, HNGraphBasePortView portView);
 
-        protected abstract void DrawNode();
+        public abstract void RemovePortView(HNGraphData editorData, HNGraphBasePortView portView);
 
-        protected abstract void DrawPorts();
+        protected abstract void DrawNode(HNGraphData editorData);
+
+        protected abstract void DrawPorts(HNGraphData editorData);
 
         public void SavePosition()
         {

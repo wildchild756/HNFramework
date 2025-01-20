@@ -31,7 +31,6 @@ namespace HN.Graph.Editor
         public void Initialize(HNGraphEdge edgeData, HNGraphBasePortView output, HNGraphBasePortView input)
         {
             this.edgeData = edgeData;
-            this.edgeData.EditorData = graphView.GraphEditorData;
             ConnectOutput(output);
             ConnectInput(input);
         }

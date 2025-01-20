@@ -21,7 +21,6 @@ namespace HN.Graph.Editor
         {
             this.graphView = graphView;
             this.groupData = groupData;
-            this.groupData.EditorData = graphView.GraphEditorData;
 
             title = groupData.Title;
             headerContainer.Q<TextField>().RegisterCallback<ChangeEvent<string>>((e) =>

@@ -26,8 +26,9 @@ namespace HN.Graph.Editor
 
         private void DrawNodes()
         {
-            foreach(var nodeData in GraphEditorData.Nodes.Values)
+            foreach(var nodeGuid in GraphEditorData.GetAllNodeGuids())
             {
+                HNGraphNode nodeData = GraphEditorData.GetNode(nodeGuid);
                 AddNodeView(nodeData, out HNGraphNodeView nodeView);
             }
         }
@@ -35,12 +36,24 @@ namespace HN.Graph.Editor
         private void AddNodeView(HNGraphNode nodeData, out HNGraphNodeView nodeView)
         {
             nodeView = new HNGraphNodeView(this, nodeData, edgeConnectorListener);
-            nodeView.Initialize();
+            nodeView.Initialize(GraphEditorData);
             AddGraphElement(nodeView);
         }
 
         private void RemoveNode(HNGraphNodeView nodeView)
         {
+            if(!ContainsElement(nodeView))
+                return;
+            
+            for(int i = 0; i < nodeView.InputPortViews.Count; i++)
+            {
+                nodeView.RemovePortView(GraphEditorData, nodeView.InputPortViews[i]);
+            }
+            for(int i = 0; i < nodeView.OutputPortViews.Count; i++)
+            {
+                nodeView.RemovePortView(GraphEditorData, nodeView.OutputPortViews[i]);
+            }
+
             foreach(var portView in nodeView.InputPortViews)
             {
                 var edgeGuids = portView.PortData.EdgeGuids;

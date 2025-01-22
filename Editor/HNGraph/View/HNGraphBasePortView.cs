@@ -22,11 +22,11 @@ namespace HN.Graph.Editor
 
         public IReadOnlyList<HNGraphEdgeView> EdgeViews => edgeViews;
 
-        public HNGraphPortView RefPortView => refPortView;
+        public HNGraphNodePortView RefPortView => refPortView;
 
 
         protected HNGraphBasePort portData;
-        protected HNGraphPortView refPortView;
+        protected HNGraphNodePortView refPortView;
         private HNGraphBaseNodeView ownerNodeView;
 
         private List<HNGraphEdgeView> edgeViews;

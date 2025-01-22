@@ -95,7 +95,7 @@ namespace HN.Graph.Editor
 
         public override void AddPortView(HNGraphData editorData, HNGraphBasePortView portView)
         {
-            if(portView is not HNGraphPortView)
+            if(portView is not HNGraphNodePortView)
                 return;
 
             if(portView.direction == Direction.Input)
@@ -108,7 +108,7 @@ namespace HN.Graph.Editor
                 {
                     inputContainer.Add(portView);
                 }
-                inputPortViews.Add(portView as HNGraphPortView);
+                inputPortViews.Add(portView as HNGraphNodePortView);
 
                 baseNodeData.AddInputPort(editorData, portView.PortData);
             }
@@ -122,7 +122,7 @@ namespace HN.Graph.Editor
                 {
                     outputContainer.Add(portView);
                 }
-                outputPortViews.Add(portView as HNGraphPortView);
+                outputPortViews.Add(portView as HNGraphNodePortView);
 
                 baseNodeData.AddOutputPort(editorData, portView.PortData);
             }
@@ -154,7 +154,7 @@ namespace HN.Graph.Editor
 
         private void CreatePortView(HNGraphData editorData, HNGraphBasePort port, HNGraphPortInfo slotInfo)
         {
-            HNGraphPortView portView = new HNGraphPortView(
+            HNGraphNodePortView portView = new HNGraphNodePortView(
                 GraphView,
                 port,
                 this,

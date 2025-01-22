@@ -9,7 +9,8 @@ namespace HN.Graph.Editor
     public class HNGraphNodePort : HNGraphBasePort
     {
         public string PropertyName => propertyName;
-
+        
+        [SerializeField]
         private string propertyName;
 
         public HNGraphNodePort(string ownerNodeGuid, string typeName, string name, string propertyName, Direction direction, Capacity capacity) : base(ownerNodeGuid, typeName, name, direction, capacity)

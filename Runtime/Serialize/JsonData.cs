@@ -45,6 +45,11 @@ namespace HN.Serialize
             objAssemblyName = objType.Assembly.FullName;
         }
 
+        public void Serialize()
+        {
+            jsonText = SerializeToJson();
+        }
+
         public string SerializeToJson()
         {
             if(obj == null)
@@ -77,7 +82,7 @@ namespace HN.Serialize
         public void OnBeforeSerialize()
         {
             jsonText = "";
-            jsonText = SerializeToJson();
+            Serialize();
         }
 
         public void OnAfterDeserialize()

@@ -276,6 +276,7 @@ namespace HN.Graph.Editor
             if(nodePorts.ContainsValue(nodePort))
                 return;
 
+            onNodePortAdded?.Invoke(nodePort);
             nodePorts.Add(nodePort.Guid, nodePort);
         }
 
@@ -320,6 +321,7 @@ namespace HN.Graph.Editor
             if(relayNodePorts.ContainsValue(relayNodePort))
                 return;
 
+            onRelayNodePortAdded?.Invoke(relayNodePort);
             relayNodePorts.Add(relayNodePort.Guid, relayNodePort);
         }
 

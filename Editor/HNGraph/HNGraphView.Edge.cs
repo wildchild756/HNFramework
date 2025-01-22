@@ -92,7 +92,7 @@ namespace HN.Graph.Editor
 
         private void UpdateRefPortView(HNGraphEdgeView edgeView)
         {
-            HNGraphPortView refPortView = null;
+            HNGraphNodePortView refPortView = null;
             refPortView = FindUpstreamRefPortView(edgeView);
             if(refPortView == null)
             {
@@ -106,7 +106,7 @@ namespace HN.Graph.Editor
             UpdateDownstreamRelayNodeRefPort(edgeView, refPortView);
         }
 
-        private HNGraphPortView FindUpstreamRefPortView(HNGraphEdgeView edgeView)
+        private HNGraphNodePortView FindUpstreamRefPortView(HNGraphEdgeView edgeView)
         {
             HNGraphBasePortView edgeOutputPortView = edgeView.OutputPortView;
             HNGraphBaseNodeView edgeOutputPortOwnerNodeView = edgeOutputPortView.OwnerNodeView;
@@ -122,13 +122,13 @@ namespace HN.Graph.Editor
             }
             else if(edgeOutputPortOwnerNodeView is HNGraphNodeView)
             {
-                return edgeOutputPortView as HNGraphPortView;
+                return edgeOutputPortView as HNGraphNodePortView;
             }
 
             return null;
         }
 
-        private HNGraphPortView FindDownstreamRefPortView(HNGraphEdgeView edgeView)
+        private HNGraphNodePortView FindDownstreamRefPortView(HNGraphEdgeView edgeView)
         {
             HNGraphBasePortView edgeInputPortView = edgeView.InputPortView;
             HNGraphBaseNodeView edgeInputPortOwnerNodeView = edgeInputPortView.OwnerNodeView;
@@ -144,13 +144,13 @@ namespace HN.Graph.Editor
             }
             else if(edgeInputPortOwnerNodeView is HNGraphNodeView)
             {
-                return edgeInputPortView as HNGraphPortView;
+                return edgeInputPortView as HNGraphNodePortView;
             }
 
             return null;
         }
 
-        private void UpdateUpstreamRelayNodeRefPort(HNGraphEdgeView edgeView, HNGraphPortView newRefPortView)
+        private void UpdateUpstreamRelayNodeRefPort(HNGraphEdgeView edgeView, HNGraphNodePortView newRefPortView)
         {
             HNGraphBasePortView edgeOutputPortView = edgeView.OutputPortView;
             HNGraphBaseNodeView edgeOutputPortOwnerNodeView = edgeOutputPortView.OwnerNodeView;
@@ -175,7 +175,7 @@ namespace HN.Graph.Editor
             return;
         }
 
-        private void UpdateDownstreamRelayNodeRefPort(HNGraphEdgeView edgeView, HNGraphPortView newRefPortView)
+        private void UpdateDownstreamRelayNodeRefPort(HNGraphEdgeView edgeView, HNGraphNodePortView newRefPortView)
         {
             HNGraphBasePortView edgeInputPortView = edgeView.InputPortView;
             HNGraphBaseNodeView edgeInputPortOwnerNodeView = edgeInputPortView.OwnerNodeView;

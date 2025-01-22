@@ -8,12 +8,12 @@ using UnityEngine.UIElements;
 
 namespace HN.Graph.Editor
 {
-    public class HNGraphPortView : HNGraphBasePortView
+    public class HNGraphNodePortView : HNGraphBasePortView
     {
         public new HNGraphNodePort PortData => portData as HNGraphNodePort;
 
 
-        public HNGraphPortView(
+        public HNGraphNodePortView(
             HNGraphView graphView, 
             HNGraphBasePort portData, 
             HNGraphBaseNodeView nodeView, 

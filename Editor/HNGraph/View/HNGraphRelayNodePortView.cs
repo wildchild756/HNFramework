@@ -28,7 +28,7 @@ namespace HN.Graph.Editor
             // PortData.RefPort = (portView as HNGraphRelayNodePortView).RefPortView.PortData;
         }
 
-        public void UpdateRefPortView(HNGraphPortView newPortView)
+        public void UpdateRefPortView(HNGraphNodePortView newPortView)
         {
             refPortView = newPortView;
             PortData.RefPortGuid = newPortView?.PortData.Guid;
